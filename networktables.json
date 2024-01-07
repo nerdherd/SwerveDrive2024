@@ -1,0 +1,218 @@
+[
+  {
+    "name": "/Preferences/WristP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/Wrist_FF",
+    "type": "double",
+    "value": 0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFROffsetDeg",
+    "type": "double",
+    "value": 25.75,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFLOffsetDeg",
+    "type": "double",
+    "value": -53.174,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kBLOffsetDeg",
+    "type": "double",
+    "value": 85.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kBROffsetDeg",
+    "type": "double",
+    "value": 46.85,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopIntakePower",
+    "type": "double",
+    "value": -0.35,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopLowOuttakePower",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopMidOuttakePower",
+    "type": "double",
+    "value": 0.4,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopHighOuttakePower",
+    "type": "double",
+    "value": 0.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopIntakeNeutralPower",
+    "type": "double",
+    "value": -0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopCubeCurrent",
+    "type": "double",
+    "value": 30.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomIntakePower",
+    "type": "double",
+    "value": -0.35,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomLowOuttakePower",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomMidOuttakePower",
+    "type": "double",
+    "value": 0.4,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomHighOuttakePower",
+    "type": "double",
+    "value": 0.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomIntakeNeutralPower",
+    "type": "double",
+    "value": -0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomCubeCurrent",
+    "type": "double",
+    "value": 30.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "name": "/Preferences/WristP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/WristF",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/Wrist_FF",
+    "type": "double",
+    "value": 0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFROffsetDeg",
+    "type": "double",
+    "value": 25.75,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFLOffsetDeg",
+    "type": "double",
+    "value": -53.174,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kBLOffsetDeg",
+    "type": "double",
+    "value": 85.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kBROffsetDeg",
+    "type": "double",
+    "value": 46.85,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaP",
+    "type": "double",
+    "value": 0.25,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaI",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/PP_kThetaD",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]
