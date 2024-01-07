@@ -177,71 +177,18 @@ public class PrimalSunflower implements Reportable {
     }
 
     /**
-     * @return index of the closest grid to the robot
-     */
-    public int getClosestZombieLane() {
-        robotPos = generateSun();
-        int gridNumber = 0;
-        Double distance = Math.sqrt(Math.pow(gridPositions[0][1] - robotPos[1], 2) + Math.pow(gridPositions[0][0] - robotPos[0], 2)); // distance formula
-        for (int i = 0; i < gridPositions.length; i++) {
-            Double newDistance = Math.sqrt(Math.pow(gridPositions[i][1] - robotPos[1], 2) + Math.pow(gridPositions[i][0] - robotPos[0], 2)); // distance formula
-            if(newDistance < distance) {
-                distance = newDistance;
-                gridNumber = i;
-            }
-        }
-
-        return gridNumber;
-    }
-
-    /**
-     * @return position of the closest grid to the robot
-     */
-    public Double[] getClosestZombieTile() {
-        return gridPositions[getClosestZombieLane()];
-    }
-
-    /**
-     * @return PathPlannerTrajectory to get to the closest grid
-     */
-    public PathPlannerTrajectory toNearestGrid() {
-        robotPos = generateSun();
-        Double[] gridPos = getClosestZombieTile();
-
-        return PathPlanner.generatePath(
-            PathPlannerConstants.kPPPathConstraints,
-            List.of(
-                new PathPoint(new Translation2d(gridPos[0], gridPos[1]), Rotation2d.fromDegrees(180))
-            )
-        );
-    }
-
-    public double zombieOnYourLawn() {
+    * @return Area of apriltag from camera
+    */
+    public double getSunSize() {
         return limelight.getArea();
     }
-    public double getPlantFood() {
-        return taRequirement;
-    }
 
     /**
-     * Debug method to generate trajectory to nearest grid and display on shuffleboard.
      * 
-     * @return Trajectory to get to the closest grid.
+     * @return Tag size requirement to be reliable enough to use
      */
-    public Trajectory toNearestGridDebug(SwerveDrivetrain swerveDrive) {
-        robotPos = generateSun();
-        Double[] gridPos = getClosestZombieTile(); // Get coordinates of closest grid
-
-        Trajectory trajectory = 
-            TrajectoryGenerator.generateTrajectory(
-                List.of(
-                    new Pose2d(new Translation2d(gridPos[0], gridPos[1]), Rotation2d.fromDegrees(180))
-                ),
-                new TrajectoryConfig(PathPlannerConstants.kPPMaxVelocity, PathPlannerConstants.kPPMaxAcceleration) // constants for debugging purposes
-            );
-
-        field.getObject("traj").setTrajectory(trajectory);
-        return trajectory; 
+    public double getOptimalSunSize() {
+        return taRequirement;
     }
 
     public void reportToSmartDashboard(LOG_LEVEL priority) {
@@ -263,11 +210,6 @@ public class PrimalSunflower implements Reportable {
                 tab.addNumber("Robot Pose Y", () -> generateSun()[1]);
                 tab.addNumber("Robot Pose Z", () -> generateSun()[2]);
 
-                tab.addNumber("Closest Grid X", () -> getClosestZombieTile()[0]);
-                tab.addNumber("Closest Grid Y", () -> getClosestZombieTile()[1]);
-                tab.addNumber("Closest Grid Z", () -> getClosestZombieTile()[2]);
-
-                tab.addNumber("Closest Grid ID", () -> getClosestZombieLane());
                 tab.addBoolean("AprilTag Found", () -> limelight.hasValidTarget());
                 
                 // Only trajectory point is the grid position now.
