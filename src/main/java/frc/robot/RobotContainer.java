@@ -24,11 +24,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Constants.WristConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.TheGreatBalancingAct;
 import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
@@ -175,8 +172,7 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-       "3Piece Short", "Balance", "DirectBalance", "3PieceLong2", "PreloadTaxiShort", "PreloadTaxiLong"
-      // old paths "TestPath", "TestSquare", "Test Line", "TestSquare3", "SquareTest"
+      "SquareTest"
     };
     
     PathPlannerAutos.init(swerveDrive);
