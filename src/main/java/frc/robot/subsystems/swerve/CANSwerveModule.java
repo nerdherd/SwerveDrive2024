@@ -14,6 +14,7 @@ import frc.robot.util.preferences.PrefDouble;
 import static frc.robot.Constants.*;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenixpro.configs.FeedbackConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
@@ -21,7 +22,6 @@ import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.configs.TalonFXConfigurator;
 import com.ctre.phoenixpro.controls.DutyCycleOut;
 import com.ctre.phoenixpro.controls.VelocityDutyCycle;
-import com.ctre.phoenixpro.hardware.CANcoder;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
@@ -32,7 +32,7 @@ import com.ctre.phoenixpro.signals.NeutralModeValue;
 public class CANSwerveModule implements SwerveModule {
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
-    private final CANcoder canCoder;
+    private final CANCoder canCoder;
     private final TalonFXConfigurator driveConfigurator;
     private final TalonFXConfigurator turnConfigurator;
 
@@ -118,7 +118,7 @@ public class CANSwerveModule implements SwerveModule {
 
         this.driveMotor.setInverted(invertDriveMotor);
         this.turnMotor.setInverted(invertTurningMotor);
-        this.canCoder = new CANcoder(CANCoderId, ModuleConstants.kCANivoreName);
+        this.canCoder = new CANCoder(CANCoderId, ModuleConstants.kCANivoreName);
         this.invertTurningEncoder = CANCoderReversed;
         this.CANCoderOffsetDegrees = CANCoderOffsetDegrees;
         
@@ -141,7 +141,7 @@ public class CANSwerveModule implements SwerveModule {
     public void resetEncoder() {
         // double startAngle = (canCoder.getAbsolutePosition().getValue() * 360 - this.CANCoderOffsetDegrees.get()) % 360;
         // canCoder.setPosition(startAngle / 360);
-        canCoder.setPosition(canCoder.getAbsolutePosition().getValue());
+        canCoder.setPosition(canCoder.getAbsolutePosition());
 
         ModuleConstants.ktunePID.loadPreferences();
         ModuleConstants.kPTurning.loadPreferences();
@@ -238,7 +238,7 @@ public class CANSwerveModule implements SwerveModule {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = (canCoder.getPosition().getValue() % 1) * 360;
+        double turningPosition = (canCoder.getPosition()) % 360;
         return turningPosition;
     }
 
@@ -266,7 +266,7 @@ public class CANSwerveModule implements SwerveModule {
      * @return Velocity of the turning motor (in degrees / sec)
      */
     public double getTurningVelocityDegrees() {
-        double turnVelocity = canCoder.getVelocity().getValue() * 360;
+        double turnVelocity = canCoder.getVelocity();
         return turnVelocity;
     }
 

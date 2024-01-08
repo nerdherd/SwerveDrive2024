@@ -46,6 +46,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private final SwerveDrivePoseEstimator poseEstimator;
     private final PrimalSunflower sunflower; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
+    private int counter = 0;
+    private int visionFrequency = 3;
 
     private Field2d field;
 
@@ -131,17 +133,26 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
         // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
-
-        Pose3d sunflowerPose3d = sunflower.getPose3d();
-        if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
-            SmartDashboard.putString("Pose", sunflowerPose3d.toString());
-            poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-            SmartDashboard.putString("Pose Vision Measurement", poseEstimator.getEstimatedPosition().toString());
-        } else {
-            SmartDashboard.putString("Pose", "null");
-
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        // counter = (counter + 1) % visionFrequency;
+        
+        if (counter == 0) {
+            Pose3d sunflowerPose3d = sunflower.getPose3d();
+            if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
+                SmartDashboard.putString("Pose", sunflowerPose3d.toString());
+                SmartDashboard.putString("The Pose2D Value: ", sunflowerPose3d.toPose2d().toString());
+                poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
+                SmartDashboard.putString("Pose Vision Measurement", poseEstimator.getEstimatedPosition().toString());
+                SmartDashboard.putBoolean("Vision Used", true);
+            } else {
+                SmartDashboard.putBoolean("Vision Used", false);
+                SmartDashboard.putString("Pose", "null");    
+            }
         }
+        else {
+            SmartDashboard.putBoolean("Vision Used", false);
+            SmartDashboard.putString("Pose", "null");
+        }
+        // field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
     //****************************** RESETTERS ******************************/

@@ -163,8 +163,8 @@ public class NavX extends SubsystemBase implements Gyro {
             SmartDashboard.putBoolean("AHRS Connected", ahrs.isConnected());
             SmartDashboard.putString("NavX Firmware version", ahrs.getFirmwareVersion());
         case MEDIUM:
-        case MINIMAL:
             SmartDashboard.putNumber("IMU Resets", numResets);
+        case MINIMAL:
             SmartDashboard.putNumber("Robot Heading", getHeading());
             break;
         }

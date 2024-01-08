@@ -63,7 +63,7 @@ public class RobotContainer {
   private final PS4Controller operatorController = commandOperatorController.getHID();
   // private final Joystick joystick = new Joystick(2);
 
-  private final LOG_LEVEL loggingLevel = LOG_LEVEL.ALL;
+  private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
   private final POVButton upButton = new POVButton (operatorController,0);
   private final POVButton rightButton = new POVButton (operatorController, 90);
   private final POVButton downButton = new POVButton (operatorController, 180);
@@ -90,6 +90,7 @@ public class RobotContainer {
     }
 
     initAutoChoosers();
+    initShuffleboard();
 
     // Configure the trigger bindings
     configureBindings();
@@ -172,7 +173,7 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "SquareTest"
+      "TestSquare", "TestSquare2", "LTest"
     };
     
     PathPlannerAutos.init(swerveDrive);
@@ -184,6 +185,8 @@ public class RobotContainer {
 
     autoChooser.addOption("Do Nothing", Commands::none);
     autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
+    autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
+    autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));

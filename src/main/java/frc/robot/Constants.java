@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -79,10 +80,15 @@ public final class Constants {
 
   public static final class SwerveDriveConstants {
 
-    public static final double kVisionSTDx = 0.9;
-    public static final double kVisionSTDy = 0.9;
-    public static final double kVisionSTDtheta = 69696969;
-    public static final Matrix<N3, N1> kBaseVisionPoseSTD = VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
+    public static final double kVisionSTDx = 0.7; //0.9
+    public static final double kVisionSTDy = 0.7; //0.9
+    public static final double kVisionSTDtheta = 1000; //Old: 69696969
+    public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
+      kVisionSTDx,
+      kVisionSTDy,
+      kVisionSTDtheta
+    );
+    // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
 
 
     // Distance between right and left wheels
