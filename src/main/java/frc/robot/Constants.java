@@ -102,20 +102,6 @@ public final class Constants {
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
     
-    public static final double kDodgeDistance = Units.inchesToMeters(12);
-    
-    public static final Translation2d[] kRotationCenters = new Translation2d[] {
-      new Translation2d(kDodgeDistance, kDodgeDistance),  // FL
-      new Translation2d(kDodgeDistance, -kDodgeDistance),   // FR
-      new Translation2d(-kDodgeDistance, kDodgeDistance), // BL
-      new Translation2d(-kDodgeDistance, -kDodgeDistance)   // BR
-    };
-    
-    public static final int[] kLeftRotationCenters = new int[] {0, 1, 3, 2};
-    public static final int[] kRightRotationCenters = new int[] {1, 3, 2, 0};
-
-    public static final double kRotationOffset = 0.5 * kTrackWidth;
-
     public static final int kFRDriveID = 31; //11
     public static final int kFLDriveID = 41; //21
     public static final int kBLDriveID = 11; //31
@@ -208,15 +194,6 @@ public final class Constants {
     // public static final double kIThetaController = new PrefDouble("kIThetaAuto", 0).get();
     // public static final double kDThetaController = new PrefDouble("kDThetaAuto", 0).get();
     
-    public static final double kPBalancingInitial = 4.8;
-    public static final double kPBalancing = 2.6; //2.7 worked once //2.37; // 0.4
-    public static final double kIBalancing = 0;
-    public static final double kDBalancing = 0;
-    public static final double kPOneWayBalancing = 2.6; //2.7 worked once //2.37; // 0.4
-    public static final double kIOneWayBalancing = 0;
-    public static final double kDOneWayBalancing = 0;
-    public static final double kBalancingDeadbandDegrees = Math.toRadians(2);
-    public static final double kBalancingTowPeriod = 0.5;
   }
 
   public static final class PathPlannerConstants {
