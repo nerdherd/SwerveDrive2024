@@ -25,13 +25,10 @@ public class SwerveJoystickCommand extends CommandBase {
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
     private final Supplier<Boolean> towSupplier, precisionSupplier;
-    private final Supplier<Boolean> dodgeSupplier;
     private final Supplier<Double> desiredAngle;
     private final Supplier<Boolean> turnToAngleSupplier;
     private final PIDController turnToAngleController;
     private Filter xFilter, yFilter, turningFilter;
-    private Translation2d robotOrientedJoystickDirection;
-    private Supplier<DodgeDirection> dodgeDirectionSupplier;
 
     public enum DodgeDirection {
         LEFT,
@@ -56,8 +53,6 @@ public class SwerveJoystickCommand extends CommandBase {
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, 
             Supplier<Double> turningSpdFunction,
             Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> towSupplier, 
-            Supplier<Boolean> dodgeSupplier, 
-            Supplier<DodgeDirection> dodgeDirectionSupplier, 
             Supplier<Boolean> precisionSupplier,
             Supplier<Boolean> turnToAngleSupplier, 
             Supplier<Double> desiredAngleSupplier
@@ -68,10 +63,6 @@ public class SwerveJoystickCommand extends CommandBase {
         this.turningSpdFunction = turningSpdFunction;
         this.fieldOrientedFunction = fieldOrientedFunction;
         this.towSupplier = towSupplier;
-
-        this.dodgeSupplier = dodgeSupplier;
-        this.dodgeDirectionSupplier = dodgeDirectionSupplier;
-
         this.precisionSupplier = precisionSupplier;
 
         this.turnToAngleSupplier = turnToAngleSupplier;
@@ -173,63 +164,10 @@ public class SwerveJoystickCommand extends CommandBase {
             chassisSpeeds = new ChassisSpeeds(
                 filteredXSpeed, filteredYSpeed, filteredTurningSpeed);
         }
-                
-        // SmartDashboard.putBoolean("Turn to angle", turnToAngleSupplier.get());
-        // SmartDashboard.putNumber("Swerve Drive Target Angle", desiredAngle.get());
-        // SmartDashboard.putNumber("Turning speed", filteredTurningSpeed);
 
         SwerveModuleState[] moduleStates;
 
-        if (dodgeSupplier.get()) {
-            if (robotOrientedJoystickDirection == null) {
-                robotOrientedJoystickDirection = new Translation2d(kRotationOffset, 
-                    // Rotation 2d is measured counterclockwise from the right vector
-                    // Y speed = left/right = x component
-                    // X speed = forward/back = y component
-                    new Rotation2d(ySpeed, xSpeed)
-                        .rotateBy(Rotation2d.fromDegrees(
-                            // imu is measured clockwise from forward vector
-                            swerveDrive.getImu().getHeading()))
-                        );
-                // Might need to swap x and y on rotation center depending on how it gets interpreted
-                // robotOrientedJoystickDirection = new Translation2d(robotOrientedJoystickDirection.getY(), robotOrientedJoystickDirection.getX());
-                SmartDashboard.putNumber("Dodge X", robotOrientedJoystickDirection.getX());
-                SmartDashboard.putNumber("Dodge Y", robotOrientedJoystickDirection.getY());
-            }
-
-            if (robotOrientedJoystickDirection.getX() > 0) {
-                filteredTurningSpeed *= -1;
-            }
-
-            // Forward = quadrant 0, Right = quadrant 1, Down = quadrant 2, Left = quadrant 3
-            double angle = MathUtil.inputModulus(robotOrientedJoystickDirection.getAngle().getDegrees(), -45, 315) + 45;
-            int quadrant = (int) (angle / 90) % 4;
-
-            Translation2d rotationCenter;
-
-            DodgeDirection dodgeDirection = dodgeDirectionSupplier.get();
-
-            if (dodgeDirection == DodgeDirection.LEFT) {
-                filteredTurningSpeed = 3;
-                rotationCenter = kRotationCenters[kRightRotationCenters[quadrant]];
-            } else {
-                filteredTurningSpeed = -3;
-                rotationCenter = kRotationCenters[kLeftRotationCenters[quadrant]];
-            }
-
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                0, 0, filteredTurningSpeed, 
-                swerveDrive.getImu().getRotation2d());
-
-            SmartDashboard.putNumber("Rotation Center X", rotationCenter.getX());
-            SmartDashboard.putNumber("Rotation Center Y", rotationCenter.getY());
-            SmartDashboard.putNumber("Dodge Quadrant", quadrant);
-            moduleStates = kDriveKinematics.toSwerveModuleStates(chassisSpeeds, rotationCenter);
-        } else {
-            robotOrientedJoystickDirection = null;
-            moduleStates = kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-        }
-
+        moduleStates = kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         
         // Calculate swerve module states
         swerveDrive.setModuleStates(moduleStates);

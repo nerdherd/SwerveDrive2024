@@ -111,19 +111,6 @@ public class RobotContainer {
         () -> false, // Field oriented
 
         driverController::getCrossButton, // Towing
-        // Dodge
-        // () -> {return badPS5.getL1Button() || badPS5.getR1Button();},
-        () -> false,
-        // Dodging
-        () -> {
-          // if (badPS5.getL1Button()) {
-          //   return DodgeDirection.LEFT;
-          // } 
-          // if (badPS5.getR1Button()) {
-          //   return DodgeDirection.RIGHT;
-          // }
-          return DodgeDirection.NONE;
-        },
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
         () -> driverController.getCircleButton(), // Turn to angle
