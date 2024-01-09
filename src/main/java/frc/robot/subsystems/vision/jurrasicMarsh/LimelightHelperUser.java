@@ -9,11 +9,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers;
+import frc.robot.subsystems.vision.jurrasicMarsh.LimelightHelpers.LimelightResults;
 
 public class LimelightHelperUser extends SubsystemBase {
   String limelightName = "limelight";
@@ -21,6 +23,7 @@ public class LimelightHelperUser extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   public LimelightHelperUser(String limelightName) {
     this.limelightName = limelightName;
+    LimelightHelpers.initializeMapper();
   }
 
   /**
@@ -38,12 +41,6 @@ public class LimelightHelperUser extends SubsystemBase {
   }
 
   private Pose3d getRawPose3d() {
-    // double[] botpose = LimelightHelpers.getLatestResults(limelightName).targetingResults.botpose;
-    // if (botpose == null || botpose.length < 3) {
-    //   DriverStation.reportError("Botpose is missing!", null);
-    //   return new Pose3d();
-    // }
-    // return new Pose3d(new Translation3d(botpose[0], botpose[1], botpose[2]), new Rotation3d());
     return LimelightHelpers.getLatestResults(limelightName).targetingResults.getBotPose3d();
   }
 
@@ -65,7 +62,10 @@ public class LimelightHelperUser extends SubsystemBase {
 
   public Pose3d getPose3d() {
     // return getRawPose3d().plus(VisionConstants.fieldPoseOffset);
-    return new Pose3d(getRawX() + VisionConstants.fieldXOffset, getRawY() + VisionConstants.fieldYOffset, getRawZ(), getRawRotation());
+    Pose3d rawPose = getRawPose3d();
+    // Pose3d pose = new Pose3d(getRawX() + VisionConstants.fieldXOffset, getRawY() + VisionConstants.fieldYOffset, getRawZ(), getRawRotation());
+    Pose3d pose = new Pose3d(rawPose.getX() + VisionConstants.fieldXOffset, rawPose.getY() + VisionConstants.fieldYOffset, rawPose.getZ(), rawPose.getRotation());
+    return pose;
   }
 
   public double getX() {

@@ -138,11 +138,10 @@ public class PrimalSunflower implements Reportable {
         if (limelight == null) {
             return null;
         }
-
         limelight.setPipeline(VisionConstants.kAprilTagPipeline);
         
         if(limelight.hasValidTarget()) {
-            return limelightUser.getPose3d(); // Replace w different met? Idk i just copied it from generateSun()
+            return limelightUser.getPose3d();
         } 
 
         return null;
