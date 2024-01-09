@@ -47,7 +47,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private final PrimalSunflower sunflower; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
-    private int visionFrequency = 3;
+    private int visionFrequency = 5;
 
     private Field2d field;
 
@@ -133,7 +133,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
         // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
-        // counter = (counter + 1) % visionFrequency;
+        counter = (counter + 1) % visionFrequency;
         
         if (counter == 0) {
             Pose3d sunflowerPose3d = sunflower.getPose3d();
