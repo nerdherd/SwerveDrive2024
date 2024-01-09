@@ -5,6 +5,7 @@ package frc.robot.subsystems.vision.jurrasicMarsh;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -383,6 +384,10 @@ public class LimelightHelpers {
     }
 
     private static Pose3d toPose3D(double[] inData){
+        if(inData == null) {
+            DriverStation.reportError("Bot Pose is Null!", null);
+            return new Pose3d();
+        }
         if(inData.length < 6)
         {
             System.err.println("Bad LL 3D Pose Data!");

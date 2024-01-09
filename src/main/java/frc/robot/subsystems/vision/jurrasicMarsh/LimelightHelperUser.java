@@ -6,6 +6,9 @@ package frc.robot.subsystems.vision.jurrasicMarsh;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,6 +38,12 @@ public class LimelightHelperUser extends SubsystemBase {
   }
 
   private Pose3d getRawPose3d() {
+    // double[] botpose = LimelightHelpers.getLatestResults(limelightName).targetingResults.botpose;
+    // if (botpose == null || botpose.length < 3) {
+    //   DriverStation.reportError("Botpose is missing!", null);
+    //   return new Pose3d();
+    // }
+    // return new Pose3d(new Translation3d(botpose[0], botpose[1], botpose[2]), new Rotation3d());
     return LimelightHelpers.getLatestResults(limelightName).targetingResults.getBotPose3d();
   }
 
@@ -55,6 +64,7 @@ public class LimelightHelperUser extends SubsystemBase {
   }
 
   public Pose3d getPose3d() {
+    // return getRawPose3d().plus(VisionConstants.fieldPoseOffset);
     return new Pose3d(getRawX() + VisionConstants.fieldXOffset, getRawY() + VisionConstants.fieldYOffset, getRawZ(), getRawRotation());
   }
 
