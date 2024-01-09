@@ -133,7 +133,7 @@ public class RobotContainer {
     // commandDriverController.options().onTrue(Commands.runOnce(wrist::resetEncoders));
     // commandDriverController.PS().whileTrue(new TheGreatBalancingAct(swerveDrive));
 
-    commandDriverController.cross().whileTrue(Commands.run(() -> swerveDrive.driveToSunflower(4, 5)));
+    // commandDriverController.cross().whileTrue(Commands.run(() -> swerveDrive.driveToSunflower(4, 5)));
 
     // commandDriverController.triangle().whileTrue(new TheGreatBalancingAct(swerveDrive));
     commandDriverController.circle()

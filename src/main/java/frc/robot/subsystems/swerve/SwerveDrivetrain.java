@@ -47,7 +47,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private final PrimalSunflower sunflower; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
-    private int visionFrequency = 5;
+    private int visionFrequency = 1;
 
     private Field2d field;
 
