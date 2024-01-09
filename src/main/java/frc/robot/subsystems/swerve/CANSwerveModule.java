@@ -86,7 +86,7 @@ public class CANSwerveModule implements SwerveModule {
         
         this.driveVelocityRequest = new VelocityDutyCycle(0);
         this.driveVelocityRequest.EnableFOC = true;
-        this.driveVelocityRequest.FeedForward = ModuleConstants.kFDrive;
+        this.driveVelocityRequest.FeedForward = ModuleConstants.kFDrive.get();
 
         this.drivePIDConfigs = new Slot0Configs();
         this.driveConfigurator.refresh(drivePIDConfigs);
@@ -148,7 +148,12 @@ public class CANSwerveModule implements SwerveModule {
         ModuleConstants.kITurning.loadPreferences();
         ModuleConstants.kDTurning.loadPreferences();
         turningController.setPID(ModuleConstants.kPTurning.get(), ModuleConstants.kITurning.get(), ModuleConstants.kDTurning.get());
-        
+        if (ModuleConstants.ktunePID.get()) {
+            this.drivePIDConfigs.kP = ModuleConstants.kPDrive.get();
+            this.drivePIDConfigs.kI = ModuleConstants.kIDrive.get();
+            this.drivePIDConfigs.kD = ModuleConstants.kDDrive.get();
+            driveConfigurator.apply(drivePIDConfigs);
+        }
     }
 
     /**
@@ -168,19 +173,12 @@ public class CANSwerveModule implements SwerveModule {
 
         desiredAngle = desiredState.angle.getDegrees();
 
-        double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
+        double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution;
+        // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
         if (this.velocityControl) {
-            if (ModuleConstants.ktunePID.get()) {
-            
-                this.drivePIDConfigs.kP = SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive);
-                this.drivePIDConfigs.kI = SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive);
-                this.drivePIDConfigs.kD = SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive);
-
-                driveConfigurator.apply(drivePIDConfigs);
-            }
-
+            SmartDashboard.putNumber("Module #" + this.turnMotorID, velocity);
             driveMotor.setControl(driveVelocityRequest.withVelocity(velocity));
             this.currentPercent = 0;
         } else {

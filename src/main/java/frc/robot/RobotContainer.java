@@ -119,42 +119,16 @@ public class RobotContainer {
           return 0.0;
         }
       ));
-
-      // Removed to allow percent output joystick control
-      // wrist.setDefaultCommand(Commands.run(() -> wrist.moveWristMotionMagicJoystick(-operatorController.getLeftY()), wrist));
   }
 
   private void configureBindings() {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
-    // These button bindings are chosen for testing, and may be changed based on
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
-    // commandDriverController.options().onTrue(Commands.runOnce(wrist::resetEncoders));
-    // commandDriverController.PS().whileTrue(new TheGreatBalancingAct(swerveDrive));
-
-    // commandDriverController.cross().whileTrue(Commands.run(() -> swerveDrive.driveToSunflower(4, 5)));
-
-    // commandDriverController.triangle().whileTrue(new TheGreatBalancingAct(swerveDrive));
-    commandDriverController.circle()
+    commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
-    
-    
-    // Note:
-    // L2:  hold = intake     let go = stow + hold
-    // L1:  press = aim low   let go = score + stow
-    // R1:  press = aim mid   let go = score + stow
-    // R2:  press = aim high  let go = score + stow
-
-    // commandOperatorController.square()
-    //   .onTrue(temp += 10)
-    //   .onFalse(temp -= 10);
-
-    // commandOperatorController.square()
-    //   .onTrue(new InstantCommand(() -> new ToNearestGridDebug(swerveDrive, sunflower)));
-    // commandOperatorController.cross()
-    //   .onTrue(new InstantCommand(() -> sunflower.toNearestGrid()));
   }
 
   private void initAutoChoosers() {

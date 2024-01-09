@@ -71,14 +71,14 @@ public final class Constants {
     public static final PrefDouble kITurning = new PrefDouble("kITurning",0);
     public static final PrefDouble kDTurning = new PrefDouble("kDTurning",0.02); 
     public static final PrefDouble kFTurning = new PrefDouble("kFTurning",0.015); 
-    
-    public static final double kPDrive = 0.13;
-    public static final double kIDrive = 0;
-    public static final double kDDrive = 0;
-    public static final double kFDrive = 0.0469;
+
+    public static final PrefDouble kPDrive = new PrefDouble("kPDrive",0.13); // 0.6
+    public static final PrefDouble kIDrive = new PrefDouble("kIDrive",0);
+    public static final PrefDouble kDDrive = new PrefDouble("kDDrive",0); 
+    public static final PrefDouble kFDrive = new PrefDouble("kFDrive",0.0469); 
 
     public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
-    public static final String kCANivoreName = "CANivore1";
+    public static final String kCANivoreName = "CANivore2";
   } 
 
   public static final class SwerveDriveConstants {
