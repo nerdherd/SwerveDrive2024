@@ -29,6 +29,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 import frc.robot.subsystems.Reportable;
 
@@ -44,7 +45,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final PrimalSunflower sunflower; 
+    // private final PrimalSunflower sunflower; //using limelight
+    private final Citron citron; // using photonvision
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
@@ -67,7 +69,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, PrimalSunflower sunflower) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, Citron citron) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
                 frontLeft = new CANSwerveModule(
@@ -112,7 +114,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         this.gyro = gyro;
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
         this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
-        this.sunflower = sunflower;
+        this.citron = citron;
         // this.odometer = new SwerveDriveOdometry(
         //     kDriveKinematics, 
         //     new Rotation2d(0), 
@@ -135,18 +137,26 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         counter = (counter + 1) % visionFrequency;
         
-        if (counter == 0) {
-            Pose3d sunflowerPose3d = sunflower.getPose3d();
-            if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
-                poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("Vision Used", true);
-            } else {
-                SmartDashboard.putBoolean("Vision Used", false);
-            }
-        }
-        else {
+        // if (counter == 0) {
+        //     Pose3d sunflowerPose3d = sunflower.getPose3d();
+        //     if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
+        //         poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
+        //         SmartDashboard.putBoolean("Vision Used", true);
+        //     } else {
+        //         SmartDashboard.putBoolean("Vision Used", false);
+        //     }
+        // }
+        // else {
+        //     SmartDashboard.putBoolean("Vision Used", false);
+        // }
+        Pose3d citronPose3d = citron.usePlasmaBall();
+        if(citronPose3d != null) {
+            poseEstimator.addVisionMeasurement(citronPose3d.toPose2d(), citron.getChargeTime());
+            SmartDashboard.putBoolean("Vision Used", true);
+        } else {
             SmartDashboard.putBoolean("Vision Used", false);
         }
+
         // field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
@@ -260,31 +270,31 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     //****************************** GO TO COORDINATES VISION ******************************/
-    public void driveToSunflower(double xCoord, double yCoord) {
-        double XOffset;
-        double YOffset;
-        XOffset = xCoord - sunflower.getPose3dXCoord();
-        YOffset = yCoord - sunflower.getPose3dYCoord();
+    // public void driveToSunflower(double xCoord, double yCoord) {
+    //     double XOffset;
+    //     double YOffset;
+    //     XOffset = xCoord - sunflower.getPose3dXCoord();
+    //     YOffset = yCoord - sunflower.getPose3dYCoord();
 
-        //Make PID Controller for this
-        //idk wut u wanted here but i just made a new controller to fix the build error
-        PIDController sunflowerController = new PIDController(VisionConstants.kSunflowerP, VisionConstants.kSunflowerI, VisionConstants.kSunflowerD);
-        sunflowerController.setTolerance(0.2);
+    //     //Make PID Controller for this
+    //     //idk wut u wanted here but i just made a new controller to fix the build error
+    //     PIDController sunflowerController = new PIDController(VisionConstants.kSunflowerP, VisionConstants.kSunflowerI, VisionConstants.kSunflowerD);
+    //     sunflowerController.setTolerance(0.2);
 
-        // if(XOffset < 0.1 && XOffset > -0.1) {
-        //     XOffset = 0;
-        // }
+    //     // if(XOffset < 0.1 && XOffset > -0.1) {
+    //     //     XOffset = 0;
+    //     // }
 
-        // if(YOffset < 0.1 && YOffset > -0.1) {
-        //     YOffset = 0;
-        // }
+    //     // if(YOffset < 0.1 && YOffset > -0.1) {
+    //     //     YOffset = 0;
+    //     // }
 
-        // Should be ~- between 0.1 and 5.0
-        double calculatedXOffset = MathUtil.clamp(sunflowerController.calculate(XOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
-        double calculatedYOffset = MathUtil.clamp(sunflowerController.calculate(YOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
+    //     // Should be ~- between 0.1 and 5.0
+    //     double calculatedXOffset = MathUtil.clamp(sunflowerController.calculate(XOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
+    //     double calculatedYOffset = MathUtil.clamp(sunflowerController.calculate(YOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
 
-        drive(calculatedXOffset, calculatedYOffset, 0);
-    }
+    //     drive(calculatedXOffset, calculatedYOffset, 0);
+    // }
 
     public void driveFieldOriented(double xSpeed, double ySpeed, double turnSpeed) {
         setModuleStates(
