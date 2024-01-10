@@ -107,7 +107,7 @@ public class RobotContainer {
         // () -> 0.0, // debug
         commandDriverController::getRightX, // Rotationaq
 
-        // driverController::getTriangleButton, // Field oriented
+        // driverController::getSquareButton, // Field oriented
         () -> false, // Field oriented
 
         driverController::getCrossButton, // Towing
@@ -164,7 +164,7 @@ public class RobotContainer {
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
-    tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
+    // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
   }
 

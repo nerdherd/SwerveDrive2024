@@ -15,7 +15,7 @@ public class TurnLineTest extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(() -> swerve.getImu().setOffset(180)),
+            Commands.runOnce(() -> swerve.getImu().setOffset(0)),
             autoBuilder.resetPose(pathGroup.get(0)),
             autoBuilder.followPathWithEvents(pathGroup.get(0))
         );
