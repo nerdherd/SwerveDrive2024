@@ -36,6 +36,7 @@ import frc.robot.subsystems.imu.NavX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
+import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 
 /**
@@ -77,14 +78,15 @@ public class RobotContainer {
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
+  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
+  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontCitron);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }

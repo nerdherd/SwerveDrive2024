@@ -214,5 +214,77 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/kPTurning",
+    "type": "double",
+    "value": 0.55,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kITurning",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kDTurning",
+    "type": "double",
+    "value": 0.02,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFTurning",
+    "type": "double",
+    "value": 0.015,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kPDrive",
+    "type": "double",
+    "value": 0.13,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kIDrive",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kDDrive",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/kFDrive",
+    "type": "double",
+    "value": 0.0469,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TuneDrivePID",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

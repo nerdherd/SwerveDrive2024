@@ -118,5 +118,101 @@
     "properties": {
       "persistent": true
     }
+  },
+  {
+    "name": "/Preferences/TopIntakePower",
+    "type": "double",
+    "value": -0.35,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopLowOuttakePower",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopMidOuttakePower",
+    "type": "double",
+    "value": 0.4,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopHighOuttakePower",
+    "type": "double",
+    "value": 0.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopIntakeNeutralPower",
+    "type": "double",
+    "value": -0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/TopCubeCurrent",
+    "type": "double",
+    "value": 30.0,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomIntakePower",
+    "type": "double",
+    "value": -0.35,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomLowOuttakePower",
+    "type": "double",
+    "value": 0.2,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomMidOuttakePower",
+    "type": "double",
+    "value": 0.4,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomHighOuttakePower",
+    "type": "double",
+    "value": 0.5,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomIntakeNeutralPower",
+    "type": "double",
+    "value": -0.05,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Preferences/BottomCubeCurrent",
+    "type": "double",
+    "value": 30.0,
+    "properties": {
+      "persistent": true
+    }
   }
 ]

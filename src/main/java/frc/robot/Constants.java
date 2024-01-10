@@ -7,6 +7,8 @@ package frc.robot;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -229,5 +231,11 @@ public final class Constants {
       new Translation3d(-VisionConstants.fieldXOffset, -VisionConstants.fieldYOffset, 0), 
       new Rotation3d()
     );
+
+    public static final String kPhotonVisionFrontName = "laserbean";
+    public static final Transform3d kCameraToRobot = new Transform3d(
+      new Translation3d(),
+      new Rotation3d()
+    ); // distance from camera to center of robot
   }
 }
