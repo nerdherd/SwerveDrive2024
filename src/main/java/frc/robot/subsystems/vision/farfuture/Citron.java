@@ -4,36 +4,22 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 
 public class Citron {
     private PhotonCamera camera;
+    private AprilTagFieldLayout layout;
     private double resultTimestamp = 0.0;
-
-    private Pose3d[] aprilTagPoses = {
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-        new Pose3d(new Translation3d(), new Rotation3d()),
-    };
 
     //Takes in photonvision camera name
     public Citron(String cameraName) {
@@ -44,23 +30,38 @@ public class Citron {
             camera = null;
             SmartDashboard.putBoolean("Limelight inited", false);
         }
+
+        try {
+            
+            layout = new AprilTagFieldLayout(Filesystem.getDeployDirectory() + "/2024-crescendo.json");
+            SmartDashboard.putBoolean("Layout Found", true);
+        } catch (Exception e) {
+            SmartDashboard.putBoolean("Layout Found", false);
+        }
     }
 
     //returns the pose2d of 
     public Pose3d usePlasmaBall() {
         if (camera == null) return null;
-
+        
+        camera.setPipelineIndex(0);
         PhotonPipelineResult results = camera.getLatestResult();
 
         //store time for later use by pose estimator
         resultTimestamp = results.getTimestampSeconds();
 
-        if(!results.hasTargets()) return null;
+        if(!results.hasTargets()) {
+            SmartDashboard.putBoolean("Has Target", false);
+            return null;
+        }
         PhotonTrackedTarget target = results.getBestTarget();
 
         int index = target.getFiducialId() - 1; // subtract 1 because numbered 1-16
-        if(index == -1) return null;
-        Pose3d targetPose = aprilTagPoses[index];
+        if(index < 0) {
+            SmartDashboard.putBoolean("index legit", false);
+            return null;
+        }
+        Pose3d targetPose = layout.getTags().get(index).pose;
 
         Transform3d cameraToTarget = target.getBestCameraToTarget();
         Pose3d cameraPose = targetPose.transformBy(cameraToTarget.inverse());
