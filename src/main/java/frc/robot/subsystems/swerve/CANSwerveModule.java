@@ -77,7 +77,7 @@ public class CANSwerveModule implements SwerveModule {
         this.turnMotor = new TalonFX(turningMotorId, ModuleConstants.kCANivoreName);
         
         this.driveConfigurator = driveMotor.getConfigurator();
-        this.turnConfigurator = driveMotor.getConfigurator();
+        this.turnConfigurator = turnMotor.getConfigurator();
         
         this.driveRequest = new DutyCycleOut(0);
         this.turnRequest = new DutyCycleOut(0);
@@ -149,6 +149,7 @@ public class CANSwerveModule implements SwerveModule {
         ModuleConstants.kDTurning.loadPreferences();
         turningController.setPID(ModuleConstants.kPTurning.get(), ModuleConstants.kITurning.get(), ModuleConstants.kDTurning.get());
         if (ModuleConstants.ktunePID.get()) {
+            driveConfigurator.refresh(drivePIDConfigs);
             this.drivePIDConfigs.kP = ModuleConstants.kPDrive.get();
             this.drivePIDConfigs.kI = ModuleConstants.kIDrive.get();
             this.drivePIDConfigs.kD = ModuleConstants.kDDrive.get();
