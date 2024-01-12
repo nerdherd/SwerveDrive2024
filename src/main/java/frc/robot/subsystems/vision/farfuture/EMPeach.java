@@ -117,7 +117,7 @@ public class EMPeach implements Reportable{
         if(currentPose == null) return -1;
         Pose3d poseToAvoid = getZombieTile(limelight.getAprilTagID());
 
-        return Math.toDegrees(Math.atan(poseToAvoid.getZ() / currentPose.getX()));
+        return Math.toDegrees(Math.atan(poseToAvoid.getZ() / Math.abs(poseToAvoid.getX() - currentPose.getX())));
     }
 
     /**
