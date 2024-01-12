@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.vision.farfuture.Citron;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
 
   private RobotContainer m_robotContainer;
   
@@ -32,7 +36,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     // m_robotContainer.initShuffleboard();
-    m_robotContainer.swerveDrive.resetEncoders();
 	
     DataLogManager.start("/media/sda1/logs");
     DataLogManager.logNetworkTables(true);
@@ -53,6 +56,8 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    Pose3d pose = frontCitron.usePlantFood();
+    if(pose != null) SmartDashboard.putString("Robot Pose", pose.toString());
     CommandScheduler.getInstance().run();
   }
 
@@ -69,10 +74,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_robotContainer.swerveDrive.resetEncoders();
-    m_robotContainer.imu.zeroHeading();
-    m_robotContainer.imu.zeroAll();
-    m_robotContainer.imu.setOffset(180);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

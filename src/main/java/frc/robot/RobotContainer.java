@@ -25,19 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
-// import frc.robot.commands.VisionAutos.ToNearestGridDebug;
-import frc.robot.commands.autos.PathPlannerAutos;
-import frc.robot.commands.autos.SquareTest;
-import frc.robot.subsystems.Reportable.LOG_LEVEL;
-import frc.robot.subsystems.imu.Gyro;
-import frc.robot.subsystems.imu.NavX;
-import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
-import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.farfuture.Citron;
-import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,9 +38,6 @@ import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
  */
 public class RobotContainer {
 
-  public Gyro imu = new NavX();
-  // public Gyro imu = new Pigeon(60);
-  public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
   private final CommandPS4Controller commandDriverController = new CommandPS4Controller(
@@ -64,7 +49,6 @@ public class RobotContainer {
   private final PS4Controller operatorController = commandOperatorController.getHID();
   // private final Joystick joystick = new Joystick(2);
 
-  private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
   private final POVButton upButton = new POVButton (operatorController,0);
   private final POVButton rightButton = new POVButton (operatorController, 90);
   private final POVButton downButton = new POVButton (operatorController, 180);
@@ -79,14 +63,13 @@ public class RobotContainer {
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
-  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontCitron);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -101,36 +84,11 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands() {
-    swerveDrive.setDefaultCommand(
-      new SwerveJoystickCommand(
-        swerveDrive,
-        () -> -commandDriverController.getLeftY(), // Horizontal translation
-        commandDriverController::getLeftX, // Vertical Translation
-        // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
-
-        // driverController::getSquareButton, // Field oriented
-        () -> false, // Field oriented
-
-        driverController::getCrossButton, // Towing
-        // driverController::getR2Button, // Precision/"Sniper Button"
-        () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
-        // () -> false, // Turn to angle (disabled)
-        () -> { // Turn To angle Direction
-          return 0.0;
-        }
-      ));
   }
 
   private void configureBindings() {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
-    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
-    commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
   }
 
   private void initAutoChoosers() {
@@ -138,20 +96,6 @@ public class RobotContainer {
     final String[] paths = {
       "TestSquare", "TestSquare2", "LTest", "LTest Copy"
     };
-    
-    PathPlannerAutos.init(swerveDrive);
-
-    for (String path : paths) {
-      PathPlannerAutos.initPath(path);
-      PathPlannerAutos.initPathGroup(path);
-    }
-
-    autoChooser.addOption("Do Nothing", Commands::none);
-    autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
-    autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
-    autoChooser.setDefaultOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.setDefaultOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
-
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
@@ -162,11 +106,6 @@ public class RobotContainer {
   }
   
   public void initShuffleboard() {
-    imu.initShuffleboard(loggingLevel);
-    // backSunflower.initShuffleboard(loggingLevel);
-    // frontSunflower.initShuffleboard(loggingLevel);
-    swerveDrive.initShuffleboard(loggingLevel);
-    swerveDrive.initModuleShuffleboard(loggingLevel);
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
@@ -188,7 +127,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command currentAuto = autoChooser.getSelected().get();
 
-    swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;
   }
 }

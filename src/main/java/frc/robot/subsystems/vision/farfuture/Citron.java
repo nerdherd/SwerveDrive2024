@@ -1,6 +1,11 @@
 package frc.robot.subsystems.vision.farfuture;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -18,8 +23,9 @@ import frc.robot.Constants.VisionConstants;
 
 public class Citron {
     private PhotonCamera camera;
+    private PhotonPoseEstimator estimator;
     private AprilTagFieldLayout layout;
-    private double resultTimestamp = 0.0;
+    private double lastTimestamp = 0.0;
 
     //Takes in photonvision camera name
     public Citron(String cameraName) {
@@ -34,8 +40,12 @@ public class Citron {
         try {
             
             layout = new AprilTagFieldLayout(Filesystem.getDeployDirectory() + "/2024-crescendo.json");
+            estimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.kCameraToRobot);
+            estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
             SmartDashboard.putBoolean("Layout Found", true);
         } catch (Exception e) {
+            layout = null;
+            estimator = null;
             SmartDashboard.putBoolean("Layout Found", false);
         }
     }
@@ -48,7 +58,7 @@ public class Citron {
         PhotonPipelineResult results = camera.getLatestResult();
 
         //store time for later use by pose estimator
-        resultTimestamp = results.getTimestampSeconds();
+        lastTimestamp = results.getTimestampSeconds();
 
         if(!results.hasTargets()) {
             SmartDashboard.putBoolean("Has Target", false);
@@ -70,7 +80,37 @@ public class Citron {
         return cameraPose.transformBy(VisionConstants.kCameraToRobot);
     }
 
+    public Pose3d usePlantFood() {
+        if(estimator == null) SmartDashboard.putBoolean("Estimator null", true);
+        if(camera == null) SmartDashboard.putBoolean("Camera null", true);
+
+        Optional<EstimatedRobotPose> estimatedPose = estimator.update();
+
+        PhotonPipelineResult result = camera.getLatestResult();
+        if(!result.hasTargets()) SmartDashboard.putBoolean("No targets", true);
+        double latestTimestamp = result.getTimestampSeconds();
+        // boolean substantialDifference = Math.abs(latestTimestamp - lastTimestamp) > 1e-5;
+        // if(substantialDifference) lastTimestamp = latestTimestamp;
+
+        if(lastTimestamp > 0 && Math.abs(lastTimestamp - latestTimestamp) < 1e-6) SmartDashboard.putBoolean("Time bad", true);
+
+        if(result.getBestTarget().getPoseAmbiguity() == -1 && result.getBestTarget().getPoseAmbiguity() < 10) {
+            SmartDashboard.putNumber("Pose ambiguity", result.getBestTarget().getPoseAmbiguity());
+            SmartDashboard.putBoolean("Bad ambiguity", true);
+        }
+        if(layout.getTagPose(result.getBestTarget().getFiducialId()).isEmpty()) SmartDashboard.putBoolean("No tag pose", true);
+
+        lastTimestamp = latestTimestamp;
+
+        if(estimatedPose.isEmpty()) {
+            SmartDashboard.putBoolean("Has Target", false);
+            return null;
+        }
+        SmartDashboard.putBoolean("Has Target", true);
+        return estimatedPose.get().estimatedPose;
+    }
+
     public double getChargeTime() {
-        return resultTimestamp;
+        return lastTimestamp;
     }
 }
