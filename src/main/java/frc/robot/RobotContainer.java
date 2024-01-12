@@ -136,7 +136,7 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "LTest Copy"
+      "TestSquare", "TestSquare2", "LTest", "LTest Copy", "TwoMeterNinetyDegree", "FiveMeterNinetyDegree", "TwoMeterFortyFiveDegree", "FiveMeterFortyFiveDegree"
     };
     
     PathPlannerAutos.init(swerveDrive);
@@ -150,7 +150,11 @@ public class RobotContainer {
     autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
     autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
     autoChooser.setDefaultOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.setDefaultOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
+    autoChooser.addOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
+    autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
+    autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
+    autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
+    autoChooser.addOption("FiveMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree", swerveDrive));
 
 
     // these are the auto paths in the old format (not the actual full auto command)
