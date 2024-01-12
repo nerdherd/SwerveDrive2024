@@ -36,7 +36,6 @@ import frc.robot.subsystems.imu.NavX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
-import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 
 /**
@@ -78,15 +77,15 @@ public class RobotContainer {
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
-  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+  private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
+  //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontCitron);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -136,7 +135,8 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "LTest Copy", "TwoMeterNinetyDegree", "FiveMeterNinetyDegree", "TwoMeterFortyFiveDegree", "FiveMeterFortyFiveDegree", "TwoMeterZeroDegree", "FiveMeterZeroDegree"
+      "TestSquare", "TestSquare2", "LTest", "TwoMeterNinetyDegree", "FiveMeterNinetyDegree", "TwoMeterFortyFiveDegree", "FiveMeterFortyFiveDegree Copy", "ZeroDegreeLine"
+      
     };
     
     PathPlannerAutos.init(swerveDrive);
@@ -149,16 +149,12 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", Commands::none);
     autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
     autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
-    autoChooser.setDefaultOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.addOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
+    autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
     autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
     autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
     autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("TwoMeterZeroDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterZeroDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterZeroDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterZeroDegree", swerveDrive));
-
-
+    autoChooser.addOption("FiveMeterFortyFiveDegree Copy", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree Copy", swerveDrive));
+    autoChooser.addOption("ZeroDegreeLine", () -> PathPlannerAutos.pathplannerAuto("ZeroDegreeLine", swerveDrive));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
