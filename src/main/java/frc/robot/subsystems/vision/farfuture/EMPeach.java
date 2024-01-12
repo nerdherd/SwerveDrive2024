@@ -1,10 +1,14 @@
 package frc.robot.subsystems.vision.farfuture;
 
+import java.util.Optional;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +25,8 @@ public class EMPeach implements Reportable{
     private Limelight limelight;
     private LimelightHelperUser limelightHelperUser;
     private String limelightName;
+
+    private AprilTagFieldLayout layout;
 
     private int pipeline;
     private boolean lightsON;
@@ -42,6 +48,13 @@ public class EMPeach implements Reportable{
         } catch (Exception e) {
             SmartDashboard.putBoolean("limelight-" + name + " inited", false);
             SmartDashboard.putBoolean("LimelightHelper inited", false);
+        }
+        
+        try {
+            layout = new AprilTagFieldLayout(Filesystem.getDeployDirectory() + "/2024-crescendo.json");
+            SmartDashboard.putBoolean("AprilTag Layout Found", true);
+        } catch (Exception e) {
+            SmartDashboard.putBoolean("AprilTag Layout Found", false);
         }
     }
 
@@ -71,13 +84,25 @@ public class EMPeach implements Reportable{
     }
 
     /**
+     * @param ID AprilTag ID
+     * @return the Pose3d of a specific AprilTag
+     */
+    public Pose3d getZombieTile(int ID) {
+        if(ID < 1 || ID > 16) return null;
+        if(layout == null) return null;
+        Optional<Pose3d> tagPose = layout.getTagPose(ID);
+        if(tagPose.isEmpty()) return null;
+        
+        return tagPose.get();
+    }
+
+    /**
      * @param degrees angle of the shooter in degrees
      * @return a Transform3d mapping the currentPos to the ideal distance based on the shooter angle
      */
     public Transform3d getIdealZombieDistance(double degrees) {
-        Pose3d currentPose = getCurrentGrassTile();
-        if(currentPose == null) return null;
-        Pose3d poseToAvoid = limelightHelperUser.getPose3d();
+        Pose3d poseToAvoid = getZombieTile(limelight.getAprilTagID());
+
         //just using trig for now, theres probably a better formula tho
         double distance = poseToAvoid.getZ() / Math.tan(Math.toRadians(degrees));
 
@@ -85,11 +110,12 @@ public class EMPeach implements Reportable{
     }
 
     /**
-     * @return the shooter angle in degrees based on how far the robot is from the apriltag
+     * @return the shooter angle in degrees based on how far the robot is from the apriltag, -1 if error
      */
     public double getEMPeachThrowingAngle() {
         Pose3d currentPose = getCurrentGrassTile();
-        Pose3d poseToAvoid = limelightHelperUser.getPose3d();
+        if(currentPose == null) return -1;
+        Pose3d poseToAvoid = getZombieTile(limelight.getAprilTagID());
 
         return Math.toDegrees(Math.atan(poseToAvoid.getZ() / currentPose.getX()));
     }
