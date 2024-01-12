@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -204,7 +204,10 @@ public final class Constants {
   public static final class PathPlannerConstants {
     public static final double kPPMaxVelocity = 3;
     public static final double kPPMaxAcceleration = 3;
-    public static final PathConstraints kPPPathConstraints = new PathConstraints(kPPMaxVelocity, kPPMaxAcceleration);
+    public static final double kPPMaxAngularVelocity = Math.PI * 2;
+    public static final double kPPMaxAngularAcceleration = Math.PI * 2;
+    public static final PathConstraints kPPPathConstraints = new PathConstraints(kPPMaxVelocity, kPPMaxAcceleration, 
+                                                                                kPPMaxAngularVelocity, kPPMaxAngularAcceleration);
 
     public static final double kPP_P = new PrefDouble("PP_kP", 0.25).get();
     public static final double kPP_I = new PrefDouble("PP_kI", 0.0).get();
@@ -224,7 +227,6 @@ public final class Constants {
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
     public static final String kLimelightFrontName = "limelight-front";
-    public static final String kLimelightFrontIP = "10.6.87.25:5801";
     public static final int kAprilTagPipeline = 4;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)

@@ -3,11 +3,10 @@ package frc.robot.commands.autos;
 import java.util.HashMap;
 import java.util.List;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +20,7 @@ public class PathPlannerAutos {
     private static HashMap<String, List<PathPlannerTrajectory>> cachedPathGroups = new HashMap<>();
     private static HashMap<String, Command> events = new HashMap<>();
 
-    public static SwerveAutoBuilder autoBuilder;
+    public static AutoBuilder autoBuilder;
 
     /**
      * Load the selected path from storage.
@@ -72,6 +71,9 @@ public class PathPlannerAutos {
     }
 
     public static void init(SwerveDrivetrain swerveDrive) {
+        autoBuilder = new AutoBuilder(
+            
+        )
         autoBuilder = new SwerveAutoBuilder(
             swerveDrive::getPose, 
             swerveDrive::resetOdometry, 
@@ -88,7 +90,7 @@ public class PathPlannerAutos {
      * @param swerveDrive
      * @return
      */
-    public static CommandBase pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive) {
+    public static Command pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive) {
         if (!cachedPaths.containsKey(pathName)) {
             DriverStation.reportWarning(String.format("Path '%s' was not pre-loaded into memory, which may cause lag during the Autonomous Period.", pathName), true);
             initPath(pathName);

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -75,7 +75,7 @@ public class RobotContainer {
   private final POVButton downButtonDriver = new POVButton (driverController, 180);
   private final POVButton leftButtonDriver = new POVButton (driverController, 270);
 
-  private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
+  private SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<Supplier<Command>>();
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
@@ -136,7 +136,7 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "LTest Copy", "TwoMeterNinetyDegree", "FiveMeterNinetyDegree", "TwoMeterFortyFiveDegree", "FiveMeterFortyFiveDegree", "TwoMeterZeroDegree", "FiveMeterZeroDegree"
+      "TestSquare", "TestSquare2", "LTest", "LTest Copy"
     };
     
     PathPlannerAutos.init(swerveDrive);
@@ -150,14 +150,7 @@ public class RobotContainer {
     autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
     autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
     autoChooser.setDefaultOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.addOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
-    autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
-    autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("TwoMeterZeroDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterZeroDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterZeroDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterZeroDegree", swerveDrive));
-
+    autoChooser.setDefaultOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
 
 
     // these are the auto paths in the old format (not the actual full auto command)
