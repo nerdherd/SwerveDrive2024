@@ -236,6 +236,7 @@ public final class Constants {
     );
 
     public static final String kPhotonVisionFrontName = "laserbean";
+    public static final String kPhotonVisionBackName = "TileTurnip";
     public static final Transform3d kCameraToRobot = new Transform3d(
       new Translation3d(),
       new Rotation3d()

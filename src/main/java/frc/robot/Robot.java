@@ -21,7 +21,7 @@ import frc.robot.subsystems.vision.farfuture.Citron;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionBackName);
 
   private RobotContainer m_robotContainer;
   

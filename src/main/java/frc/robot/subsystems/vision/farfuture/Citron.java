@@ -81,24 +81,41 @@ public class Citron {
     }
 
     public Pose3d usePlantFood() {
-        if(estimator == null) SmartDashboard.putBoolean("Estimator null", true);
-        if(camera == null) SmartDashboard.putBoolean("Camera null", true);
+        if(estimator == null) {
+            SmartDashboard.putBoolean("Estimator null", true);
+            return null;
+        }
+        if(camera == null) {
+            SmartDashboard.putBoolean("Camera null", true);
+            return null;
+        }
 
         Optional<EstimatedRobotPose> estimatedPose = estimator.update();
 
         PhotonPipelineResult result = camera.getLatestResult();
-        if(!result.hasTargets()) SmartDashboard.putBoolean("No targets", true);
+        if(!result.hasTargets()) {
+            SmartDashboard.putBoolean("No targets", true);
+            return null;
+        }
         double latestTimestamp = result.getTimestampSeconds();
         // boolean substantialDifference = Math.abs(latestTimestamp - lastTimestamp) > 1e-5;
         // if(substantialDifference) lastTimestamp = latestTimestamp;
 
-        if(lastTimestamp > 0 && Math.abs(lastTimestamp - latestTimestamp) < 1e-6) SmartDashboard.putBoolean("Time bad", true);
+        if(lastTimestamp > 0 && Math.abs(lastTimestamp - latestTimestamp) < 1e-6) {
+            SmartDashboard.putBoolean("Time bad", true);
+            return null;
+        }
+
+        if(layout.getTagPose(result.getBestTarget().getFiducialId()).isEmpty()) {
+            SmartDashboard.putBoolean("No tag pose", true);
+            return null;
+        }
 
         if(result.getBestTarget().getPoseAmbiguity() == -1 && result.getBestTarget().getPoseAmbiguity() < 10) {
             SmartDashboard.putNumber("Pose ambiguity", result.getBestTarget().getPoseAmbiguity());
             SmartDashboard.putBoolean("Bad ambiguity", true);
+            return null;
         }
-        if(layout.getTagPose(result.getBestTarget().getFiducialId()).isEmpty()) SmartDashboard.putBoolean("No tag pose", true);
 
         lastTimestamp = latestTimestamp;
 
