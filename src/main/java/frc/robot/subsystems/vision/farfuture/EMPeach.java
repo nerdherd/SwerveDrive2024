@@ -51,6 +51,7 @@ public class EMPeach implements Reportable{
 
         try {
             limelight = new Limelight(name);
+            limelightHelperUser = new LimelightHelperUser(name);
             toggleEMP(true);
             changeEMPType(VisionConstants.kAprilTagPipeline);
 
@@ -74,7 +75,7 @@ public class EMPeach implements Reportable{
      * @param pipeline
      */
     public void changeEMPType(int pipeline) {
-        this.pipeline.setInteger(pipeline);
+        if(this.pipeline != null) this.pipeline.setInteger(pipeline);
         limelight.setPipeline(pipeline);
     }
 
@@ -103,8 +104,8 @@ public class EMPeach implements Reportable{
 
         changeEMPType(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
-        hasTarget.setBoolean(true);
-        poseString.setString(limelightHelperUser.getPose3d().toString());
+        if(hasTarget != null) hasTarget.setBoolean(true);
+        if(poseString != null) poseString.setString(limelightHelperUser.getPose3d().toString());
         return limelightHelperUser.getPose3d(); // im hoping this is with the bottom left corner of the field as the origin
     }
 
@@ -215,7 +216,7 @@ public class EMPeach implements Reportable{
                     .getEntry();
 
             case MINIMAL:   
-                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5802")
+                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5800")
                     .withPosition(0, 0)
                     .withSize(6, 3);
 
