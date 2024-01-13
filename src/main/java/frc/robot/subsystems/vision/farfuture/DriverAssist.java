@@ -35,13 +35,13 @@ public class DriverAssist implements Reportable{
      * Makes a new EMPeach to utilize vision
      * @param name name of the limelight
      */
-    public DriverAssist(String name) {
+    public DriverAssist(String name, int pipeline) {
         limelightName = name;
 
         try {
             limelight = new Limelight(name);
             toggleLight(false);
-            changePipeline(VisionConstants.kAprilTagPipeline);
+            changePipeline(pipeline);
 
             SmartDashboard.putBoolean("Limelight: " + name + " inited ", true);
         } catch (Exception e) {
@@ -108,6 +108,38 @@ public class DriverAssist implements Reportable{
         }
     }
 
+    // Add any tag ID (align to closest tag) functionality same method different signature
+    // ************************* WE TEST LATER ****************************
+    public void driveToATag(double targetTA, double targetTX, double targetskew) {
+        double taOffset;
+        double txOffset;
+        double skewOffset;
+
+        SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
+        
+        taOffset = targetTA - getTA();
+        txOffset = targetTX - getTX();
+        skewOffset = targetskew - getSkew();
+    
+        SmartDashboard.putNumber("TA Offset: ", taOffset);
+        SmartDashboard.putNumber("TX Offset: ", txOffset);
+        SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+
+        calculatedForwardPower = pidTA.calculate(taOffset, 0);
+        calculatedForwardPower = calculatedForwardPower * -1;
+
+        calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
+        calculatedSidewaysPower = calculatedSidewaysPower * -1;
+
+        calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+        calculatedAngledPower = calculatedAngledPower * -1;
+
+        SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
+        SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
+        SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+
+    }
+
     public double getForwardPower() {
         return calculatedForwardPower;
     }
@@ -171,9 +203,6 @@ public class DriverAssist implements Reportable{
             case MINIMAL:   
                 tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP);
 
-                // tab.addNumber("Robot Pose X", () -> getCurrentGrassTile().getX());
-                // tab.addNumber("Robot Pose Y", () -> getCurrentGrassTile().getY());
-                // tab.addNumber("Robot Pose Z", () -> getCurrentGrassTile().getZ());
 
             case OFF:
                 break;

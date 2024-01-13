@@ -78,7 +78,7 @@ public class RobotContainer {
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
   private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
-  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName);
+  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -90,7 +90,7 @@ public class RobotContainer {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
-    driverAssist.changePipeline(4);
+    // driverAssist.changePipeline(4);
     driverAssist.toggleLight(false);
 
     initAutoChoosers();
@@ -137,6 +137,7 @@ public class RobotContainer {
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
+    // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
   }
 
   private void initAutoChoosers() {
