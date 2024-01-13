@@ -235,6 +235,7 @@ public final class Constants {
       new Rotation3d()
     );
 
+    //photon vision constants
     public static final String kPhotonVisionFrontName = "laserbean";
     public static final String kPhotonVisionFrontIP = "http://10.6.87.69:1182/?action=stream";
     public static final String kPhotonVisionBackName = "TileTurnip";
@@ -243,5 +244,8 @@ public final class Constants {
       new Translation3d(),
       new Rotation3d()
     ); // distance from camera to center of robot
+    public static double kCameraHeightMeters = 0;
+    public static double kTargetHeightMeters = 0;
+    public static double kCameraPitchDegrees = 0;
   }
 }

@@ -64,7 +64,7 @@ public class RobotContainer {
 
   public Citron[] citrons = {
     // new Citron(VisionConstants.kPhotonVisionFrontName, VisionConstants.kPhotonVisionFrontIP),
-    new Citron(VisionConstants.kPhotonVisionBackName, VisionConstants.kPhotonVisionBackIP)
+    new Citron(VisionConstants.kPhotonVisionBackName, VisionConstants.kPhotonVisionBackIP, 2)
   };
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);

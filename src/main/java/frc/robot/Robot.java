@@ -24,8 +24,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private int visionFrequency = 2;
-  private int counter = 0;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -58,13 +56,10 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    counter++;
-    if(counter % visionFrequency == 0) {
-      for (int i = 0; i < m_robotContainer.citrons.length; i++) {
-        Pose3d pose = m_robotContainer.citrons[i].usePlantFood();
-        if(pose != null) {
-          SmartDashboard.putString(m_robotContainer.citrons[i].name + ":Robot Pose", pose.toString());
-        }
+    for (int i = 0; i < m_robotContainer.citrons.length; i++) {
+      Pose3d pose = m_robotContainer.citrons[i].getCitronCurrentPosition();
+      if(pose != null) {
+        SmartDashboard.putString(m_robotContainer.citrons[i].name + ":Robot Pose", pose.toString());
       }
     }
     CommandScheduler.getInstance().run();
