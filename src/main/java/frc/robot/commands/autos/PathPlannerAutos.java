@@ -145,7 +145,8 @@ public class PathPlannerAutos {
             Commands.runOnce(() -> swerveDrive.getImu().zeroAll()),
             autoBuilder.resetPose(path),
             autoBuilder.followPathWithEvents(path),
-            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false))
+            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false)),
+            Commands.runOnce( () -> swerveDrive.towModules())
             // TODO: Once we get real odometry with vision, get rid of this
             // Commands.runOnce(() -> swerveDrive.setPoseMeters(finalInitialPose2d)),
             // autoCommand

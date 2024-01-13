@@ -140,6 +140,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if (counter == 0) {
             Pose3d sunflowerPose3d = sunflower.getPose3d();
             if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
+                SmartDashboard.putNumber("Vision X Value", sunflowerPose3d.getX());
+                SmartDashboard.putNumber("Vision Y Value", sunflowerPose3d.getY());
                 if (previousVisionX != -1) {
                     if ((Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2) ) {
                         poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
