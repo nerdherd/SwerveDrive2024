@@ -75,7 +75,9 @@ public class EMPeach implements Reportable{
      * @param pipeline
      */
     public void changeEMPType(int pipeline) {
-        this.pipeline.setInteger(pipeline);
+        if (this.pipeline != null) {
+            this.pipeline.setInteger(pipeline);
+        }
         limelight.setPipeline(pipeline);
     }
 
@@ -104,8 +106,12 @@ public class EMPeach implements Reportable{
 
         changeEMPType(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
-        hasTarget.setBoolean(true);
-        poseString.setString(limelightHelperUser.getPose3d().toString());
+        if(hasTarget != null) {
+            hasTarget.setBoolean(true);
+        }
+        if(poseString != null) {
+            poseString.setString(limelightHelperUser.getPose3d().toString());
+        }
         return limelightHelperUser.getPose3d(); // im hoping this is with the bottom left corner of the field as the origin
     }
 
