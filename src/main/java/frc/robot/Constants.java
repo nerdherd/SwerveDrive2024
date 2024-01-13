@@ -231,6 +231,7 @@ public final class Constants {
     public static final int kAprilTagPipeline = 4;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)
+    public static final double kMinimumTA = 0.7;
     public static final Transform3d fieldPoseOffset = new Transform3d(
       new Translation3d(-VisionConstants.fieldXOffset, -VisionConstants.fieldYOffset, 0), 
       new Rotation3d()
