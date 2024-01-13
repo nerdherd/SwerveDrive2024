@@ -36,8 +36,13 @@ import frc.robot.subsystems.imu.NavX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
+<<<<<<< HEAD
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
+=======
+import frc.robot.subsystems.vision.farfuture.Citron;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
+>>>>>>> driveToATag
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -77,10 +82,15 @@ public class RobotContainer {
 
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
+<<<<<<< HEAD
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
   private EMPeach vision;
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+=======
+  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+>>>>>>> driveToATag
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -93,6 +103,9 @@ public class RobotContainer {
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
+
+    // driverAssist.changePipeline(4);
+    driverAssist.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -134,6 +147,11 @@ public class RobotContainer {
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
+    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+
+    // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
   }
 
   private void initAutoChoosers() {
