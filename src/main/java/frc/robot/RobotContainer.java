@@ -30,6 +30,7 @@ import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
 import frc.robot.commands.autos.SquareTest;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
@@ -51,6 +52,7 @@ import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 public class RobotContainer {
 
   public Gyro imu = new NavX();
+  public Shooter shooter = new Shooter();
   // public Gyro imu = new Pigeon(60);
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
@@ -78,7 +80,7 @@ public class RobotContainer {
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
+  private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
   private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -86,7 +88,7 @@ public class RobotContainer {
   public RobotContainer() {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontCitron);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -131,6 +133,25 @@ public class RobotContainer {
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+
+      commandOperatorController.povUp().onTrue(shooter.increaseTop());
+      commandOperatorController.povDown().onTrue(shooter.decreaseTop());
+  
+      commandOperatorController.povLeft().onTrue(shooter.increaseBottom());
+      commandOperatorController.povRight().onTrue(shooter.decreaseBottom());
+  
+      commandOperatorController.triangle()
+        .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
+        .onFalse(shooter.setPowerZero());
+      
+      commandOperatorController.square()
+        .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
+        .onFalse(shooter.setPowerZero());
+  
+      commandOperatorController.circle()
+        .onTrue(shooter.setIndex(2).andThen(shooter.setSpeed()))
+        .onFalse(shooter.setPowerZero());
+
   }
 
   private void initAutoChoosers() {
