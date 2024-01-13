@@ -236,7 +236,9 @@ public final class Constants {
     );
 
     public static final String kPhotonVisionFrontName = "laserbean";
+    public static final String kPhotonVisionFrontIP = "http://10.6.87.69:1182/?action=stream";
     public static final String kPhotonVisionBackName = "TileTurnip";
+    public static final String kPhotonVisionBackIP = "http://10.6.87.96:1182/?action=stream";
     public static final Transform3d kCameraToRobot = new Transform3d(
       new Translation3d(),
       new Rotation3d()

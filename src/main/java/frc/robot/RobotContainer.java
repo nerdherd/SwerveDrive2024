@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.vision.farfuture.Citron;
 
 /**
@@ -60,6 +61,11 @@ public class RobotContainer {
   private final POVButton leftButtonDriver = new POVButton (driverController, 270);
 
   private SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<Supplier<Command>>();
+
+  public Citron[] citrons = {
+    // new Citron(VisionConstants.kPhotonVisionFrontName, VisionConstants.kPhotonVisionFrontIP),
+    new Citron(VisionConstants.kPhotonVisionBackName, VisionConstants.kPhotonVisionBackIP)
+  };
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
@@ -108,6 +114,9 @@ public class RobotContainer {
   public void initShuffleboard() {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
+    for (int i = 0; i < citrons.length; i++) {
+      citrons[i].initShuffleboard(LOG_LEVEL.ALL);
+    }
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
   }
 

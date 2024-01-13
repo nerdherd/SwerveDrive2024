@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision.farfuture;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -18,17 +19,24 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.Reportable;
 
-public class Citron {
+public class Citron implements Reportable{
     private PhotonCamera camera;
     private PhotonPoseEstimator estimator;
     private AprilTagFieldLayout layout;
+    public String name;
+    private String ip;
     private double lastTimestamp = 0.0;
 
     //Takes in photonvision camera name
-    public Citron(String cameraName) {
+    public Citron(String cameraName, String ip) {
+        name = cameraName;
+        this.ip = ip;
         try {
             camera = new PhotonCamera(cameraName);
             SmartDashboard.putBoolean("Limelight inited", true);
@@ -82,11 +90,11 @@ public class Citron {
 
     public Pose3d usePlantFood() {
         if(estimator == null) {
-            SmartDashboard.putBoolean("Estimator null", true);
+            // SmartDashboard.putBoolean(name + ":Estimator null", true);
             return null;
         }
         if(camera == null) {
-            SmartDashboard.putBoolean("Camera null", true);
+            // SmartDashboard.putBoolean(name + ":Camera null", true);
             return null;
         }
 
@@ -94,7 +102,7 @@ public class Citron {
 
         PhotonPipelineResult result = camera.getLatestResult();
         if(!result.hasTargets()) {
-            SmartDashboard.putBoolean("No targets", true);
+            SmartDashboard.putBoolean(name + ":No targets", true);
             return null;
         }
         double latestTimestamp = result.getTimestampSeconds();
@@ -102,32 +110,60 @@ public class Citron {
         // if(substantialDifference) lastTimestamp = latestTimestamp;
 
         if(lastTimestamp > 0 && Math.abs(lastTimestamp - latestTimestamp) < 1e-6) {
-            SmartDashboard.putBoolean("Time bad", true);
+            SmartDashboard.putBoolean(name + ":Time bad", true);
             return null;
         }
 
         if(layout.getTagPose(result.getBestTarget().getFiducialId()).isEmpty()) {
-            SmartDashboard.putBoolean("No tag pose", true);
+            SmartDashboard.putBoolean(name + ":No tag pose", true);
             return null;
         }
 
         if(result.getBestTarget().getPoseAmbiguity() == -1 && result.getBestTarget().getPoseAmbiguity() < 10) {
-            SmartDashboard.putNumber("Pose ambiguity", result.getBestTarget().getPoseAmbiguity());
-            SmartDashboard.putBoolean("Bad ambiguity", true);
+            SmartDashboard.putNumber(name + ":Pose ambiguity", result.getBestTarget().getPoseAmbiguity());
+            SmartDashboard.putBoolean(name + ":Bad ambiguity", true);
             return null;
         }
 
         lastTimestamp = latestTimestamp;
 
         if(estimatedPose.isEmpty()) {
-            SmartDashboard.putBoolean("Has Target", false);
+            SmartDashboard.putBoolean(name + ":Has Target", false);
             return null;
         }
-        SmartDashboard.putBoolean("Has Target", true);
+        SmartDashboard.putBoolean(name + ":Has Target", true);
         return estimatedPose.get().estimatedPose;
     }
 
     public double getChargeTime() {
         return lastTimestamp;
+    }
+
+    @Override
+    public void reportToSmartDashboard(LOG_LEVEL priority) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void initShuffleboard(LOG_LEVEL priority) {
+        if (priority == LOG_LEVEL.OFF)  {
+            return;
+        }
+        ShuffleboardTab tab = Shuffleboard.getTab(name);
+
+        switch (priority) {
+            case ALL:
+
+            case MEDIUM:
+
+            case MINIMAL:   
+                tab.addCamera(name + ": Stream", name, ip);
+
+                // tab.addString("Robot Pose", currentPose.toString());
+
+            case OFF:
+                break;
+            
+        }
     }
 }
