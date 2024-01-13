@@ -34,6 +34,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
+import frc.robot.subsystems.imu.Pigeon;
+import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
@@ -51,9 +53,10 @@ import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
  */
 public class RobotContainer {
 
-  public Gyro imu = new NavX();
+  // public Gyro imu = new NavX();
   public Shooter shooter = new Shooter();
-  // public Gyro imu = new Pigeon(60);
+  public Gyro imu = new PigeonV2(1);
+  // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
@@ -67,15 +70,6 @@ public class RobotContainer {
   // private final Joystick joystick = new Joystick(2);
 
   private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
-  private final POVButton upButton = new POVButton (operatorController,0);
-  private final POVButton rightButton = new POVButton (operatorController, 90);
-  private final POVButton downButton = new POVButton (operatorController, 180);
-  private final POVButton leftButton = new POVButton (operatorController, 270);
-
-  private final POVButton upButtonDriver = new POVButton (driverController, 0);
-  private final POVButton rightButtonDriver = new POVButton (driverController, 90);
-  private final POVButton downButtonDriver = new POVButton (driverController, 180);
-  private final POVButton leftButtonDriver = new POVButton (driverController, 270);
 
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 

@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
     // m_robotContainer.imu.setOffset(180);
 
     m_robotContainer.initDefaultCommands();
+    m_robotContainer.shooter.setPowerZero();
 
     // m_robotContainer.wrist.zeroEncodersStow();
 
