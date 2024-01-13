@@ -207,11 +207,11 @@ public class EMPeach implements Reportable{
 
             case MEDIUM:
                 hasTarget = tab.add("Target Found", false)
-                    .withPosition(6, 0)
+                    .withPosition(4, 3)
                     .withSize(2, 1)
                     .getEntry();
                 pipeline = tab.add("Current Pipeline", 4)
-                    .withPosition(6, 1)
+                    .withPosition(6, 0)
                     .withSize(2, 1)
                     .getEntry();
 
@@ -223,7 +223,7 @@ public class EMPeach implements Reportable{
 
                 poseString = tab.add("Robot Pose", "null")
                     .withPosition(0, 3)
-                    .withSize(6, 1)
+                    .withSize(4, 1)
                     .getEntry();
 
             case OFF:
