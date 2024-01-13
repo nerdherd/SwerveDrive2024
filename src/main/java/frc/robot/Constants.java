@@ -85,9 +85,9 @@ public final class Constants {
 
   public static final class SwerveDriveConstants {
 
-    public static final double kVisionSTDx = 0.7; //0.9
-    public static final double kVisionSTDy = 0.7; //0.9
-    public static final double kVisionSTDtheta = 1000; //Old: 69696969
+    public static final double kVisionSTDx = 0.3; //0.7
+    public static final double kVisionSTDy = 0.3; //0.7
+    public static final double kVisionSTDtheta = 500; //Old: 1000
     public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
       kVisionSTDx,
       kVisionSTDy,
