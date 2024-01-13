@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
@@ -140,9 +141,12 @@ public class PathPlannerAutos {
         // final Pose2d finalInitialPose2d = initialPose2d;
 
         return Commands.sequence(
+            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", true)),
             Commands.runOnce(() -> swerveDrive.getImu().zeroAll()),
             autoBuilder.resetPose(path),
-            autoBuilder.followPathWithEvents(path)
+            autoBuilder.followPathWithEvents(path),
+            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false)),
+            Commands.runOnce( () -> swerveDrive.towModules())
             // TODO: Once we get real odometry with vision, get rid of this
             // Commands.runOnce(() -> swerveDrive.setPoseMeters(finalInitialPose2d)),
             // autoCommand

@@ -85,9 +85,9 @@ public final class Constants {
 
   public static final class SwerveDriveConstants {
 
-    public static final double kVisionSTDx = 0.7; //0.9
-    public static final double kVisionSTDy = 0.7; //0.9
-    public static final double kVisionSTDtheta = 1000; //Old: 69696969
+    public static final double kVisionSTDx = 0.2; //0.7
+    public static final double kVisionSTDy = 0.2; //0.7
+    public static final double kVisionSTDtheta = 1000; //Old: 10000
     public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
       kVisionSTDx,
       kVisionSTDy,
@@ -220,14 +220,18 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
+    public static final double kFrontCameraHeightMeters = 0;
+    public static final double kNoteHeightMeters = 0;
+    public static final double kCameraPitchRadians = 0;
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
     public static final String kLimelightFrontName = "limelight-front";
-    public static final String kLimelightFrontIP = "10.6.87.25:5801";
+    public static final String kLimelightFrontIP = "10.6.87.25:5802";
     public static final int kAprilTagPipeline = 4;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)
+    public static final double kMinimumTA = 0.7;
     public static final Transform3d fieldPoseOffset = new Transform3d(
       new Translation3d(-VisionConstants.fieldXOffset, -VisionConstants.fieldYOffset, 0), 
       new Rotation3d()
