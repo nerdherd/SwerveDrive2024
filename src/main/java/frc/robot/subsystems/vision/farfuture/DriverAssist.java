@@ -58,21 +58,24 @@ public class DriverAssist implements Reportable{
         return limelight.getXAngle();
     }
 
-    // public double getSkew() {
-    //     return 
-    // }
+    public double getSkew() {
+        return limelight.periodic();
+    }
 
 
-    PIDController pidTA = new PIDController(0.2, 0, 0);
+    PIDController pidTA = new PIDController(0.3, 0, 0);
     PIDController pidTX = new PIDController(0.1, 0, 0);
-    PIDController pidSkew = new PIDController(0.1, 0, 0);
+    PIDController pidSkew = new PIDController(0.02, 0, 0);
+
+    double calculatedForwardPower;
+    double calculatedSidewaysPower;
+    double calculatedAngledPower;
 
     // ************************ VISION ***********************
     public void driveToATag(double targetTA, double targetTX, double targetskew, int tagID) {
         double taOffset;
         double txOffset;
-        // double skewOffset;
-        limelight.periodic();
+        double skewOffset;
 
         SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
         if(tagID == getAprilTagID()) {
@@ -80,44 +83,41 @@ public class DriverAssist implements Reportable{
             
             taOffset = targetTA - getTA();
             txOffset = targetTX - getTX();
-            // SmartDashboard.putNumber("Skew READINGS: ", getSkew());
-            // skewOffset = targetskew - getSkew();
+            skewOffset = targetskew - getSkew();
      
             SmartDashboard.putNumber("TA Offset: ", taOffset);
             SmartDashboard.putNumber("TX Offset: ", txOffset);
-            // SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+            SmartDashboard.putNumber("Skew Offset: ", skewOffset);
     
-            double calculatedForwardPower = pidTA.calculate(taOffset, 0);
-            double calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
-            // double calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+            calculatedForwardPower = pidTA.calculate(taOffset, 0);
+            calculatedForwardPower = calculatedForwardPower * -1;
+
+            calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
+            calculatedSidewaysPower = calculatedSidewaysPower * -1;
+
+            calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
+            calculatedAngledPower = calculatedAngledPower * -1;
     
             SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
             SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
-            // SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+            SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
         }
         else {
             SmartDashboard.putBoolean("Found Right Tag ID: ", false);
             
         }
-        
-        // USE THIS ONCE ANGLE VALUE CAN BE FOUND ***************8
+    }
 
-        // double testValue = 180;
-        // boolean isPos;
-        // if (testValue >= 0) {
-        //     isPos = true;
-        // } else {
-        //     isPos = false;
-        // }
-        // if (180 - Math.abs(testValue) > 5) {
-        //     // Calculate power
-        //     // Multiply power by isPos (true or false)
-        // }
-        // else {
-        //     // Set calculated power to 0
-        // }
+    public double getForwardPower() {
+        return calculatedForwardPower;
+    }
 
-        //drive(1, 1, 0); // ADD TURN SPEED LATER
+    public double getSidewaysPower() {
+        return calculatedSidewaysPower;
+    }
+
+    public double getAngledPower() {
+        return calculatedAngledPower;
     }
 
     public int getAprilTagID() {

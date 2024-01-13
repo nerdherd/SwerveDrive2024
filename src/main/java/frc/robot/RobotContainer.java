@@ -134,7 +134,8 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 0, 0, 6)));
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
+    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
   }
 
