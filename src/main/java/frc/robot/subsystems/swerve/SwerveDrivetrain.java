@@ -123,6 +123,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
 
+    double previousVisionX = -1;
+
     /**
      * Have modules move towards states and update odometry
      */
@@ -138,8 +140,17 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if (counter == 0) {
             Pose3d sunflowerPose3d = sunflower.getPose3d();
             if (sunflowerPose3d != null && sunflower.getSunSize() > sunflower.getOptimalSunSize()) {
-                poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("Vision Used", true);
+                if (previousVisionX != -1) {
+                    if ((Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2) ) {
+                        poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
+                        SmartDashboard.putBoolean("Vision Used", true);
+                        previousVisionX = sunflowerPose3d.toPose2d().getX();
+                    }
+                    SmartDashboard.putBoolean("Filtered out", (Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2));
+                    SmartDashboard.putNumber("Prev Vis X", previousVisionX);
+                } else {
+                    previousVisionX = sunflowerPose3d.toPose2d().getX();
+                }
             } else {
                 SmartDashboard.putBoolean("Vision Used", false);
             }
