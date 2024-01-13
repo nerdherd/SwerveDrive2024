@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -36,6 +37,10 @@ public class EMPeach implements Reportable{
     private static PIDController pidTX = new PIDController(0.1, 0, 0);
     private static PIDController pidTY = new PIDController(0.1, 0, 0);
     private static PIDController pidSkew = new PIDController(0.02, 0, 0);
+
+    private GenericEntry hasTarget;
+    private GenericEntry pipeline;
+    private GenericEntry poseString;
     
     /**
      * Makes a new EMPeach to utilize vision
@@ -69,6 +74,7 @@ public class EMPeach implements Reportable{
      * @param pipeline
      */
     public void changeEMPType(int pipeline) {
+        this.pipeline.setInteger(pipeline);
         limelight.setPipeline(pipeline);
     }
 
@@ -82,6 +88,13 @@ public class EMPeach implements Reportable{
     }
 
     /**
+     * @return the area of the target
+     */
+    public double getEMPRadius() {
+        return limelight.getArea();
+    }
+
+    /**
      * @return robot position based on vision and apriltags
      */
     public Pose3d getCurrentGrassTile() {
@@ -90,6 +103,8 @@ public class EMPeach implements Reportable{
 
         changeEMPType(VisionConstants.kAprilTagPipeline);
         if(!limelight.hasValidTarget()) return null;
+        hasTarget.setBoolean(true);
+        poseString.setString(limelightHelperUser.getPose3d().toString());
         return limelightHelperUser.getPose3d(); // im hoping this is with the bottom left corner of the field as the origin
     }
 
@@ -190,12 +205,14 @@ public class EMPeach implements Reportable{
             case ALL:
 
             case MEDIUM:
-                tab.addBoolean("Target Found", () -> limelight.hasValidTarget())
+                hasTarget = tab.add("Target Found", false)
                     .withPosition(6, 0)
-                    .withSize(2, 1);
-                tab.addInteger("Current Pipeline", () -> limelight.getPipeIndex())
+                    .withSize(2, 1)
+                    .getEntry();
+                pipeline = tab.add("Current Pipeline", 4)
                     .withPosition(6, 1)
-                    .withSize(2, 1);
+                    .withSize(2, 1)
+                    .getEntry();
 
             case MINIMAL:   
                 tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5802")
@@ -203,9 +220,10 @@ public class EMPeach implements Reportable{
                     .withSize(6, 3);
 
 
-                tab.addString("Robot Pose", () -> getCurrentGrassTile().toString())
+                poseString = tab.add("Robot Pose", "null")
                     .withPosition(0, 3)
-                    .withSize(6, 1);
+                    .withSize(6, 1)
+                    .getEntry();
 
             case OFF:
                 break;
