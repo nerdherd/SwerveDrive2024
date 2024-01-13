@@ -29,12 +29,8 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
-<<<<<<< HEAD
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
-=======
-import frc.robot.subsystems.vision.farfuture.Citron;
->>>>>>> driveToATag
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.SwerveDriveConstants.*;

@@ -36,13 +36,9 @@ import frc.robot.subsystems.imu.NavX;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
-<<<<<<< HEAD
 import frc.robot.subsystems.vision.farfuture.EMPeach;
-import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
-=======
-import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
->>>>>>> driveToATag
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -82,15 +78,11 @@ public class RobotContainer {
 
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
-<<<<<<< HEAD
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
   private EMPeach vision;
-  //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
-=======
-  private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
->>>>>>> driveToATag
+  //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
