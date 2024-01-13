@@ -227,7 +227,11 @@ public final class Constants {
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
     public static final String kLimelightFrontName = "limelight-front";
+<<<<<<< HEAD
     public static final String kLimelightFrontIP = "10.6.87.25";
+=======
+    public static final String kLimelightFrontIP = "10.6.87.25:5802";
+>>>>>>> driveToATag
     public static final int kAprilTagPipeline = 4;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)
