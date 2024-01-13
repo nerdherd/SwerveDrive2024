@@ -216,9 +216,9 @@ public class EMPeach implements Reportable{
                     .getEntry();
 
             case MINIMAL:   
-                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5802")
-                    .withPosition(0, 0)
-                    .withSize(6, 3);
+                // tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP + ":5800")
+                //     .withPosition(0, 0)
+                //     .withSize(6, 3);
 
 
                 poseString = tab.add("Robot Pose", "null")

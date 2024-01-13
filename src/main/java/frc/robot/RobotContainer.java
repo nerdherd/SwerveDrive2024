@@ -79,7 +79,7 @@ public class RobotContainer {
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
-  private EMPeach vision = new EMPeach(VisionConstants.kLimelightFrontName);
+  private EMPeach vision;
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -88,6 +88,7 @@ public class RobotContainer {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
+      vision = new EMPeach(VisionConstants.kLimelightFrontName);
       swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -175,7 +176,7 @@ public class RobotContainer {
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
-    // vision.initShuffleboard(loggingLevel);
+    vision.initShuffleboard(loggingLevel);
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
