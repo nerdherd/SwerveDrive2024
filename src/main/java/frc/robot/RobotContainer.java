@@ -37,7 +37,7 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.farfuture.Citron;
-import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -77,9 +77,8 @@ public class RobotContainer {
 
   private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
 
-  // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
   private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
+  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -90,6 +89,9 @@ public class RobotContainer {
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
+
+    driverAssist.changePipeline(4);
+    driverAssist.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -131,6 +133,9 @@ public class RobotContainer {
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 0, 0, 6)));
+
   }
 
   private void initAutoChoosers() {

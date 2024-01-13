@@ -127,8 +127,14 @@ public class Limelight implements Reportable{
     private double m_LimelightDriveCommand = 0.0;
     private double m_LimelightSteerCommand = 0.0;
 
+    private final NetworkTableEntry m_botPos;
+    private final NetworkTableEntry m_camPos;
+
     public Limelight(String keyN)
     {
+        m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose");
+        m_camPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("targetpose_cameraspace");
+
         reinitBuffer(); // need to reset everytime change pipeline
 
         table = NetworkTableInstance.getDefault().getTable(keyN);
@@ -138,6 +144,31 @@ public class Limelight implements Reportable{
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
         setLightState(LIGHT_OFF);
+    }
+
+    public void periodic() {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        double[] camPose = m_camPos.getDoubleArray(new double[6]);
+
+        if(botPose.length != 0) {
+            SmartDashboard.putNumber("x bot pose: ", botPose[0]);
+            SmartDashboard.putNumber("y bot pose: ", botPose[1]);
+            SmartDashboard.putNumber("z bot pose: ", botPose[2]);
+
+            SmartDashboard.putNumber("BOT POSE 4: ", botPose[3]);
+            SmartDashboard.putNumber("BOT POSE 5: ", botPose[4]);
+            SmartDashboard.putNumber("BOT POSE 6: ", botPose[5]);
+        }
+
+        if(camPose.length != 0) {
+            SmartDashboard.putNumber("x tag pose: ", camPose[0]);
+            SmartDashboard.putNumber("y tag pose: ", camPose[1]);
+            SmartDashboard.putNumber("z tag pose: ", camPose[2]);
+
+            SmartDashboard.putNumber("TAG POSE 4: ", camPose[3]);
+            SmartDashboard.putNumber("TAG POSE 5: ", camPose[4]);
+            SmartDashboard.putNumber("TAG POSE 6: ", camPose[5]);
+        }
     }
 
     public String getName() {

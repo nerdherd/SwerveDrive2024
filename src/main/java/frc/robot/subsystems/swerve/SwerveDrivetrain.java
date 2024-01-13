@@ -30,7 +30,6 @@ import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.vision.farfuture.Citron;
-import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 import frc.robot.subsystems.Reportable;
 
 import static frc.robot.Constants.SwerveDriveConstants.*;
