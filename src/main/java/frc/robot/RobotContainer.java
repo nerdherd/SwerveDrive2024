@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -38,6 +37,7 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
+import frc.robot.commands.autos.SquareTest;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -146,12 +146,11 @@ public class RobotContainer {
       PathPlannerAutos.initPathGroup(path);
     }
 
-    autoChooser.addOption("Do Nothing", Commands::none);
-    autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
-    autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
-    autoChooser.setDefaultOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.setDefaultOption("LTest Copy", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
-
+    // autoChooser.addOption("Do Nothing", Commands::none);
+    autoChooser.addOption("SquareTest", SquareTest(swerveDrive));
+    autoChooser.addOption("BackwardsSquareTest", PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
+    autoChooser.setDefaultOption("LTest", PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
+    autoChooser.setDefaultOption("LTest Copy", PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
@@ -186,7 +185,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command currentAuto = autoChooser.getSelected().get();
+    Command currentAuto = autoChooser.getSelected();
 
     swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;

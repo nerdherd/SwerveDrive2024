@@ -33,7 +33,14 @@ import frc.robot.subsystems.vision.farfuture.Citron;
 import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 import frc.robot.subsystems.Reportable;
 
+import static frc.robot.Constants.PathPlannerConstants.kPPMaxVelocity;
+import static frc.robot.Constants.PathPlannerConstants.kPPRotationPIDConstants;
+import static frc.robot.Constants.PathPlannerConstants.kPPTranslationPIDConstants;
 import static frc.robot.Constants.SwerveDriveConstants.*;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     private final SwerveModule frontLeft;
@@ -123,6 +130,20 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         field = new Field2d();
         // field.setRobotPose(odometer.getPoseMeters());
         field.setRobotPose(poseEstimator.getEstimatedPosition());
+
+        AutoBuilder.configureHolonomic(
+            this::getPose,
+            this::resetOdometry, 
+            this::getChassisSpeeds, 
+            this::setChassisSpeeds, 
+            new HolonomicPathFollowerConfig(
+                kPPTranslationPIDConstants, 
+                kPPRotationPIDConstants, 
+                kPPMaxVelocity,
+                kTrackWidth,
+                new ReplanningConfig()), 
+            null, 
+            this);
     }
 
     /**
@@ -255,6 +276,19 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             backLeft.getPosition(),
             backRight.getPosition()
         };
+    }
+
+    private SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            frontLeft.getState(),
+            frontRight.getState(),
+            backLeft.getState(),
+            backRight.getState()
+        };
+    }
+
+    private ChassisSpeeds getChassisSpeeds() {
+        return SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public void drive(double xSpeed, double ySpeed, double turnSpeed) {

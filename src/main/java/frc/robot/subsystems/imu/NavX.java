@@ -184,7 +184,7 @@ public class NavX extends SubsystemBase implements Gyro {
             case OFF:
                 break;
             case ALL:
-                tab.add("Calibrate NavX", new InstantCommand(() -> ahrs.calibrate()));
+                // tab.add("Calibrate NavX", new InstantCommand(() -> ahrs.calibrate()));
                 tab.addNumber("Robot Raw Yaw", () -> ahrs.getRawGyroZ());
                 tab.addNumber("Robot Raw Pitch", () -> ahrs.getRawGyroX());
                 tab.addNumber("Robot Raw Roll", () -> ahrs.getRawGyroY());
