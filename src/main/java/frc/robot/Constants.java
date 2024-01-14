@@ -223,6 +223,9 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
+    public static final double kFrontCameraHeightMeters = Units.inchesToMeters(5.5);
+    public static final double kNoteHeightMeters = Units.inchesToMeters(1);
+    public static final double kCameraPitchRadians = 0;
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
@@ -234,6 +237,7 @@ public final class Constants {
       new Translation3d(-VisionConstants.fieldXOffset, -VisionConstants.fieldYOffset, 0), 
       new Rotation3d()
     );
+    public static final String kLimelightIP = "10.6.87.55";
 
     //photon vision constants
     public static final String kPhotonVisionFrontName = "laserbean";

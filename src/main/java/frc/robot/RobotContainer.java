@@ -27,6 +27,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.vision.farfuture.Citron;
+import frc.robot.subsystems.vision.farfuture.EMPeach;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,10 +63,11 @@ public class RobotContainer {
 
   private SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<Supplier<Command>>();
 
-  public Citron[] citrons = {
-    // new Citron(VisionConstants.kPhotonVisionFrontName, VisionConstants.kPhotonVisionFrontIP),
-    new Citron(VisionConstants.kPhotonVisionBackName, VisionConstants.kPhotonVisionBackIP, 2)
-  };
+  // public Citron[] citrons = {
+  //   // new Citron(VisionConstants.kPhotonVisionFrontName, VisionConstants.kPhotonVisionFrontIP),
+  //   new Citron(VisionConstants.kPhotonVisionBackName, VisionConstants.kPhotonVisionBackIP, 2)
+  // };
+  public EMPeach empeach;
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.7); //0.6 is threshold for consistent ATag detection
@@ -76,6 +78,7 @@ public class RobotContainer {
   public RobotContainer() {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
+      empeach = new EMPeach("limelight");
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -114,9 +117,10 @@ public class RobotContainer {
   public void initShuffleboard() {
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
-    for (int i = 0; i < citrons.length; i++) {
-      citrons[i].initShuffleboard(LOG_LEVEL.ALL);
-    }
+    // for (int i = 0; i < citrons.length; i++) {
+    //   citrons[i].initShuffleboard(LOG_LEVEL.ALL);
+    // }
+    empeach.initShuffleboard(LOG_LEVEL.ALL);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
   }
 

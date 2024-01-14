@@ -382,9 +382,9 @@ public class Limelight implements Reportable{
      * @param streamMode - STANDARD is side by side, MAIN is Limelight big with
      *                   secondary camera in bottom right, SECONDARY is vice versa
      */
-    public void setStreamMode(LightMode.StreamMode streamMode) {
-        table.getEntry("stream").setNumber(streamMode.getMode());
-    }
+    // public void setStreamMode(LightMode.StreamMode streamMode) {
+    //     table.getEntry("stream").setNumber(streamMode.getMode());
+    // }
 
     /**
      * Allow the Lime Light to take snapshots so that it can be tuned off the field

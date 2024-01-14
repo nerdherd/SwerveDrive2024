@@ -56,12 +56,17 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    for (int i = 0; i < m_robotContainer.citrons.length; i++) {
-      Pose3d pose = m_robotContainer.citrons[i].getCitronCurrentPosition();
-      if(pose != null) {
-        SmartDashboard.putString(m_robotContainer.citrons[i].name + ":Robot Pose", pose.toString());
-      }
-    }
+    // for (int i = 0; i < m_robotContainer.citrons.length; i++) {
+      // Pose3d pose = m_robotContainer.citrons[i].getCitronCurrentPosition();
+      // Pose3d pose = m_robotContainer.empeach.getCurrentGrassTile();
+      double[] speeds = m_robotContainer.empeach.getMovePowerToImp(0);
+      SmartDashboard.putNumber("forward speed", speeds[0]);
+      SmartDashboard.putNumber("sideways speed", speeds[1]);
+      SmartDashboard.putNumber("angle speed", speeds[2]);
+      // if(pose != null) {
+      //   SmartDashboard.putString("Robot Pose", pose.toString());
+      // }
+    // }
     CommandScheduler.getInstance().run();
   }
 

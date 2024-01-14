@@ -670,17 +670,17 @@ public class LimelightHelpers {
         setLimelightNTDouble(limelightName, "ledMode", 3);
     }
 
-    public static void setStreamMode_Standard(String limelightName) {
-        setLimelightNTDouble(limelightName, "stream", 0);
-    }
+    // public static void setStreamMode_Standard(String limelightName) {
+    //     setLimelightNTDouble(limelightName, "stream", 0);
+    // }
 
-    public static void setStreamMode_PiPMain(String limelightName) {
-        setLimelightNTDouble(limelightName, "stream", 1);
-    }
+    // public static void setStreamMode_PiPMain(String limelightName) {
+    //     setLimelightNTDouble(limelightName, "stream", 1);
+    // }
 
-    public static void setStreamMode_PiPSecondary(String limelightName) {
-        setLimelightNTDouble(limelightName, "stream", 2);
-    }
+    // public static void setStreamMode_PiPSecondary(String limelightName) {
+    //     setLimelightNTDouble(limelightName, "stream", 2);
+    // }
 
     public static void setCameraMode_Processor(String limelightName) {
         setLimelightNTDouble(limelightName, "camMode", 0);
