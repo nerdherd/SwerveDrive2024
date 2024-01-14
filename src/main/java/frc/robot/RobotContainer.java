@@ -33,7 +33,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
-import frc.robot.subsystems.imu.Pigeon;
+// import frc.robot.subsystems.imu.Pigeon;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;

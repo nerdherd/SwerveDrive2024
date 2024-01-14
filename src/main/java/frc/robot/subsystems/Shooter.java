@@ -1,15 +1,15 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenixpro.configs.Slot0Configs;
-import com.ctre.phoenixpro.configs.Slot1Configs;
-import com.ctre.phoenixpro.controls.DutyCycleOut;
-import com.ctre.phoenixpro.controls.Follower;
-import com.ctre.phoenixpro.controls.VelocityVoltage;
-import com.ctre.phoenixpro.controls.VoltageOut;
-import com.ctre.phoenixpro.hardware.TalonFX;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -74,13 +74,13 @@ public class Shooter {
         SmartDashboard.putNumber("OuttakeBottom", bottomSpeeds[1]);
     }
 
-    public CommandBase setIndex(int index) {
+    public Command setIndex(int index) {
         return Commands.runOnce(() -> {
             this.index = index;
         });
     }
 
-    public CommandBase setSpeed() {
+    public Command setSpeed() {
         return Commands.runOnce(() -> {
 
             // Percent Ouput
@@ -97,7 +97,7 @@ public class Shooter {
         });
     }
 
-    public CommandBase setPowerZero() {
+    public Command setPowerZero() {
         return Commands.runOnce(() -> {
             topShooter.setControl(m_leftDutyCycleRequest.withOutput(0));
             topShooter.setControl(m_leftDutyCycleRequest.withOutput(0));
@@ -105,23 +105,23 @@ public class Shooter {
         });
     }
 
-    public CommandBase increaseTop() {
+    public Command increaseTop() {
         return Commands.runOnce(() -> {
             this.topSpeeds[index] += 0.1;
         });
     }
-    public CommandBase increaseBottom() {
+    public Command increaseBottom() {
         return Commands.runOnce(() -> {
             this.bottomSpeeds[index] += 0.1;
         });
     }
 
-    public CommandBase decreaseTop() {
+    public Command decreaseTop() {
         return Commands.runOnce(() -> {
             this.topSpeeds[index] -= 0.1;
         });
     }
-    public CommandBase decreaseBottom() {
+    public Command decreaseBottom() {
         return Commands.runOnce(() -> {
             this.bottomSpeeds[index] -= 0.1;
         });
