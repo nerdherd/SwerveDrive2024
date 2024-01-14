@@ -1,5 +1,6 @@
 package frc.robot.commands.autos;
 
+import java.sql.Driver;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,10 +11,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 
 import static frc.robot.Constants.PathPlannerConstants.*;
 
@@ -89,7 +93,7 @@ public class PathPlannerAutos {
      * @param swerveDrive
      * @return
      */
-    public static CommandBase pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive) {
+    public static CommandBase pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive, DriverAssist driverAssist) {
         if (!cachedPaths.containsKey(pathName)) {
             DriverStation.reportWarning(String.format("Path '%s' was not pre-loaded into memory, which may cause lag during the Autonomous Period.", pathName), true);
             initPath(pathName);
@@ -146,6 +150,10 @@ public class PathPlannerAutos {
             autoBuilder.resetPose(path),
             autoBuilder.followPathWithEvents(path),
             Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false)),
+            Commands.race(
+                Commands.run(() -> driverAssist.TagDriving(swerveDrive, 3.7, 13.5, 0, 6)), // TODO TEST
+                Commands.waitSeconds(2)
+            ),
             Commands.runOnce( () -> swerveDrive.towModules())
             // TODO: Once we get real odometry with vision, get rid of this
             // Commands.runOnce(() -> swerveDrive.setPoseMeters(finalInitialPose2d)),
@@ -156,4 +164,6 @@ public class PathPlannerAutos {
     public static HashMap<String, Command> getEvents() {
         return events;
     }
+
+    
 }
