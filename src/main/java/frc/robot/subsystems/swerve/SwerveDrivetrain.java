@@ -313,31 +313,31 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     //****************************** GO TO COORDINATES VISION ******************************/
-    // public void driveToSunflower(double xCoord, double yCoord) {
-    //     double XOffset;
-    //     double YOffset;
-    //     XOffset = xCoord - sunflower.getPose3dXCoord();
-    //     YOffset = yCoord - sunflower.getPose3dYCoord();
+    public void driveToSunflower(double xCoord, double yCoord) {
+        double XOffset;
+        double YOffset;
+        XOffset = xCoord - sunflower.getPose3dXCoord();
+        YOffset = yCoord - sunflower.getPose3dYCoord();
 
-    //     //Make PID Controller for this
-    //     //idk wut u wanted here but i just made a new controller to fix the build error
-    //     PIDController sunflowerController = new PIDController(VisionConstants.kSunflowerP, VisionConstants.kSunflowerI, VisionConstants.kSunflowerD);
-    //     sunflowerController.setTolerance(0.2);
+        //Make PID Controller for this
+        //idk wut u wanted here but i just made a new controller to fix the build error
+        PIDController sunflowerController = new PIDController(VisionConstants.kSunflowerP, VisionConstants.kSunflowerI, VisionConstants.kSunflowerD);
+        sunflowerController.setTolerance(0.2);
 
-    //     // if(XOffset < 0.1 && XOffset > -0.1) {
-    //     //     XOffset = 0;
-    //     // }
+        // if(XOffset < 0.1 && XOffset > -0.1) {
+        //     XOffset = 0;
+        // }
 
-    //     // if(YOffset < 0.1 && YOffset > -0.1) {
-    //     //     YOffset = 0;
-    //     // }
+        // if(YOffset < 0.1 && YOffset > -0.1) {
+        //     YOffset = 0;
+        // }
 
-    //     // Should be ~- between 0.1 and 5.0
-    //     double calculatedXOffset = MathUtil.clamp(sunflowerController.calculate(XOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
-    //     double calculatedYOffset = MathUtil.clamp(sunflowerController.calculate(YOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
+        // Should be ~- between 0.1 and 5.0
+        double calculatedXOffset = MathUtil.clamp(sunflowerController.calculate(XOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
+        double calculatedYOffset = MathUtil.clamp(sunflowerController.calculate(YOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
 
-    //     drive(calculatedXOffset, calculatedYOffset, 0);
-    // }
+        drive(calculatedXOffset, calculatedYOffset, 0);
+    }
 
     public void driveFieldOriented(double xSpeed, double ySpeed, double turnSpeed) {
         setModuleStates(

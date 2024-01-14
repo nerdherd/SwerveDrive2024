@@ -80,7 +80,7 @@ public final class Constants {
     public static final PrefDouble kFDrive = new PrefDouble("kFDrive",0.0469); 
 
     public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
-    public static final String kCANivoreName = "CANivore2";
+    public static final String kCANivoreName = "CANivore1";
   } 
 
   public static final class SwerveDriveConstants {
@@ -245,5 +245,21 @@ public final class Constants {
       new Translation3d(),
       new Rotation3d()
     ); // distance from camera to center of robot
+  }
+
+  public static final class ShooterConstants {
+    public static final int kTopMotorID = 17;
+    public static final int kBottomMotorID = 18;
+    public static final int kIntakePower = 0;
+    public static final int kOuttakePower = 0;
+    public static final PrefDouble kPTopMotor = new PrefDouble("P Top Motor", 0);
+    public static final PrefDouble kITopMotor = new PrefDouble("I Top Motor", 0);
+    public static final PrefDouble kDTopMotor = new PrefDouble("D Top Motor", 0);
+    public static final PrefDouble kVTopMotor = new PrefDouble("V Top Motor", 0);
+
+    public static final PrefDouble kPBottomMotor = new PrefDouble("P Bottom Motor", 0);
+    public static final PrefDouble kIBottomMotor = new PrefDouble("I Bottom Motor", 0);
+    public static final PrefDouble kDBottomMotor = new PrefDouble("D Bottom Motor", 0);
+    public static final PrefDouble kVBottomMotor =new PrefDouble("v Bottom Motor", 0);
   }
 }
