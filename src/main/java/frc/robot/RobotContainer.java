@@ -162,7 +162,7 @@ public class RobotContainer {
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "FiveMeterFortyFiveDegree Copy", "ZeroDegreeLine", "GetBackWithVision", "LTest Copy"
+      "TestSquare", "TestSquare2", "LTest", "FiveMeterFortyFiveDegree Copy", "ZeroDegreeLine", "GetBackWithVision", "LTest Copy", "2 piece"
       
     };
     
@@ -176,6 +176,7 @@ public class RobotContainer {
     autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
     autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
     autoChooser.addOption("LTest 2", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
+    autoChooser.addOption("2 piece", () -> PathPlannerAutos.pathplannerAuto("2 piece", swerveDrive));
     // autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
     //autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
     // autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
