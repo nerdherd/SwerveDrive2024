@@ -81,7 +81,7 @@ public class DriverAssist implements Reportable{
     }
 
     PIDController pidTA = new PIDController(0.3, 0, 0);
-    PIDController pidTX = new PIDController(0.09, 0, 0);
+    PIDController pidTX = new PIDController(0.12, 0, 0);
     PIDController pidSkew = new PIDController(0.02, 0, 0);
 
     double calculatedForwardPower;

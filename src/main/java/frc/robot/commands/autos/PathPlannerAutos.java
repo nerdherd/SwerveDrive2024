@@ -151,7 +151,7 @@ public class PathPlannerAutos {
             autoBuilder.followPathWithEvents(path),
             Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false)),
             Commands.race(
-                Commands.run(() -> driverAssist.TagDriving(swerveDrive, 3.7, 13.5, 0, 6)), // TODO TEST
+                Commands.run(() -> driverAssist.TagDriving(swerveDrive, 3.7, 13.5, -3.3, 6)), // TODO TEST
                 Commands.waitSeconds(2)
             ),
             Commands.runOnce( () -> swerveDrive.towModules())
