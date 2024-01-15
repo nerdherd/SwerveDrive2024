@@ -19,6 +19,7 @@ import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
 /**
  * Subsystem that uses Limelight for vision
@@ -50,6 +51,23 @@ public class DriverAssist implements Reportable{
         
     }
 
+
+
+
+    public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
+        calculateTag(targetTA, targetTX, targetSkew, tagID);
+        if(getForwardPower() == 0 && getSidewaysPower() == 0 && getAngledPower() == 0) {
+            SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", true);
+        } else {
+            SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", false);
+        }
+        swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower());
+    }
+
+
+
+
+
     public double getTA() {
         return limelight.getArea();
     }
@@ -62,9 +80,8 @@ public class DriverAssist implements Reportable{
         return limelight.periodic();
     }
 
-
     PIDController pidTA = new PIDController(0.3, 0, 0);
-    PIDController pidTX = new PIDController(0.1, 0, 0);
+    PIDController pidTX = new PIDController(0.12, 0, 0);
     PIDController pidSkew = new PIDController(0.02, 0, 0);
 
     double calculatedForwardPower;
@@ -72,7 +89,7 @@ public class DriverAssist implements Reportable{
     double calculatedAngledPower;
 
     // ************************ VISION ***********************
-    public void driveToATag(double targetTA, double targetTX, double targetskew, int tagID) {
+    public void calculateTag(double targetTA, double targetTX, double targetskew, int tagID) {
         double taOffset;
         double txOffset;
         double skewOffset;
@@ -141,14 +158,32 @@ public class DriverAssist implements Reportable{
     }
 
     public double getForwardPower() {
+        boolean isReached = false;
+        if(calculatedForwardPower < 0.2 && calculatedForwardPower > -0.2) {
+            calculatedForwardPower = 0;
+            isReached = true;
+        }
+        SmartDashboard.putBoolean("Forward Condition Met? ", isReached);
         return calculatedForwardPower;
     }
 
     public double getSidewaysPower() {
+        boolean isReached = false;
+        if(calculatedSidewaysPower < 0.2 && calculatedSidewaysPower > -0.2) {
+            calculatedSidewaysPower = 0;
+            isReached = true;
+        }
+        SmartDashboard.putBoolean("Sideways Condition Met? ", isReached);
         return calculatedSidewaysPower;
     }
 
     public double getAngledPower() {
+        boolean isReached = false;
+        if(calculatedAngledPower < 0.2 && calculatedAngledPower > -0.2) {
+            calculatedAngledPower = 0;
+            isReached = true;
+        }
+        SmartDashboard.putBoolean("Angled Condition Met? ", isReached);
         return calculatedAngledPower;
     }
 
