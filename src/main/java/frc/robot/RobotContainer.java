@@ -7,6 +7,8 @@ package frc.robot;
 import java.time.Instant;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
@@ -28,7 +30,7 @@ import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
-import frc.robot.commands.autos.SquareTest;
+// import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
@@ -40,7 +42,6 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
-import frc.robot.commands.autos.SquareTest;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -52,7 +53,6 @@ import frc.robot.commands.autos.SquareTest;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
   // public Gyro imu = new NavX();
   public Shooter shooter = new Shooter();
   public Gyro imu = new PigeonV2(1);
@@ -147,22 +147,19 @@ public class RobotContainer {
   
       commandOperatorController.triangle()
         .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
+        .onFalse(shooter.setPowerZeroCommand());
+
+        
       
       commandOperatorController.square()
         .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
-  
-      commandOperatorController.circle()
-        .onTrue(shooter.setIndex(2).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
-
+        .onFalse(shooter.setPowerZeroCommand());
   }
 
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "FiveMeterFortyFiveDegree Copy", "ZeroDegreeLine", "GetBackWithVision", "LTest Copy", "2 piece"
+      // "2 piece"
       
     };
     
@@ -172,11 +169,11 @@ public class RobotContainer {
     }
 
     autoChooser.addOption("Do Nothing", Commands::none);
-    autoChooser.addOption("SquareTest", () -> new SquareTest(swerveDrive));
+    // autoChooser.addOption("SquareTest", () -> new SquareTest(swerveDrive));
     autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
     autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
     autoChooser.addOption("LTest 2", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
-    autoChooser.addOption("2 piece", () -> PathPlannerAutos.pathplannerAuto("2 piece", swerveDrive));
+    autoChooser.addOption("2 piece", () -> new PathPlannerAuto("2 Piece"));
     // autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
     //autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
     // autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));

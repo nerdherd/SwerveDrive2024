@@ -23,10 +23,10 @@ public class Shooter {
     private double[] bottomSpeeds = {-0.1, 0.5};
     private int index = 0;
 
-    final VoltageOut m_leftVoltageRequest = new VoltageOut(0);
-    final VoltageOut m_rightVoltageRequest = new VoltageOut(0);
-    final DutyCycleOut m_leftDutyCycleRequest = new DutyCycleOut(0);
-    final DutyCycleOut m_rightDutyCyclerequest = new DutyCycleOut(0);
+    final VoltageOut m_topVoltageRequest = new VoltageOut(0);
+    final VoltageOut m_bottomVoltageRequest = new VoltageOut(0);
+    final DutyCycleOut m_topDutyCycleRequest = new DutyCycleOut(0);
+    final DutyCycleOut m_bottomDutyCycleRequest = new DutyCycleOut(0);
 
     final VelocityVoltage m_topVelocity = new VelocityVoltage(0);
     final VelocityVoltage m_bottomVelocity = new VelocityVoltage(0);
@@ -35,7 +35,7 @@ public class Shooter {
         topShooter = new TalonFX(ShooterConstants.kTopMotorID, ModuleConstants.kCANivoreName);
         bottomShooter = new TalonFX(ShooterConstants.kBottomMotorID, ModuleConstants.kCANivoreName);
         topShooter.setInverted(false);
-        bottomShooter.setControl(new Follower(topShooter.getDeviceID(), false));
+        // bottomShooter.setControl(new Follower(topShooter.getDeviceID(), false));
 
         ShooterConstants.kPTopMotor.loadPreferences();
         // ShooterConstants.kITopMotor.loadPreferences();
@@ -63,8 +63,9 @@ public class Shooter {
 
         bottomShooter.getConfigurator().apply(slot1Configs, 0.050);
  
-        topShooter.setControl(m_leftVoltageRequest.withOutput(11.0));
-        bottomShooter.setControl(m_rightVoltageRequest.withOutput(11.0));
+        topShooter.setControl(m_topVoltageRequest.withOutput(11.0));
+        bottomShooter.setControl(m_bottomVoltageRequest.withOutput(11.0));
+
     }
 
     public void printSpeeds() {
@@ -97,12 +98,19 @@ public class Shooter {
         });
     }
 
-    public Command setPowerZero() {
+    public Command setPowerZeroCommand() {
         return Commands.runOnce(() -> {
-            topShooter.setControl(m_leftDutyCycleRequest.withOutput(0));
-            topShooter.setControl(m_leftDutyCycleRequest.withOutput(0));
+            topShooter.setControl(m_topDutyCycleRequest.withOutput(0));
+            bottomShooter.setControl(m_bottomDutyCycleRequest.withOutput(0));
             SmartDashboard.putBoolean("Pressed", false);
         });
+    }
+
+    public void setPowerZero() {
+        topShooter.setControl(m_topDutyCycleRequest.withOutput(0));
+        bottomShooter.setControl(m_bottomDutyCycleRequest.withOutput(0));
+        SmartDashboard.putBoolean("Pressed", false);
+
     }
 
     public Command increaseTop() {
@@ -127,11 +135,12 @@ public class Shooter {
         });
     }
 
-    // public void reportToSmartDashboard(){
-    //     SmartDashboard.putNumber("Left RPM", topShooter.getSelectedSensorVelocity(0) * 10 / 2048);
-    //     SmartDashboard.putNumber("Right RPM", bottomShooter.getSelectedSensorVelocity(0) * 10 / 2048);
-    //     SmartDashboard.putNumber("Left Current", topShooter.getSupplyCurrent());
-    //     SmartDashboard.putNumber("Right Current", bottomShooter.getSupplyCurrent());
-    // }
+    public void reportToSmartDashboard(){
+        // SmartDashboard.putNumber("Left RPM", topShooter.getSelectedSensorVelocity(0) * 10 / 2048);
+        // SmartDashboard.putNumber("Right RPM", bottomShooter.getSelectedSensorVelocity(0) * 10 / 2048);
+        // SmartDashboard.putNumber("Left Current", topShooter.getSupplyCurrent());
+        // SmartDashboard.putNumber("Right Current", bottomShooter.getSupplyCurrent());
+
+    }
 
 }
