@@ -136,29 +136,25 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
-<<<<<<< HEAD
-      commandOperatorController.povUp().onTrue(shooter.increaseTop());
-      commandOperatorController.povDown().onTrue(shooter.decreaseTop());
-  
-      commandOperatorController.povLeft().onTrue(shooter.increaseBottom());
-      commandOperatorController.povRight().onTrue(shooter.decreaseBottom());
-  
-      commandOperatorController.triangle()
-        .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
-      
-      commandOperatorController.square()
-        .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
-  
-      commandOperatorController.circle()
-        .onTrue(shooter.setIndex(2).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZero());
+    commandOperatorController.povUp().onTrue(shooter.increaseTop());
+    commandOperatorController.povDown().onTrue(shooter.decreaseTop());
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
-=======
+    commandOperatorController.povLeft().onTrue(shooter.increaseBottom());
+    commandOperatorController.povRight().onTrue(shooter.decreaseBottom());
+
+    commandOperatorController.triangle()
+      .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
+      .onFalse(shooter.setPowerZero());
+    
+    commandOperatorController.square()
+      .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
+      .onFalse(shooter.setPowerZero());
+
+    commandOperatorController.circle()
+      .onTrue(shooter.setIndex(2).andThen(shooter.setSpeed()))
+      .onFalse(shooter.setPowerZero());
+
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(3.9, 12.6, -3.3, 6))); // Old: 5, 10, 0, 6
->>>>>>> TagPart2
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
