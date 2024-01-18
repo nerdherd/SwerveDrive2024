@@ -237,7 +237,7 @@ public class CANSwerveModule implements SwerveModule {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = (canCoder.getPosition().getValue()) % 360;
+        double turningPosition = 360 * canCoder.getPosition().getValue();
         return turningPosition;
     }
 

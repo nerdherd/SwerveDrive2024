@@ -139,19 +139,17 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-      commandOperatorController.povUp().onTrue(shooter.increaseTop());
-      commandOperatorController.povDown().onTrue(shooter.decreaseTop());
+      commandDriverController.povUp().onTrue(shooter.increaseTop());
+      commandDriverController.povDown().onTrue(shooter.decreaseTop());
   
-      commandOperatorController.povLeft().onTrue(shooter.increaseBottom());
-      commandOperatorController.povRight().onTrue(shooter.decreaseBottom());
+      commandDriverController.povLeft().onTrue(shooter.increaseBottom());
+      commandDriverController.povRight().onTrue(shooter.decreaseBottom());
   
-      commandOperatorController.triangle()
+      commandDriverController.cross()
         .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
         .onFalse(shooter.setPowerZeroCommand());
-
-        
       
-      commandOperatorController.square()
+      commandDriverController.square()
         .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
         .onFalse(shooter.setPowerZeroCommand());
   }
