@@ -74,7 +74,7 @@ public class RobotContainer {
 
   private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
 
-  private SendableChooser<Supplier<Command>> autoChooser = new SendableChooser<Supplier<Command>>();
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
@@ -183,11 +183,11 @@ public class RobotContainer {
     // autoChooser.addOption("GetBackWithVision", () -> PathPlannerAutos.pathplannerAuto("GetBackWithVision", swerveDrive));
 
 	List<String> paths = AutoBuilder.getAllAutoNames();
-    autoChooser.addOption("Do Nothing", Commands::none);
+    autoChooser.addOption("Do Nothing", Commands.none());
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
       //else if ....
     }
 
@@ -225,7 +225,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command currentAuto = autoChooser.getSelected().get();
+    Command currentAuto = autoChooser.getSelected();
 
     swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;
