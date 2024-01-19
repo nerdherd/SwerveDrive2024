@@ -5,8 +5,10 @@
 package frc.robot;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +30,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
+import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
 // import frc.robot.commands.autos.SquareTest;
@@ -156,28 +159,37 @@ public class RobotContainer {
 
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
-    final String[] paths = {
-      // "2 piece"
+    // final String[] paths = {
+    //   // "2 piece"
       
-    };
+    // };
     
-    for (String path : paths) {
-      PathPlannerAutos.initPath(path);
-      PathPlannerAutos.initPathGroup(path);
-    }
+    // for (String path : paths) {
+    //   PathPlannerAutos.initPath(path);
+    //   PathPlannerAutos.initPathGroup(path);
+    // }
 
+    // autoChooser.addOption("Do Nothing", Commands::none);
+    // // autoChooser.addOption("SquareTest", () -> new SquareTest(swerveDrive));
+    // autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
+    // autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
+    // autoChooser.addOption("LTest 2", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
+    // autoChooser.addOption("2 piece", () -> new PathPlannerAuto("2 Piece"));
+    // // autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
+    // //autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
+    // // autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
+    // autoChooser.addOption("FiveMeterFortyFiveDegree Copy", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree Copy", swerveDrive));
+    // autoChooser.addOption("ZeroDegreeLine", () -> PathPlannerAutos.pathplannerAuto("ZeroDegreeLine", swerveDrive));
+    // autoChooser.addOption("GetBackWithVision", () -> PathPlannerAutos.pathplannerAuto("GetBackWithVision", swerveDrive));
+
+	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands::none);
-    // autoChooser.addOption("SquareTest", () -> new SquareTest(swerveDrive));
-    autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive));
-    autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive));
-    autoChooser.addOption("LTest 2", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive));
-    autoChooser.addOption("2 piece", () -> new PathPlannerAuto("2 Piece"));
-    // autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
-    //autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
-    // autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterFortyFiveDegree Copy", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree Copy", swerveDrive));
-    autoChooser.addOption("ZeroDegreeLine", () -> PathPlannerAutos.pathplannerAuto("ZeroDegreeLine", swerveDrive));
-    autoChooser.addOption("GetBackWithVision", () -> PathPlannerAutos.pathplannerAuto("GetBackWithVision", swerveDrive));
+
+    for (String path : paths) {
+      if(path.equals("4PAuto"))
+        autoChooser.addOption(path, () -> new Auto4Notes(swerveDrive, path));
+      //else if ....
+    }
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
