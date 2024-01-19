@@ -34,7 +34,7 @@ import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
 // import frc.robot.commands.autos.SquareTest;
-import frc.robot.subsystems.Shooter;
+// import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
@@ -57,8 +57,8 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  */
 public class RobotContainer {
   // public Gyro imu = new NavX();
-  public Shooter shooter = new Shooter();
-  public Gyro imu = new PigeonV2(1);
+  // public Shooter shooter = new Shooter();
+  public Gyro imu = new NavX();
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
@@ -142,19 +142,19 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-      commandDriverController.povUp().onTrue(shooter.increaseTop());
-      commandDriverController.povDown().onTrue(shooter.decreaseTop());
+      // commandDriverController.povUp().onTrue(shooter.increaseTop());
+      // commandDriverController.povDown().onTrue(shooter.decreaseTop());
   
-      commandDriverController.povLeft().onTrue(shooter.increaseBottom());
-      commandDriverController.povRight().onTrue(shooter.decreaseBottom());
+      // commandDriverController.povLeft().onTrue(shooter.increaseBottom());
+      // commandDriverController.povRight().onTrue(shooter.decreaseBottom());
   
-      commandDriverController.cross()
-        .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZeroCommand());
+      // commandDriverController.cross()
+      //   .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
+      //   .onFalse(shooter.setPowerZeroCommand());
       
-      commandDriverController.square()
-        .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
-        .onFalse(shooter.setPowerZeroCommand());
+      // commandDriverController.square()
+      //   .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
+      //   .onFalse(shooter.setPowerZeroCommand());
   }
 
   private void initAutoChoosers() {

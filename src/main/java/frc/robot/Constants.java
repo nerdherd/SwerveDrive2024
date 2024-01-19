@@ -80,7 +80,7 @@ public final class Constants {
     public static final PrefDouble kFDrive = new PrefDouble("kFDrive",0.0469); 
 
     public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
-    public static final String kCANivoreName = "CANivore1";
+    public static final String kCANivoreName = "CANivore2";
   } 
 
   public static final class SwerveDriveConstants {
@@ -106,7 +106,7 @@ public final class Constants {
       new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-    
+
     public static final int kFRDriveID = 11;
     public static final int kFLDriveID = 21;
     public static final int kBLDriveID = 31;
@@ -128,6 +128,7 @@ public final class Constants {
     public static final boolean kBRDriveReversed = false;
 
     public static final class CANCoderConstants {
+      
       public static final int kFRCANCoderID = 14;
       public static final int kFLCANCoderID = 24;
       public static final int kBLCANCoderID = 34;
