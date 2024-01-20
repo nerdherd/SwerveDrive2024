@@ -80,9 +80,9 @@ public class DriverAssist implements Reportable{
         return limelight.periodic();
     }
 
-    PIDController pidTA = new PIDController(0.3, 0, 0);
-    PIDController pidTX = new PIDController(0.12, 0, 0);
-    PIDController pidSkew = new PIDController(0.02, 0, 0);
+    PIDController pidTA = new PIDController(1.8, 0, 0); // P 1.2
+    PIDController pidTX = new PIDController(0.06, 0, 0.006); // P 0.08
+    PIDController pidSkew = new PIDController(0.05, 0, 0); // P 0.02
 
     double calculatedForwardPower;
     double calculatedSidewaysPower;
@@ -107,10 +107,10 @@ public class DriverAssist implements Reportable{
             SmartDashboard.putNumber("Skew Offset: ", skewOffset);
     
             calculatedForwardPower = pidTA.calculate(taOffset, 0);
-            calculatedForwardPower = calculatedForwardPower * -1;
+            // calculatedForwardPower = calculatedForwardPower * -1;
 
             calculatedSidewaysPower = pidTX.calculate(txOffset, 0);
-            calculatedSidewaysPower = calculatedSidewaysPower * -1;
+            // calculatedSidewaysPower = calculatedSidewaysPower * -1;
 
             calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
             calculatedAngledPower = calculatedAngledPower * -1;
@@ -159,7 +159,7 @@ public class DriverAssist implements Reportable{
 
     public double getForwardPower() {
         boolean isReached = false;
-        if(calculatedForwardPower < 0.2 && calculatedForwardPower > -0.2) {
+        if(calculatedForwardPower < 0.25 && calculatedForwardPower > -0.25) {
             calculatedForwardPower = 0;
             isReached = true;
         }
@@ -169,7 +169,7 @@ public class DriverAssist implements Reportable{
 
     public double getSidewaysPower() {
         boolean isReached = false;
-        if(calculatedSidewaysPower < 0.2 && calculatedSidewaysPower > -0.2) {
+        if(calculatedSidewaysPower < 0.25 && calculatedSidewaysPower > -0.25) {
             calculatedSidewaysPower = 0;
             isReached = true;
         }
@@ -179,7 +179,7 @@ public class DriverAssist implements Reportable{
 
     public double getAngledPower() {
         boolean isReached = false;
-        if(calculatedAngledPower < 0.2 && calculatedAngledPower > -0.2) {
+        if(calculatedAngledPower < 0.25 && calculatedAngledPower > -0.25) {
             calculatedAngledPower = 0;
             isReached = true;
         }

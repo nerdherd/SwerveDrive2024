@@ -33,9 +33,20 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
 
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
-            AutoBuilder.followPath((pathGroup.get(0))),
-            Commands.waitSeconds(5),
-            AutoBuilder.followPath((pathGroup.get(1)))
+            AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
+            Commands.waitSeconds(1),
+            AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
+            Commands.waitSeconds(1),
+            AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
+            Commands.waitSeconds(1),
+            AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
+            Commands.waitSeconds(1),
+            AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
+            Commands.waitSeconds(0.5),
+            AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
+            Commands.waitSeconds(1),
+            AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
+            Commands.waitSeconds(0.5)
         );
     }
 }

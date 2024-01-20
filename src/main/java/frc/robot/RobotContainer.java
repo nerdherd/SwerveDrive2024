@@ -139,7 +139,7 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(5, 10, 0, 6)));
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring

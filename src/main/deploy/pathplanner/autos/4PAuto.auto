@@ -18,21 +18,9 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "2ndPickPath"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
           }
         },
         {
@@ -42,9 +30,27 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 1.0
+            "pathName": "4thPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4thPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidPickPath"
           }
         }
       ]
