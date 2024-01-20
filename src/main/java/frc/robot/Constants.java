@@ -260,6 +260,6 @@ public final class Constants {
     public static final PrefDouble kPBottomMotor = new PrefDouble("P Bottom Motor", 0);
     public static final PrefDouble kIBottomMotor = new PrefDouble("I Bottom Motor", 0);
     public static final PrefDouble kDBottomMotor = new PrefDouble("D Bottom Motor", 0);
-    public static final PrefDouble kVBottomMotor =new PrefDouble("v Bottom Motor", 0);
+    public static final PrefDouble kVBottomMotor =new PrefDouble("V Bottom Motor", 0);
   }
 }

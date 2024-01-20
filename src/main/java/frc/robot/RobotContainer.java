@@ -148,12 +148,12 @@ public class RobotContainer {
       commandDriverController.povLeft().onTrue(shooter.increaseBottom());
       commandDriverController.povRight().onTrue(shooter.decreaseBottom());
   
-      commandDriverController.cross()
-        .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
+      commandOperatorController.cross()
+        .onTrue(shooter.setSpeed(50,50))
         .onFalse(shooter.setPowerZeroCommand());
       
-      commandDriverController.square()
-        .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
+      commandOperatorController.square()
+        .onTrue(shooter.setSpeed(100,100))
         .onFalse(shooter.setPowerZeroCommand());
   }
 
@@ -201,6 +201,7 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
+    shooter.initShuffleboard();
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);

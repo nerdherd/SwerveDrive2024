@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -96,14 +97,13 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    m_robotContainer.shooter.refreshPID();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
     // m_robotContainer.imu.setOffset(180);
 
     m_robotContainer.initDefaultCommands();
-    m_robotContainer.shooter.setPowerZero();
 
     // m_robotContainer.wrist.zeroEncodersStow();
 
