@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.util.preferences.PrefDouble;
 
@@ -21,6 +23,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -38,7 +42,7 @@ public class CANSwerveModule implements SwerveModule {
 
     private final DutyCycleOut driveRequest; 
     private final DutyCycleOut turnRequest;
-    private final VelocityDutyCycle driveVelocityRequest;
+    private final VelocityVoltage driveVelocityRequest;
     private final Slot0Configs drivePIDConfigs;
 
     private final int driveMotorID;
@@ -73,6 +77,7 @@ public class CANSwerveModule implements SwerveModule {
      */
     public CANSwerveModule(int driveMotorId, int turningMotorId, boolean invertDriveMotor, boolean invertTurningMotor, 
     int CANCoderId, PrefDouble CANCoderOffsetDegrees, boolean CANCoderReversed) {
+        
         this.driveMotor = new TalonFX(driveMotorId, ModuleConstants.kCANivoreName);
         this.turnMotor = new TalonFX(turningMotorId, ModuleConstants.kCANivoreName);
         
@@ -84,9 +89,8 @@ public class CANSwerveModule implements SwerveModule {
         this.driveRequest.EnableFOC = true;
         this.turnRequest.EnableFOC = true;
         
-        this.driveVelocityRequest = new VelocityDutyCycle(0);
-        this.driveVelocityRequest.EnableFOC = true;
-        this.driveVelocityRequest.FeedForward = ModuleConstants.kFDrive.get();
+        this.driveVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+        this.driveVelocityRequest.Slot = 0;
 
         this.drivePIDConfigs = new Slot0Configs();
         this.driveConfigurator.refresh(drivePIDConfigs);
@@ -133,6 +137,8 @@ public class CANSwerveModule implements SwerveModule {
         turnConfigurator.refresh(turnFeedbackConfigs);
         turnFeedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         turnConfigurator.apply(turnFeedbackConfigs);
+
+        refreshPID();
     }
 
     /**
@@ -142,19 +148,21 @@ public class CANSwerveModule implements SwerveModule {
         // double startAngle = (canCoder.getAbsolutePosition().getValue() * 360 - this.CANCoderOffsetDegrees.get()) % 360;
         // canCoder.setPosition(startAngle / 360);
         canCoder.setPosition(canCoder.getAbsolutePosition().getValue());
+    }
 
+    public void refreshPID() {
         ModuleConstants.ktunePID.loadPreferences();
         ModuleConstants.kPTurning.loadPreferences();
         ModuleConstants.kITurning.loadPreferences();
         ModuleConstants.kDTurning.loadPreferences();
         turningController.setPID(ModuleConstants.kPTurning.get(), ModuleConstants.kITurning.get(), ModuleConstants.kDTurning.get());
-        if (ModuleConstants.ktunePID.get()) {
-            driveConfigurator.refresh(drivePIDConfigs);
-            this.drivePIDConfigs.kP = ModuleConstants.kPDrive.get();
-            this.drivePIDConfigs.kI = ModuleConstants.kIDrive.get();
-            this.drivePIDConfigs.kD = ModuleConstants.kDDrive.get();
-            driveConfigurator.apply(drivePIDConfigs);
-        }
+        
+        driveConfigurator.refresh(drivePIDConfigs);
+        this.drivePIDConfigs.kP = ModuleConstants.kPDrive.get();
+        this.drivePIDConfigs.kI = ModuleConstants.kIDrive.get();
+        this.drivePIDConfigs.kD = ModuleConstants.kDDrive.get();
+        this.drivePIDConfigs.kV = ModuleConstants.kVDrive.get();
+        driveConfigurator.apply(drivePIDConfigs);
     }
 
     /**
@@ -174,12 +182,11 @@ public class CANSwerveModule implements SwerveModule {
 
         desiredAngle = desiredState.angle.getDegrees();
 
-        double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution;
+        double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution / ModuleConstants.kDriveMotorGearRatio;
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
-        this.desiredVelocity = velocity;
+        this.desiredVelocity = desiredState.speedMetersPerSecond;
         
         if (this.velocityControl) {
-            SmartDashboard.putNumber("Module #" + this.turnMotorID, velocity);
             driveMotor.setControl(driveVelocityRequest.withVelocity(velocity));
             this.currentPercent = 0;
         } else {
@@ -325,7 +332,7 @@ public class CANSwerveModule implements SwerveModule {
     }
 
     public void initShuffleboard(LOG_LEVEL level) {
-        if (level == LOG_LEVEL.OFF || level == LOG_LEVEL.MINIMAL)  {
+        if (level == LOG_LEVEL.OFF)  {
             return;
         }
         int moduleId = (driveMotorID / 10);
@@ -344,8 +351,6 @@ public class CANSwerveModule implements SwerveModule {
                 tab.addNumber("Turn Motor Current", () -> turnMotor.getStatorCurrent().getValue());
                 tab.addNumber("Drive Motor Voltage", () -> (driveMotor.getDutyCycle().getValue() * driveMotor.getSupplyVoltage().getValue()));
                 tab.addNumber("Turn Motor Voltage", () -> turnMotor.getSupplyVoltage().getValue());// ::getMotorOutputVoltage);
-                tab.addNumber("Module velocity", this::getDriveVelocity);
-                tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
                 tab.addNumber("Drive percent (motor controller)", () -> driveMotor.getDutyCycle().getValue());
                 tab.addNumber("Drive percent (current)", () -> this.currentPercent);
                 
@@ -355,13 +360,15 @@ public class CANSwerveModule implements SwerveModule {
                 tab.addNumber("Desired Angle", () -> desiredAngle);
                 tab.addBoolean("Velocity Control", () -> this.velocityControl);
                 tab.addNumber("Angle Difference", () -> desiredAngle - currentAngle);
-
+                
                 tab.add("Flip",Commands.runOnce(this::flipModules));
                 // tab.addNumber("Drive Motor Bus Voltage", driveMotor::getBusVoltage);
             case MINIMAL:
+                tab.addNumber("Module velocity", this::getDriveVelocity);
+                tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
                 break;
-        }
-
+            }
+            
     }
 
      public void reportToSmartDashboard(LOG_LEVEL level) {

@@ -42,10 +42,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveDrivetrain extends SubsystemBase implements Reportable {
-    private final SwerveModule frontLeft;
-    private final SwerveModule frontRight;
-    private final SwerveModule backLeft;
-    private final SwerveModule backRight;
+    private final CANSwerveModule frontLeft;
+    private final CANSwerveModule frontRight;
+    private final CANSwerveModule backLeft;
+    private final CANSwerveModule backRight;
 
     private final Gyro gyro;
     // private final SwerveDriveOdometry odometer;
@@ -222,6 +222,13 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         frontRight.resetEncoder();
         backLeft.resetEncoder();
         backRight.resetEncoder();
+    }
+
+    public void refreshModulePID() {
+        frontLeft.refreshPID();
+        backLeft.refreshPID();
+        frontRight.refreshPID();  
+        backRight.refreshPID();
     }
 
     public void zeroModules() {
