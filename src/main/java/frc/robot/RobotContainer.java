@@ -142,19 +142,29 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
-      commandDriverController.povUp().onTrue(shooter.increaseTop());
-      commandDriverController.povDown().onTrue(shooter.decreaseTop());
+      // commandDriverController.povUp().onTrue(shooter.increaseTop());
+      // commandDriverController.povDown().onTrue(shooter.decreaseTop());
   
-      commandDriverController.povLeft().onTrue(shooter.increaseBottom());
-      commandDriverController.povRight().onTrue(shooter.decreaseBottom());
+      // commandDriverController.povLeft().onTrue(shooter.increaseBottom());
+      // commandDriverController.povRight().onTrue(shooter.decreaseBottom());
   
       commandOperatorController.cross()
-        .onTrue(shooter.setSpeed(50,50))
+        .onTrue(shooter.setTopSpeed(75))
         .onFalse(shooter.setPowerZeroCommand());
       
       commandOperatorController.square()
-        .onTrue(shooter.setSpeed(100,100))
+        .onTrue(shooter.setTopSpeed(100))
         .onFalse(shooter.setPowerZeroCommand());
+
+      commandOperatorController.circle()
+        .onTrue(shooter.setBottomSpeed(100))
+        .onFalse(shooter.setPowerZeroCommand());
+      
+      
+      commandOperatorController.triangle()
+        .onTrue(shooter.setSpeed(-10, -10))
+        .onFalse(shooter.setPowerZeroCommand());
+
   }
 
   private void initAutoChoosers() {
@@ -201,7 +211,7 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    shooter.initShuffleboard();
+    shooter.initShuffleboard(loggingLevel);
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);

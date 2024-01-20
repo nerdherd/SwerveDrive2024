@@ -18,17 +18,14 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
 
-public class Shooter {
+public class Shooter extends SubsystemBase implements Reportable{
 
     final TalonFX topShooter;
     final TalonFX bottomShooter;
-
-    private double[] topSpeeds = {-0.1, 0.5};
-    private double[] bottomSpeeds = {-0.1, 0.5};
-    private int index = 0;
 
     final VoltageOut m_topVoltageRequest = new VoltageOut(0);
     final VoltageOut m_bottomVoltageRequest = new VoltageOut(0);
@@ -44,14 +41,6 @@ public class Shooter {
         topShooter = new TalonFX(ShooterConstants.kTopMotorID, ModuleConstants.kCANivoreName);
         bottomShooter = new TalonFX(ShooterConstants.kBottomMotorID, ModuleConstants.kCANivoreName);
         topShooter.setInverted(false);
-        // bottomShooter.setControl(new Follower(topShooter.getDeviceID(), false));
-
-        
-
-        // bottomShooter.getConfigurator().apply(slot1Configs, 0.050);
- 
-        // topShooter.setControl(m_topVoltageRequest.withOutput(11.0));
-        // bottomShooter.setControl(m_bottomVoltageRequest.withOutput(11.0));
 
         refreshPID();
 
@@ -98,36 +87,30 @@ public class Shooter {
         }
     }
 
-    public void printSpeeds() {
-        SmartDashboard.putNumber("Index", index);
-        SmartDashboard.putNumber("Intake", topSpeeds[0]);
-        SmartDashboard.putNumber("OuttakeTop", topSpeeds[1]);
-        SmartDashboard.putNumber("OuttakeBottom", bottomSpeeds[1]);
-    }
-
-    public Command setIndex(int index) {
+    public Command setBottomSpeed(double bottomSpeed) {
         return Commands.runOnce(() -> {
-            this.index = index;
-        });
-    }
-
-    public Command setSpeed(double topSpeed, double bottomSpeed) {
-        return Commands.runOnce(() -> {
-
-            // Percent Ouput
-            // topShooter.setControl(m_leftDutyCycleRequest.withOutput(topSpeeds[index]));
-            // topShooter.setControl(m_leftDutyCycleRequest.withOutput(bottomSpeeds[index]));
-
-            // Velocity Control
-            m_topVelocity.Slot = 0;
             m_bottomVelocity.Slot = 0;
-            // m_bottomVelocity.Slot = 1;
-
-            topShooter.setControl(m_topVelocity.withVelocity(topSpeed));
             bottomShooter.setControl(m_bottomVelocity.withVelocity(bottomSpeed));
             SmartDashboard.putBoolean("Pressed", true);
         });
     }
+
+
+    public Command setTopSpeed(double topSpeed) {
+        return Commands.runOnce(() -> {
+            m_topVelocity.Slot = 0;
+            topShooter.setControl(m_topVelocity.withVelocity(topSpeed));
+            SmartDashboard.putBoolean("Pressed", true);
+        });
+    }
+
+    public Command setSpeed(double topSpeed, double bottomSpeed) {
+        return Commands.parallel(
+            setTopSpeed(topSpeed),
+            setBottomSpeed(bottomSpeed)
+        );
+    }
+
 
     public Command setPowerZeroCommand() {
         return Commands.runOnce(() -> {
@@ -146,37 +129,9 @@ public class Shooter {
 
     }
 
-    public Command increaseTop() {
-        return Commands.runOnce(() -> {
-            this.topSpeeds[index] += 0.1;
-        });
-    }
-    public Command increaseBottom() {
-        return Commands.runOnce(() -> {
-            this.bottomSpeeds[index] += 0.1;
-        });
-    }
+    public void reportToSmartDashboard(LOG_LEVEL logLevel) {}
 
-    public Command decreaseTop() {
-        return Commands.runOnce(() -> {
-            this.topSpeeds[index] -= 0.1;
-        });
-    }
-    public Command decreaseBottom() {
-        return Commands.runOnce(() -> {
-            this.bottomSpeeds[index] -= 0.1;
-        });
-    }
-
-    public void reportToSmartDashboard(){
-        // SmartDashboard.putNumber("Left RPM", topShooter.getSelectedSensorVelocity(0) * 10 / 2048);
-        // SmartDashboard.putNumber("Right RPM", bottomShooter.getSelectedSensorVelocity(0) * 10 / 2048);
-        // SmartDashboard.putNumber("Left Current", topShooter.getSupplyCurrent());
-        // SmartDashboard.putNumber("Right Current", bottomShooter.getSupplyCurrent());
-
-    }
-
-    public void initShuffleboard() {
+    public void initShuffleboard(LOG_LEVEL logLevel) {
         ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
         tab.addNumber("Top Velocity", ()-> topShooter.getVelocity().getValueAsDouble());
         tab.addNumber("Bottom Velocity", ()-> bottomShooter.getVelocity().getValueAsDouble());
