@@ -33,6 +33,7 @@ import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.PathPlannerAutos;
+import frc.robot.commands.autos.Squarto;
 // import frc.robot.commands.autos.SquareTest;
 // import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
@@ -138,7 +139,7 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
@@ -188,7 +189,9 @@ public class RobotContainer {
     for (String path : paths) {
       if(path.equals("4PAuto"))
         autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
-      //else if ....
+      else if(path.equals("Squarto")) {
+        autoChooser.addOption(path, new Squarto(swerveDrive, path));
+      }
     }
 
     // these are the auto paths in the old format (not the actual full auto command)
