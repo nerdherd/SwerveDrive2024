@@ -79,7 +79,6 @@ public final class Constants {
     public static final PrefDouble kDDrive = new PrefDouble("kDDrive",0); 
     public static final PrefDouble kVDrive = new PrefDouble("kVDrive",0.0469); 
 
-    public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
     public static final String kCANivoreName = "CANivore1";
   } 
 

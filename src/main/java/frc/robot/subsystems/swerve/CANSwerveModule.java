@@ -161,7 +161,6 @@ public class CANSwerveModule implements SwerveModule {
     }
 
     public void refreshPID() {
-        ModuleConstants.ktunePID.loadPreferences();
         ModuleConstants.kPTurning.loadPreferences();
         ModuleConstants.kITurning.loadPreferences();
         ModuleConstants.kDTurning.loadPreferences();
