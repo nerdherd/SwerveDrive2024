@@ -80,7 +80,7 @@ public class RobotContainer {
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
   private EMPeach vision;
-  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  // private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -89,14 +89,14 @@ public class RobotContainer {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
-      vision = new EMPeach(VisionConstants.kLimelightFrontName);
+      vision = new EMPeach("limelight-brianna");
       swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
 
     // driverAssist.changePipeline(4);
-    driverAssist.toggleLight(false);
+    // driverAssist.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -139,8 +139,12 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+    // commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+    commandDriverController.L2().whileTrue(Commands.run(() -> vision.driveToImp(2.2, 0, 0)));
+    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(vision.getChargeSpeeds()[0], vision.getChargeSpeeds()[1], vision.getChargeSpeeds()[2] / 3)));
+    
+    // swerveDrive.drive(vision.getMovePowerToImp(0.5)[0], vision.getMovePowerToImp(0.5)[1], vision.getMovePowerToImp(0.5)[2])));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
       // commandDriverController.povUp().onTrue(shooter.increaseTop());

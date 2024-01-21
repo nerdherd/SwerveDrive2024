@@ -224,9 +224,9 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final double kFrontCameraHeightMeters = 0;
-    public static final double kNoteHeightMeters = 0;
-    public static final double kCameraPitchRadians = 0;
+    public static final double kFrontCameraHeightMeters = Units.inchesToMeters(45.25);
+    public static final double kNoteHeightMeters = Units.inchesToMeters(17);
+    public static final double kCameraPitchRadians = Units.degreesToRadians(-42);
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
