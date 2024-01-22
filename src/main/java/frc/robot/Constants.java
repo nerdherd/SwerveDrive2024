@@ -7,12 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.PIDConstants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,7 +21,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.util.preferences.PrefBool;
 import frc.robot.util.preferences.PrefDouble;
 
 /**
@@ -136,16 +132,6 @@ public final class Constants {
       public static final boolean kFLCANCoderReversed = false;      
       public static final boolean kBLCANCoderReversed = false;       
       public static final boolean kBRCANCoderReversed = false; 
-
-      // public static final double kFRCANCoderOffsetDegrees = 25.75;       
-      // public static final double kFLCANCoderOffsetDegrees = -53.174;         
-      // public static final double kBLCANCoderOffsetDegrees = 85;          
-      // public static final double kBRCANCoderOffsetDegrees = 46.85;
-
-      public static final PrefDouble kFROffsetDeg = new PrefDouble("kFROffsetDeg", 0); //-29
-      public static final PrefDouble kFLOffsetDeg = new PrefDouble("kFLOffsetDeg", 0); //51
-      public static final PrefDouble kBLOffsetDeg = new PrefDouble("kBLOffsetDeg", 0); //185
-      public static final PrefDouble kBROffsetDeg = new PrefDouble("kBROffsetDeg", 0); //316
     }
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;    

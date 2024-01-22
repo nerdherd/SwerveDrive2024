@@ -6,27 +6,16 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SwerveDriveConstants;
-import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
-import frc.robot.util.preferences.PrefDouble;
-
-import static frc.robot.Constants.*;
-
-// import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
+import frc.robot.subsystems.Reportable;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -35,7 +24,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 /**
  * Swerve module that uses CANCoder for the absolute position
  */
-public class CANSwerveModule implements SwerveModule {
+public class CANSwerveModule implements Reportable {
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
     private final CANcoder canCoder;
@@ -45,8 +34,9 @@ public class CANSwerveModule implements SwerveModule {
     private final DutyCycleOut driveRequest; 
     private final DutyCycleOut turnRequest;
     private final VelocityVoltage driveVelocityRequest;
-    private final Slot0Configs drivePIDConfigs;
     private final NeutralOut brakeRequest;
+
+    private final Slot0Configs drivePIDConfigs;
 
     private final int driveMotorID;
     private final int turnMotorID;
@@ -54,7 +44,6 @@ public class CANSwerveModule implements SwerveModule {
 
     private final PIDController turningController;
     private final boolean invertTurningEncoder;
-    private PrefDouble CANCoderOffsetDegrees; 
 
     private double currentPercent = 0;
     private double currentTurnPercent = 0;
@@ -79,7 +68,7 @@ public class CANSwerveModule implements SwerveModule {
      * @param CANCoderReversed
      */
     public CANSwerveModule(int driveMotorId, int turningMotorId, boolean invertDriveMotor, boolean invertTurningMotor, 
-    int CANCoderId, PrefDouble CANCoderOffsetDegrees, boolean CANCoderReversed) {
+        int CANCoderId, boolean CANCoderReversed) {
         
         this.driveMotor = new TalonFX(driveMotorId, ModuleConstants.kCANivoreName);
         this.turnMotor = new TalonFX(turningMotorId, ModuleConstants.kCANivoreName);
@@ -99,12 +88,6 @@ public class CANSwerveModule implements SwerveModule {
         this.driveConfigurator.refresh(drivePIDConfigs);
 
         this.brakeRequest = new NeutralOut();
-
-        MotorOutputConfigs driveConfigs = new MotorOutputConfigs();
-        this.driveConfigurator.refresh(driveConfigs);
-        driveConfigs.NeutralMode = NeutralModeValue.Coast;
-        driveConfigs.DutyCycleNeutralDeadband =  ModuleConstants.kDriveMotorDeadband;
-        this.driveConfigurator.apply(driveConfigs);
 
         MotorOutputConfigs turnConfigs = new MotorOutputConfigs();
         this.turnConfigurator.refresh(turnConfigs);
@@ -128,39 +111,30 @@ public class CANSwerveModule implements SwerveModule {
         this.turnMotor.setInverted(invertTurningMotor);
         this.canCoder = new CANcoder(CANCoderId, ModuleConstants.kCANivoreName);
         this.invertTurningEncoder = CANCoderReversed;
-        this.CANCoderOffsetDegrees = CANCoderOffsetDegrees;
         
         this.desiredState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
 
-        FeedbackConfigs driveFeedbackConfigs = new FeedbackConfigs();
-        driveConfigurator.refresh(driveFeedbackConfigs);
-        driveFeedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        driveConfigurator.apply(driveFeedbackConfigs);
+        TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
+        driveConfigurator.refresh(driveMotorConfigs);
+        driveMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        driveMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
+        driveMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        driveMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        driveMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
+        driveConfigurator.apply(driveMotorConfigs);
 
-        VoltageConfigs driveVoltageConfigs = new VoltageConfigs();
-        driveConfigurator.refresh(driveVoltageConfigs);
-        driveVoltageConfigs.PeakForwardVoltage = 11.5;
-        driveVoltageConfigs.PeakReverseVoltage = -11.5;
-        driveConfigurator.apply(driveVoltageConfigs);
-
-        FeedbackConfigs turnFeedbackConfigs = new FeedbackConfigs();
-        turnConfigurator.refresh(turnFeedbackConfigs);
-        turnFeedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        turnConfigurator.apply(turnFeedbackConfigs);
+        TalonFXConfiguration turnMotorConfigs = new TalonFXConfiguration();
+        turnConfigurator.refresh(turnMotorConfigs);
+        turnMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        turnMotorConfigs.Feedback.FeedbackRemoteSensorID = CANCoderId;
+        turnMotorConfigs.Feedback.RotorToSensorRatio = 150.0/7.0;
+        turnMotorConfigs.Feedback.SensorToMechanismRatio = 1;
+        turnMotorConfigs.Voltage.PeakForwardVoltage = 11.5;
+        turnMotorConfigs.Voltage.PeakReverseVoltage = -11.5;
+        turnMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        turnMotorConfigs.MotorOutput.DutyCycleNeutralDeadband = ModuleConstants.kDriveMotorDeadband;
 
         refreshPID();
-    }
-
-    /**
-     * Reset the CANCoder's relative encoder using its absolute encoder
-     */
-    public void resetEncoder() {
-        // double startAngle = (canCoder.getAbsolutePosition().getValue() * 360 - this.CANCoderOffsetDegrees.get()) % 360;
-        // canCoder.setPosition(startAngle / 360);
-        // SmartDashboard.putNumber("CANCoder value for module " + this.CANCoderID, canCoder.getAbsolutePosition().getValueAsDouble());
-        // SmartDashboard.putNumber("CANCoder value for module " + this.CANCoderID, canCoder.getAbsolutePosition().getValue());
-        // canCoder.setPosition(canCoder.getAbsolutePosition().getValue());
-        // canCoder.setPosition(0);
     }
 
     public void refreshPID() {
@@ -182,6 +156,8 @@ public class CANSwerveModule implements SwerveModule {
         driveConfigurator.apply(drivePIDConfigs);
     }
 
+    private final SwerveModuleState stopState = new SwerveModuleState(0, Rotation2d.fromRadians(getTurningPosition()));
+
     /**
      * Set the percent output of both motors to zero.
      */
@@ -189,7 +165,7 @@ public class CANSwerveModule implements SwerveModule {
         driveMotor.setControl(brakeRequest);
         turnMotor.setControl(brakeRequest);
 
-        this.desiredState = new SwerveModuleState(0, Rotation2d.fromRadians(getTurningPosition()));
+        this.desiredState = this.stopState;
     }
 
     public void run() {
@@ -201,7 +177,10 @@ public class CANSwerveModule implements SwerveModule {
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
-        if (this.velocityControl) {
+        if (velocity < 0.001) {
+            driveMotor.setControl(brakeRequest);
+        }
+        else if (this.velocityControl) {
             driveVelocityRequest.Slot = 0;
             driveMotor.setControl(driveVelocityRequest.withVelocity(velocity));
             this.currentPercent = 0;
@@ -209,20 +188,12 @@ public class CANSwerveModule implements SwerveModule {
             this.currentPercent = desiredState.speedMetersPerSecond / SwerveDriveConstants.kPhysicalMaxSpeedMetersPerSecond;
             this.driveRequest.Output = currentPercent;
             driveMotor.setControl(this.driveRequest);
-        
         }
         
         double turnPower = turningController.calculate(getTurningPosition(), desiredState.angle.getRadians());
         currentTurnPercent = turnPower;
         this.turnRequest.Output = currentTurnPercent;
         turnMotor.setControl(this.turnRequest);
-    }
-
-    public void flipModules() {
-        this.CANCoderOffsetDegrees.set(this.CANCoderOffsetDegrees.get() + 180);
-        this.CANCoderOffsetDegrees.uploadPreferences();
-        //CANCoderConstants.kFLOffsetDeg.set(frontLeft.getTurnOffset() + frontLeft.getTurningPosition())
-        resetEncoder();
     }
 
     public void resetDesiredAngle() {
@@ -319,10 +290,6 @@ public class CANSwerveModule implements SwerveModule {
         //return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurningPosition()));
     }
 
-    public double getTurnOffset() {
-        return this.CANCoderOffsetDegrees.get();
-    }
-
     //****************************** SETTERS ******************************/
 
     /**
@@ -346,11 +313,6 @@ public class CANSwerveModule implements SwerveModule {
         this.desiredState = state;
     }
 
-    public void setTurnOffset(double offset) {
-        this.CANCoderOffsetDegrees.set(offset);
-        resetEncoder();
-    }
-
     public void toggleVelocityControl(boolean velocityControlOn) {
         this.velocityControl = velocityControlOn;
     }
@@ -366,8 +328,6 @@ public class CANSwerveModule implements SwerveModule {
             case OFF:
                 break;
             case ALL:
-                
-                tab.addNumber("Turn Offset", () -> this.CANCoderOffsetDegrees.get());
                 tab.addNumber("Turn percent (motor controller)", () -> turnMotor.getDutyCycle().getValue());
                 tab.addNumber("Turn percent (current)", () -> this.currentTurnPercent);
             case MEDIUM:
@@ -382,9 +342,6 @@ public class CANSwerveModule implements SwerveModule {
                 tab.addNumber("Turn angle percent", () -> turnMotor.getDutyCycle().getValue());
                 tab.addNumber("Desired Angle", () -> desiredAngle);
                 tab.addNumber("Angle Difference", () -> desiredAngle - currentAngle);
-                
-                tab.add("Flip",Commands.runOnce(this::flipModules));
-                // tab.addNumber("Drive Motor Bus Voltage", driveMotor::getBusVoltage);
             case MINIMAL:
                 tab.addNumber("Drive Motor Current", () -> driveMotor.getSupplyCurrent().getValue());
                 tab.addNumber("Module Velocity", this::getDriveVelocity);
