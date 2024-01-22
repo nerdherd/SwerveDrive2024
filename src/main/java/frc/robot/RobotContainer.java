@@ -44,6 +44,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
+import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 
@@ -80,7 +81,7 @@ public class RobotContainer {
   // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
   // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
 
-  private EMPeach noteCamera; 
+  private NoteAssistance noteCamera; 
   private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
@@ -91,7 +92,7 @@ public class RobotContainer {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
 
-      noteCamera = new EMPeach(VisionConstants.kLimelightFrontName);
+      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
       swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, null);
 
@@ -149,8 +150,8 @@ public class RobotContainer {
     
     
     // Please Comment out one set of these two to run!!!
-    commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.driveToImp(2.2, 0, 0)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(noteCamera.getChargeSpeeds()[0], noteCamera.getChargeSpeeds()[1], noteCamera.getChargeSpeeds()[2] / 3)));
+    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(2.2, 0, 0)));
+    commandOperatorController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(noteCamera.getForwardSpeed(), noteCamera.getSidewaysSpeed(), 0))); // turn speed 0 for now
     
     commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));

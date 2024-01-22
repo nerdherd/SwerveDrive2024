@@ -233,6 +233,7 @@ public final class Constants {
     public static final String kLimelightFrontName = "limelight-front"; // notes
     public static final String kLimelightFrontIP = "10.6.87.25:5802";
     public static final int kAprilTagPipeline = 4;
+    public static final int kNotePipeline = 0;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)
     public static final double kMinimumTA = 0.7;
@@ -249,6 +250,16 @@ public final class Constants {
 
     public static final String kLimelightBackName = "limelight-back"; // apriltag
     public static final String kLimelightBackIP = "10.6.87.51:5802";
+
+    public static final PrefDouble kPNoteForward = new PrefDouble("P Note Forward", 0);
+    public static final PrefDouble kINoteForward = new PrefDouble("I Note Forward", 0);
+    public static final PrefDouble kDNoteForward = new PrefDouble("D Note Forward", 0);
+    public static final PrefDouble kPNoteSide = new PrefDouble("P Note Side", 0);
+    public static final PrefDouble kINoteSide = new PrefDouble("I Note Side", 0);
+    public static final PrefDouble kDNoteSide = new PrefDouble("D Note Side", 0);
+    public static final PrefDouble kPNoteAngle = new PrefDouble("P Note Angle", 0);
+    public static final PrefDouble kINoteAngle = new PrefDouble("I Note Angle", 0);
+    public static final PrefDouble kDNoteAngle = new PrefDouble("D Note Angle", 0);
   }
 
   public static final class ShooterConstants {

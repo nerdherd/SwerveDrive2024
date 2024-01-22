@@ -79,9 +79,7 @@ public class NerdyMath {
     }
 
     public static double deadband(double value, double min, double max) {
-        if(value > min && value < max) {
-            return 0;
-        }
+        if(inRange(value, min, max)) return 0;
         return value;
     }
 
