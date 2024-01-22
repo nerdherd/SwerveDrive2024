@@ -80,10 +80,10 @@ public class Shooter extends SubsystemBase implements Reportable{
         StatusCode statusBottom = bottomShooter.getConfigurator().apply(bottomMotorConfigs);
 
         if(!statusTop.isOK()){
-            DriverStation.reportError("Could not apply top shooter configs, error code:"+statusTop.toString(), null);
+            DriverStation.reportError("Could not apply top shooter configs, error code:"+statusTop.toString(), new Error("Could not apply top shooter configs").getStackTrace());
         }
         if(!statusBottom.isOK()){
-            DriverStation.reportError("Could not apply bottom shooter configs, error code:"+statusBottom.toString(), null);
+            DriverStation.reportError("Could not apply bottom shooter configs, error code:"+statusBottom.toString(),  new Error("Could not apply top shooter configs").getStackTrace());
         }
     }
 

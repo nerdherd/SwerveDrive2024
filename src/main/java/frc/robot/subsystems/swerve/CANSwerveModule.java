@@ -61,7 +61,7 @@ public class CANSwerveModule implements SwerveModule {
     private double currentAngle = 0;
     private double desiredAngle = 0;
     private double desiredVelocity = 0;
-    private boolean velocityControl = false;
+    private boolean velocityControl = true;
 
     private SwerveModuleState desiredState = null;
     private SwerveModulePosition currPosition = new SwerveModulePosition();
@@ -157,7 +157,10 @@ public class CANSwerveModule implements SwerveModule {
     public void resetEncoder() {
         // double startAngle = (canCoder.getAbsolutePosition().getValue() * 360 - this.CANCoderOffsetDegrees.get()) % 360;
         // canCoder.setPosition(startAngle / 360);
-        canCoder.setPosition(canCoder.getAbsolutePosition().getValue());
+        // SmartDashboard.putNumber("CANCoder value for module " + this.CANCoderID, canCoder.getAbsolutePosition().getValueAsDouble());
+        // SmartDashboard.putNumber("CANCoder value for module " + this.CANCoderID, canCoder.getAbsolutePosition().getValue());
+        // canCoder.setPosition(canCoder.getAbsolutePosition().getValue());
+        // canCoder.setPosition(0);
     }
 
     public void refreshPID() {
@@ -257,7 +260,7 @@ public class CANSwerveModule implements SwerveModule {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = 360 * canCoder.getPosition().getValue();
+        double turningPosition = 360 * canCoder.getAbsolutePosition().getValue();
         return turningPosition;
     }
 

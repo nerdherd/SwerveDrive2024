@@ -135,8 +135,8 @@ public class RobotContainer {
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
