@@ -236,7 +236,7 @@ public class DriverAssist implements Reportable{
                 tab.addBoolean("AprilTag Found", () -> limelight.hasValidTarget());
 
             case MINIMAL:   
-                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightFrontIP);
+                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightBackIP);
 
 
             case OFF:
