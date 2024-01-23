@@ -33,10 +33,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveDrivetrain extends SubsystemBase implements Reportable {
-    private final CANSwerveModule frontLeft;
-    private final CANSwerveModule frontRight;
-    private final CANSwerveModule backLeft;
-    private final CANSwerveModule backRight;
+    private final SwerveModule frontLeft;
+    private final SwerveModule frontRight;
+    private final SwerveModule backLeft;
+    private final SwerveModule backRight;
 
     private final Gyro gyro;
     // private final SwerveDriveOdometry odometer;
@@ -66,28 +66,28 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, EMPeach vision) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
-                frontLeft = new CANSwerveModule(
+                frontLeft = new SwerveModule(
                     kFLDriveID,
                     kFLTurningID,
                     kFLDriveReversed,
                     kFLTurningReversed,
                     CANCoderConstants.kFLCANCoderID,
                     CANCoderConstants.kFLCANCoderReversed);
-                frontRight = new CANSwerveModule(
+                frontRight = new SwerveModule(
                     kFRDriveID,
                     kFRTurningID,
                     kFRDriveReversed,
                     kFRTurningReversed,
                     CANCoderConstants.kFRCANCoderID,
                     CANCoderConstants.kFRCANCoderReversed);
-                backLeft = new CANSwerveModule(
+                backLeft = new SwerveModule(
                     kBLDriveID,
                     kBLTurningID,
                     kBLDriveReversed,
                     kBLTurningReversed,
                     CANCoderConstants.kBLCANCoderID,
                     CANCoderConstants.kBLCANCoderReversed);
-                backRight = new CANSwerveModule(
+                backRight = new SwerveModule(
                     kBRDriveID,
                     kBRTurningID,
                     kBRDriveReversed,
@@ -193,7 +193,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     /**
-     * Stops all modules. See {@link CANSwerveModule#stop()} for more info.
+     * Stops all modules. See {@link SwerveModule#stop()} for more info.
      */
     public void stopModules() {
         frontLeft.stop();
@@ -203,7 +203,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     /**
-     * Have modules move to their desired states. See {@link CANSwerveModule#run()} for more info.
+     * Have modules move to their desired states. See {@link SwerveModule#run()} for more info.
      */
     public void runModules() {
         frontLeft.run();

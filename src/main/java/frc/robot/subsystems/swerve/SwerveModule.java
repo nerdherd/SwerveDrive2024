@@ -24,7 +24,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 /**
  * Swerve module that uses CANCoder for the absolute position
  */
-public class CANSwerveModule implements Reportable {
+public class SwerveModule implements Reportable {
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
     private final CANcoder canCoder;
@@ -67,7 +67,7 @@ public class CANSwerveModule implements Reportable {
      * @param CANCoderOffsetDegrees
      * @param CANCoderReversed
      */
-    public CANSwerveModule(int driveMotorId, int turningMotorId, boolean invertDriveMotor, boolean invertTurningMotor, 
+    public SwerveModule(int driveMotorId, int turningMotorId, boolean invertDriveMotor, boolean invertTurningMotor, 
         int CANCoderId, boolean CANCoderReversed) {
         
         this.driveMotor = new TalonFX(driveMotorId, ModuleConstants.kCANivoreName);
