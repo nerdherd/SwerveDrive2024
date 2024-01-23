@@ -265,7 +265,10 @@ public class Limelight implements Reportable{
     int indexTA = 0;
     boolean initDoneTA = false;
     public double getArea_avg() {
-
+        // double previousValue = -1;
+        // if(indexTA > 0 ) previousValue  = tAList[indexTA - 1];
+        // if(NerdyMath.deadband(tAList[indexTA], previousValue + 5, previousValue)) tAList[indexTA] = ta.getDouble(0);
+        // tAList[indexTA] = NerdyMath.deadband(ta.getDouble(0), previousValue, previousValue);
         tAList[indexTA] = ta.getDouble(0);
         indexTA ++;
         if(indexTA >= tAList.length) {
@@ -285,6 +288,43 @@ public class Limelight implements Reportable{
             return TASum / tAList.length;
         }
         else {
+            for(int i = 0; i < indexTA; i++) {
+                TASum += tAList[i];
+            }
+
+            return TASum / indexTA;
+        }
+    }
+
+    public double getAreaFiltered(int standardDeviationsAway) {
+        double TASum = 0.0;
+        if(initDoneTA) {
+            double newArea = ta.getDouble(0);
+
+            for(int i = 0; i < tAList.length; i++) {
+                TASum += tAList[i];
+            }
+            double average = TASum / tAList.length;
+
+            if(NerdyMath.withinStandardDeviation(tAList, standardDeviationsAway, newArea)) {
+                tAList[indexTA] = newArea;
+                indexTA ++;
+                if(indexTA >= tAList.length) {
+                    indexTA = 0;
+                    initDoneTA = true;
+                }
+            }
+
+            return average;
+        }
+        else {
+            tAList[indexTA] = ta.getDouble(0);
+            indexTA ++;
+            if(indexTA >= tAList.length) {
+                indexTA = 0;
+                initDoneTA = true;
+            }
+
             for(int i = 0; i < indexTA; i++) {
                 TASum += tAList[i];
             }

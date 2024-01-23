@@ -150,11 +150,11 @@ public class RobotContainer {
     
     
     // Please Comment out one set of these two to run!!!
-    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(2.2, 0, 0)));
-    commandOperatorController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(noteCamera.getForwardSpeed(), noteCamera.getSidewaysSpeed(), 0))); // turn speed 0 for now
+    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(12.1, 0, 0)));
+    // commandOperatorController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(noteCamera.getForwardSpeed(), noteCamera.getSidewaysSpeed(), 0))); // turn speed 0 for now
     
     commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));
 
 
 
@@ -224,7 +224,7 @@ public class RobotContainer {
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
-    noteCamera.initShuffleboard(loggingLevel);
+    // noteCamera.initShuffleboard(loggingLevel);
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));

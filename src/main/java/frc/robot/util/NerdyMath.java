@@ -83,4 +83,34 @@ public class NerdyMath {
         return value;
     }
 
+    public static double standardDeviation(double[] values) {
+        double sum = 0.0, standardDeviation = 0.0;
+        
+        for(int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+
+        double mean = sum / values.length;
+
+        for (int i = 0; i < values.length; i++) {
+            standardDeviation += Math.pow(values[i] - mean, 2);
+        }
+
+        return Math.sqrt(standardDeviation / values.length);
+    }
+
+    public static boolean withinStandardDeviation(double[] values, int stdevsAway, double newValue) {
+        double sum = 0.0;
+        
+        for(int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+
+        double mean = sum / values.length;
+        double stdev = standardDeviation(values);
+
+        if(newValue >= mean - stdevsAway*stdev && newValue <= mean + stdevsAway*stdev) return true;
+        return false;
+    }
+
 }

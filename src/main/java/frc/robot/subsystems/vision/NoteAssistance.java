@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.util.NerdyMath;
@@ -30,15 +31,18 @@ public class NoteAssistance implements Reportable{
         this.name = name;
 
         //TODO set pid constants to preferences for easy tuning
-        areaController = new PIDController(0, 0, 0);
-        txController = new PIDController(0, 0, 0);
-        skewController = new PIDController(0, 0, 0);
+        areaController = new PIDController(1.8, 0, 0);
+        txController = new PIDController(0.06, 0, 0.006);
+        skewController = new PIDController(0.05, 0, 0);
 
         try {
             limelight = new Limelight(name);
+            SmartDashboard.putBoolean(name + " inited", true);
         } catch (Exception e) {
             limelight = null;
+            SmartDashboard.putBoolean(name + " inited", true);
         }
+        initShuffleboard(LOG_LEVEL.ALL);
     }
 
     public void pidTuning_test() {
@@ -65,20 +69,28 @@ public class NoteAssistance implements Reportable{
         targetFound.setBoolean(hasTarget);
         if(!hasTarget) return;
 
-        double area = limelight.getArea_avg();
+        // pidTuning_test();
+
+        double area = limelight.getAreaFiltered(15);
         currentArea.setDouble(area);
+        // SmartDashboard.putNumber("area", area);
         double tx = limelight.getXAngle_avg();
         currentTX.setDouble(tx);
+        // SmartDashboard.putNumber("tx", tx);
         double skew = limelight.getSkew();
         currentSkew.setDouble(skew);
+        // SmartDashboard.putNumber("skew", skew);
 
-        speeds[0] = -1 * areaController.calculate(area, targetArea);
+        speeds[0] = 1 * areaController.calculate(area, targetArea);
         speeds[1]= -1 * txController.calculate(tx, targetTX);
         speeds[2] = 1 * skewController.calculate(skew, targetSkew);
 
         forwardSpeed.setDouble(speeds[0]);
         sidewaysSpeed.setDouble(speeds[1]);
         angularSpeed.setDouble(speeds[2]);
+        // SmartDashboard.putNumber("fs", speeds[0]);
+        // SmartDashboard.putNumber("ss", speeds[1]);
+        // SmartDashboard.putNumber("as", speeds[2]);
 
         speeds[0] = NerdyMath.deadband(speeds[0], -0.5, 0.5);
         speeds[1] = NerdyMath.deadband(speeds[1], -0.5, 0.5);
