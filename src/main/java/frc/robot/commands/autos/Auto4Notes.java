@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import frc.robot.subsystems.vision.NoteAssistance;
 
 public class Auto4Notes extends SequentialCommandGroup {
     public Auto4Notes(SwerveDrivetrain swerve, String autoPath) {     
@@ -47,6 +49,32 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.waitSeconds(1),
             AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
             Commands.waitSeconds(0.5)
+        );
+    }
+
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, int version) {     
+        
+        // Use the PathPlannerAuto class to get a path group from an auto
+        List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
+
+        // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
+        Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
+
+        NoteAssistance noteAssistance = new NoteAssistance(VisionConstants.kLimelightFrontName);
+
+        addCommands(
+            //Commands.none()
+            Commands.runOnce(swerve.getImu()::zeroAll),
+            Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
+
+            Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
+            AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
+            Commands.waitSeconds(1),
+            Commands.race(
+                Commands.run(() -> noteAssistance.driveToNote(swerve, 12.1, 0, 0), swerve),
+                Commands.waitSeconds(2)
+            ),
+            Commands.runOnce(() -> swerve.towModules())
         );
     }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.util.NerdyMath;
 
 public class NoteAssistance implements Reportable{
@@ -95,6 +96,11 @@ public class NoteAssistance implements Reportable{
         speeds[0] = NerdyMath.deadband(speeds[0], -0.5, 0.5);
         speeds[1] = NerdyMath.deadband(speeds[1], -0.5, 0.5);
         speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
+    }
+
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetSkew) {
+        speedToNote(targetArea, targetTX, targetSkew);
+        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
     public double getForwardSpeed() { return speeds[0]; }
