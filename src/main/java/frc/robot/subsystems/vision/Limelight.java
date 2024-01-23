@@ -242,6 +242,34 @@ public class Limelight implements Reportable{
         }
     }
 
+    public double getXAngleFiltered(int standardDeviationsAway) {
+        double newTX = tx.getDouble(0);
+        if(initDoneTX) {
+            if(NerdyMath.withinStandardDeviation(tAList, standardDeviationsAway, newTX)) {
+                tXList[indexTX] = newTX;
+                indexTX ++;
+                if(indexTX >= tXList.length) {
+                    indexTX = 0;
+                }
+            }
+        }
+        else {
+            tXList[indexTX] = newTX;
+            indexTX ++;
+            if(indexTX >= tXList.length) {
+                indexTX = 0;
+                initDoneTX = true;
+            }
+        }
+
+        double TXSum = 0.0;
+        int length = initDoneTX ? tXList.length : indexTX;
+        for (int i = 0; i < length; i++) {
+            TXSum += tXList[i];
+        }
+        return TXSum / length;
+    }
+
     public double getXAngle()
     {
         return tx.getDouble(0);
@@ -297,40 +325,31 @@ public class Limelight implements Reportable{
     }
 
     public double getAreaFiltered(int standardDeviationsAway) {
-        double TASum = 0.0;
+        double newArea = ta.getDouble(0);
         if(initDoneTA) {
-            double newArea = ta.getDouble(0);
-
-            for(int i = 0; i < tAList.length; i++) {
-                TASum += tAList[i];
-            }
-            double average = TASum / tAList.length;
-
             if(NerdyMath.withinStandardDeviation(tAList, standardDeviationsAway, newArea)) {
                 tAList[indexTA] = newArea;
                 indexTA ++;
                 if(indexTA >= tAList.length) {
                     indexTA = 0;
-                    initDoneTA = true;
                 }
             }
-
-            return average;
         }
         else {
-            tAList[indexTA] = ta.getDouble(0);
+            tAList[indexTA] = newArea;
             indexTA ++;
             if(indexTA >= tAList.length) {
                 indexTA = 0;
                 initDoneTA = true;
             }
-
-            for(int i = 0; i < indexTA; i++) {
-                TASum += tAList[i];
-            }
-
-            return TASum / indexTA;
         }
+
+        double TASum = 0.0;
+        int length = initDoneTA ? tAList.length : indexTA;
+        for (int i = 0; i < length; i++) {
+            TASum += tAList[i];
+        }
+        return TASum / length;
     }
 
     public double getArea(){

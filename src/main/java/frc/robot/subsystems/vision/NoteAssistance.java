@@ -74,7 +74,7 @@ public class NoteAssistance implements Reportable{
         double area = limelight.getAreaFiltered(15);
         currentArea.setDouble(area);
         // SmartDashboard.putNumber("area", area);
-        double tx = limelight.getXAngle_avg();
+        double tx = limelight.getXAngleFiltered(10);
         currentTX.setDouble(tx);
         // SmartDashboard.putNumber("tx", tx);
         double skew = limelight.getSkew();
