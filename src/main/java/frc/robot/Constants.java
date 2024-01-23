@@ -83,11 +83,11 @@ public final class Constants {
     public static final double kVisionSTDx = 0.7; //0.9
     public static final double kVisionSTDy = 0.7; //0.9
     public static final double kVisionSTDtheta = 1000; //Old: 69696969
-    public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
-      kVisionSTDx,
-      kVisionSTDy,
-      kVisionSTDtheta
-    );
+    public static final Matrix<N3, N1> kBaseVisionPoseSTD = MatBuilder.fill(
+                                                              Nat.N3(), Nat.N1(), 
+                                                              kVisionSTDx,
+                                                              kVisionSTDy,
+                                                              kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
 
 
