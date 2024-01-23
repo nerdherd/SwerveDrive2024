@@ -1,32 +1,30 @@
 package frc.robot.commands.autos;
 
-import java.sql.Driver;
 import java.util.HashMap;
 import java.util.List;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import frc.robot.subsystems.vision.farfuture.DriverAssist;
 
 import static frc.robot.Constants.PathPlannerConstants.*;
 
 public class PathPlannerAutos {
-    private static HashMap<String, PathPlannerTrajectory> cachedPaths = new HashMap<>();
-    private static HashMap<String, List<PathPlannerTrajectory>> cachedPathGroups = new HashMap<>();
+    private static HashMap<String, PathPlannerPath> cachedPaths = new HashMap<>();
+    private static HashMap<String, List<PathPlannerPath>> cachedPathGroups = new HashMap<>();
     private static HashMap<String, Command> events = new HashMap<>();
 
-    public static SwerveAutoBuilder autoBuilder;
+    public static AutoBuilder autoBuilder;
 
     /**
      * Load the selected path from storage.
@@ -37,7 +35,7 @@ public class PathPlannerAutos {
             DriverStation.reportWarning(String.format("Path '%s' has been loaded more than once.", pathName), true);
         }
 
-        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, kPPPathConstraints);
+        PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
         if (path == null) {
             DriverStation.reportWarning(String.format("Path '%s' could not be loaded!", pathName), true);
@@ -50,7 +48,7 @@ public class PathPlannerAutos {
             DriverStation.reportWarning(String.format("Path group '%s' has been loaded more than once.", pathName), true);
         }
 
-        List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(pathName, kPPPathConstraints);
+        List<PathPlannerPath> path = PathPlannerAuto.getPathGroupFromAutoFile(pathName);
 
         if (path == null || path.size() == 0) {
             DriverStation.reportWarning(String.format("Path '%s' could not be loaded!", pathName), true);
@@ -58,7 +56,7 @@ public class PathPlannerAutos {
         cachedPathGroups.put(pathName, path);
     }
 
-    public static List<PathPlannerTrajectory> getPathGroup(String pathNameString) {
+    public static List<PathPlannerPath> getPathGroup(String pathNameString) {
         if (!cachedPathGroups.containsKey(pathNameString)) {
             DriverStation.reportWarning(String.format("Path '%s' was not pre-loaded into memory, which may cause lag during the Autonomous Period.", pathNameString), true);
             initPathGroup(pathNameString);
@@ -67,7 +65,7 @@ public class PathPlannerAutos {
         
     }
     
-    public static PathPlannerTrajectory getPath(String pathNameString) {
+    public static PathPlannerPath getPath(String pathNameString) {
         if (!cachedPaths.containsKey(pathNameString)) {
             DriverStation.reportWarning(String.format("Path '%s' was not pre-loaded into memory, which may cause lag during the Autonomous Period.", pathNameString), true);
             initPath(pathNameString);
@@ -76,30 +74,19 @@ public class PathPlannerAutos {
         
     }
 
-    public static void init(SwerveDrivetrain swerveDrive) {
-        autoBuilder = new SwerveAutoBuilder(
-            swerveDrive::getPose, 
-            swerveDrive::resetOdometry, 
-            PathPlannerConstants.kPPTranslationPIDConstants,
-            PathPlannerConstants.kPPRotationPIDConstants,
-            swerveDrive::setChassisSpeeds, 
-            events,
-            swerveDrive);
-    }
-
     /**
      * Create an auto with the selected PathPlanner path.
      * @param pathName
      * @param swerveDrive
      * @return
      */
-    public static CommandBase pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive, DriverAssist driverAssist) {
+    public static Command pathplannerAuto(String pathName, SwerveDrivetrain swerveDrive) {
         if (!cachedPaths.containsKey(pathName)) {
             DriverStation.reportWarning(String.format("Path '%s' was not pre-loaded into memory, which may cause lag during the Autonomous Period.", pathName), true);
             initPath(pathName);
         }
 
-        PathPlannerTrajectory path = cachedPaths.get(pathName);
+        PathPlannerPath path = cachedPaths.get(pathName);
         
         
         // Note: The reason why the commands are manually constructed instead of
@@ -143,18 +130,12 @@ public class PathPlannerAutos {
         // }
 
         // final Pose2d finalInitialPose2d = initialPose2d;
-
+        Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(pathName);
         return Commands.sequence(
-            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", true)),
+            
             Commands.runOnce(() -> swerveDrive.getImu().zeroAll()),
-            autoBuilder.resetPose(path),
-            autoBuilder.followPathWithEvents(path),
-            Commands.runOnce (() -> SmartDashboard.putBoolean("Auto Active", false)),
-            Commands.race(
-                Commands.run(() -> driverAssist.TagDriving(swerveDrive, 3.7, 13.5, -3.3, 6)), // TODO TEST
-                Commands.waitSeconds(2)
-            ),
-            Commands.runOnce( () -> swerveDrive.towModules())
+            Commands.runOnce(() -> swerveDrive.setPoseMeters(startingPose)),
+            AutoBuilder.followPath(path)
             // TODO: Once we get real odometry with vision, get rid of this
             // Commands.runOnce(() -> swerveDrive.setPoseMeters(finalInitialPose2d)),
             // autoCommand
@@ -165,5 +146,8 @@ public class PathPlannerAutos {
         return events;
     }
 
-    
+    public static List<PathPlannerTrajectory> getPathGroupFromAutoFile(String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPathGroupFromAutoFile'");
+    }
 }

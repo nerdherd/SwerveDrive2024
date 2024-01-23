@@ -1,10 +1,10 @@
 // package frc.robot.commands.VisionAutos;
 
-// import edu.wpi.first.wpilibj2.command.CommandBase;
+// import edu.wpi.first.wpilibj2.command.Command;
 // import frc.robot.subsystems.swerve.SwerveDrivetrain;
 // import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 
-// public class ToNearestGridDebug extends CommandBase {
+// public class ToNearestGridDebug extends Command {
 //     private SwerveDrivetrain swerve;
 //     private PrimalSunflower vision;
 

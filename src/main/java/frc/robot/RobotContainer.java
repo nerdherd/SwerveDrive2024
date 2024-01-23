@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import java.time.Instant;
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
+import java.util.List;
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -15,33 +13,24 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
-// import frc.robot.commands.VisionAutos.ToNearestGridDebug;
-import frc.robot.commands.autos.PathPlannerAutos;
-import frc.robot.commands.autos.SquareTest;
-import frc.robot.subsystems.Shooter;
+import frc.robot.commands.autos.Auto4Notes;
+// import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
-import frc.robot.subsystems.imu.Pigeon;
+// import frc.robot.subsystems.imu.Pigeon;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
-import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
-
+import frc.robot.subsystems.vision.farfuture.EMPeach;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -53,9 +42,6 @@ import frc.robot.subsystems.vision.farfuture.DriverAssist;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
-  // public Gyro imu = new NavX();
-  public Shooter shooter = new Shooter();
   public Gyro imu = new PigeonV2(1);
   // public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
@@ -68,14 +54,11 @@ public class RobotContainer {
   private final CommandPS4Controller commandOperatorController = new CommandPS4Controller(
       ControllerConstants.kOperatorControllerPort);
   private final PS4Controller operatorController = commandOperatorController.getHID();
-  // private final Joystick joystick = new Joystick(2);
 
   private final LOG_LEVEL loggingLevel = LOG_LEVEL.MINIMAL;
 
-  private SendableChooser<Supplier<CommandBase>> autoChooser = new SendableChooser<Supplier<CommandBase>>();
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  // private PrimalSunflower backSunflower = new PrimalSunflower(VisionConstants.kLimelightBackName);
-  // private PrimalSunflower frontSunflower = new PrimalSunflower(VisionConstants.kLimelightFrontName, 0.3); //0.6 is threshold for consistent ATag detection
   private EMPeach vision;
   private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
@@ -131,60 +114,25 @@ public class RobotContainer {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
-    commandOperatorController.povUp().onTrue(shooter.increaseTop());
-    commandOperatorController.povDown().onTrue(shooter.decreaseTop());
-
-    commandOperatorController.povLeft().onTrue(shooter.increaseBottom());
-    commandOperatorController.povRight().onTrue(shooter.decreaseBottom());
-
-    commandOperatorController.triangle()
-      .onTrue(shooter.setIndex(0).andThen(shooter.setSpeed()))
-      .onFalse(shooter.setPowerZero());
-    
-    commandOperatorController.square()
-      .onTrue(shooter.setIndex(1).andThen(shooter.setSpeed()))
-      .onFalse(shooter.setPowerZero());
-
-    commandOperatorController.circle()
-      .onTrue(shooter.setIndex(2).andThen(shooter.setSpeed()))
-      .onFalse(shooter.setPowerZero());
-
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(3.9, 12.6, -3.3, 6))); // Old: 5, 10, 0, 6
+    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
   }
 
   private void initAutoChoosers() {
-    // Remember to load the pathplanner paths here
-    final String[] paths = {
-      "TestSquare", "TestSquare2", "LTest", "FiveMeterFortyFiveDegree Copy", "ZeroDegreeLine", "GetBackWithVision", "LTest Copy"
-      
-    };
+  	List<String> paths = AutoBuilder.getAllAutoNames();
+    autoChooser.addOption("Do Nothing", Commands.none());
     
-    PathPlannerAutos.init(swerveDrive);
-
     for (String path : paths) {
-      PathPlannerAutos.initPath(path);
-      PathPlannerAutos.initPathGroup(path);
+      if(path.equals("4PAuto"))
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
+      //else if ....
     }
-
-    autoChooser.addOption("Do Nothing", Commands::none);
-    autoChooser.addOption("SquareTest", () -> new SquareTest(PathPlannerAutos.autoBuilder, swerveDrive));
-    autoChooser.addOption("BackwardsSquareTest", () -> PathPlannerAutos.pathplannerAuto("TestSquare2", swerveDrive, driverAssist));
-    autoChooser.addOption("LTest", () -> PathPlannerAutos.pathplannerAuto("LTest", swerveDrive, driverAssist));
-    autoChooser.addOption("LTest 2", () -> PathPlannerAutos.pathplannerAuto("LTest Copy", swerveDrive, driverAssist));
-    // autoChooser.addOption("TwoMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterNinetyDegree", swerveDrive));
-    //autoChooser.addOption("FiveMeterNinetyDegree", () -> PathPlannerAutos.pathplannerAuto("FiveMeterNinetyDegree", swerveDrive));
-    // autoChooser.addOption("TwoMeterFortyFiveDegree", () -> PathPlannerAutos.pathplannerAuto("TwoMeterFortyFiveDegree", swerveDrive));
-    autoChooser.addOption("FiveMeterFortyFiveDegree Copy", () -> PathPlannerAutos.pathplannerAuto("FiveMeterFortyFiveDegree Copy", swerveDrive, driverAssist));
-    autoChooser.addOption("ZeroDegreeLine", () -> PathPlannerAutos.pathplannerAuto("ZeroDegreeLine", swerveDrive, driverAssist));
-    autoChooser.addOption("GetBackWithVision", () -> PathPlannerAutos.pathplannerAuto("GetBackWithVision", swerveDrive, driverAssist));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
@@ -220,7 +168,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command currentAuto = autoChooser.getSelected().get();
+    Command currentAuto = autoChooser.getSelected();
 
     swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
     return currentAuto;

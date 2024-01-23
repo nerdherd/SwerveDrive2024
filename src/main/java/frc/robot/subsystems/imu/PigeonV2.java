@@ -1,6 +1,6 @@
 package frc.robot.subsystems.imu;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -45,11 +45,11 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
     }
 
     public void zeroPitch() {
-        this.pitchOffset = -pigeon.getPitch();
+        this.pitchOffset = -pigeon.getPitch().getValue();
     }
     
     public void zeroRoll() {
-        this.rollOffset = pigeon.getRoll();
+        this.rollOffset = pigeon.getRoll().getValue();
     }
 
     public void setOffset(double offset) {
@@ -78,11 +78,12 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
     }
 
     public double getHeading() {
-        return pigeon.getAbsoluteCompassHeading() - offset;
+        return -pigeon.getAngle() - offset;
+
     }
 
     public double getYaw() {
-        double currentYaw = (pigeon.getYaw() - offset) % 360;
+        double currentYaw = (pigeon.getYaw().getValue() - offset) % 360;
         if (currentYaw < 0) {
             return currentYaw + 360;
         } else {
@@ -91,11 +92,11 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
     }
 
     public double getPitch() {
-        return (-pigeon.getPitch() - pitchOffset) % 360;
+        return (-pigeon.getPitch().getValue() - pitchOffset) % 360;
     }
 
     public double getRoll() {
-        return (pigeon.getRoll() - rollOffset) % 360;
+        return (pigeon.getRoll().getValue() - rollOffset) % 360;
     }
 
     public double getHeadingOffset() {
@@ -130,7 +131,7 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
             case OFF:
                 break;
             case ALL:
-                SmartDashboard.putNumber("Pigeon Firmware Version", pigeon.getFirmwareVersion());
+                SmartDashboard.putNumber("Pigeon Firmware Version", pigeon.getVersion().getValue());
             case MEDIUM:
                 SmartDashboard.putNumber("Robot Yaw", this.getYaw());
                 SmartDashboard.putNumber("Robot Pitch", this.getPitch());
@@ -154,7 +155,7 @@ public class PigeonV2 extends SubsystemBase implements Gyro {
             case OFF:
                 break;
             case ALL:
-                tab.addNumber("Pigeon Firmware Version", () -> pigeon.getFirmwareVersion());
+                tab.addNumber("Pigeon Firmware Version", () -> pigeon.getVersion().getValue());
             case MEDIUM:
                 tab.addNumber("Robot Yaw", this::getYaw);
                 tab.addNumber("Robot Pitch", this::getPitch);

@@ -4,15 +4,12 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PIDConstants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -24,7 +21,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.util.preferences.PrefBool;
 import frc.robot.util.preferences.PrefDouble;
 
 /**
@@ -77,22 +73,21 @@ public final class Constants {
     public static final PrefDouble kPDrive = new PrefDouble("kPDrive",0.13); // 0.6
     public static final PrefDouble kIDrive = new PrefDouble("kIDrive",0);
     public static final PrefDouble kDDrive = new PrefDouble("kDDrive",0); 
-    public static final PrefDouble kFDrive = new PrefDouble("kFDrive",0.0469); 
+    public static final PrefDouble kVDrive = new PrefDouble("kVDrive",0.0469); 
 
-    public static final PrefBool ktunePID = new PrefBool("TuneDrivePID", false);
-    public static final String kCANivoreName = "CANivore1";
+    public static final String kCANivoreName = "rio";
   } 
 
   public static final class SwerveDriveConstants {
 
-    public static final double kVisionSTDx = 0.2; //0.7
-    public static final double kVisionSTDy = 0.2; //0.7
-    public static final double kVisionSTDtheta = 1000; //Old: 10000
-    public static final Matrix<N3, N1> kBaseVisionPoseSTD = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(
-      kVisionSTDx,
-      kVisionSTDy,
-      kVisionSTDtheta
-    );
+    public static final double kVisionSTDx = 0.7; //0.9
+    public static final double kVisionSTDy = 0.7; //0.9
+    public static final double kVisionSTDtheta = 1000; //Old: 69696969
+    public static final Matrix<N3, N1> kBaseVisionPoseSTD = MatBuilder.fill(
+                                                              Nat.N3(), Nat.N1(), 
+                                                              kVisionSTDx,
+                                                              kVisionSTDy,
+                                                              kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
 
 
@@ -137,16 +132,6 @@ public final class Constants {
       public static final boolean kFLCANCoderReversed = false;      
       public static final boolean kBLCANCoderReversed = false;       
       public static final boolean kBRCANCoderReversed = false; 
-
-      // public static final double kFRCANCoderOffsetDegrees = 25.75;       
-      // public static final double kFLCANCoderOffsetDegrees = -53.174;         
-      // public static final double kBLCANCoderOffsetDegrees = 85;          
-      // public static final double kBRCANCoderOffsetDegrees = 46.85;
-
-      public static final PrefDouble kFROffsetDeg = new PrefDouble("kFROffsetDeg", 0); //-29
-      public static final PrefDouble kFLOffsetDeg = new PrefDouble("kFLOffsetDeg", 0); //51
-      public static final PrefDouble kBLOffsetDeg = new PrefDouble("kBLOffsetDeg", 0); //185
-      public static final PrefDouble kBROffsetDeg = new PrefDouble("kBROffsetDeg", 0); //316
     }
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;    
@@ -204,7 +189,10 @@ public final class Constants {
   public static final class PathPlannerConstants {
     public static final double kPPMaxVelocity = 3;
     public static final double kPPMaxAcceleration = 3;
-    public static final PathConstraints kPPPathConstraints = new PathConstraints(kPPMaxVelocity, kPPMaxAcceleration);
+    public static final double kPPMaxAngularVelocity = Math.PI * 2;
+    public static final double kPPMaxAngularAcceleration = Math.PI * 2;
+    public static final PathConstraints kPPPathConstraints = new PathConstraints(kPPMaxVelocity, kPPMaxAcceleration, 
+                                                                                kPPMaxAngularVelocity, kPPMaxAngularAcceleration);
 
     public static final double kPP_P = new PrefDouble("PP_kP", 0.25).get();
     public static final double kPP_I = new PrefDouble("PP_kI", 0.0).get();
@@ -257,6 +245,6 @@ public final class Constants {
     public static final PrefDouble kPBottomMotor = new PrefDouble("P Bottom Motor", 0);
     public static final PrefDouble kIBottomMotor = new PrefDouble("I Bottom Motor", 0);
     public static final PrefDouble kDBottomMotor = new PrefDouble("D Bottom Motor", 0);
-    public static final PrefDouble kVBottomMotor =new PrefDouble("v Bottom Motor", 0);
+    public static final PrefDouble kVBottomMotor =new PrefDouble("V Bottom Motor", 0);
   }
 }

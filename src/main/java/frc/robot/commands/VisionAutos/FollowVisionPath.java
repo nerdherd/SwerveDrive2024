@@ -1,10 +1,10 @@
 // package frc.robot.commands.VisionAutos;
 
 // import com.pathplanner.lib.auto.SwerveAutoBuilder;
-// import edu.wpi.first.wpilibj2.command.CommandBase;
+// import edu.wpi.first.wpilibj2.command.Command;
 // import frc.robot.subsystems.vision.primalWallnut.PrimalSunflower;
 
-// public class FollowVisionPath extends CommandBase {
+// public class FollowVisionPath extends Command {
 //     private SwerveAutoBuilder swerveAutoBuilder;
 //     private PrimalSunflower sunflower;
 
