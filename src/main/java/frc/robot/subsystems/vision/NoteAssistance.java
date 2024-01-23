@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,8 +29,11 @@ public class NoteAssistance implements Reportable{
 
     double[] speeds = {0.0, 0.0, 0.0};
 
+    //ComplexWidget v;
+
     public NoteAssistance(String name) {
         this.name = name;
+        ShuffleboardTab tab = Shuffleboard.getTab(name);
 
         //TODO set pid constants to preferences for easy tuning
         areaController = new PIDController(1.8, 0, 0);
@@ -38,12 +42,19 @@ public class NoteAssistance implements Reportable{
 
         try {
             limelight = new Limelight(name);
-            SmartDashboard.putBoolean(name + " inited", true);
+            tab.add(name + " inited", true);
+            limelight.setPipeline(VisionConstants.kNotePipeline);
+            
+            // PLEASE comment it out after debuging!!!
+            try{
+                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+            }catch(Exception e){};
+
         } catch (Exception e) {
             limelight = null;
-            SmartDashboard.putBoolean(name + " inited", true);
+            tab.add(name + " inited", false);
         }
-        initShuffleboard(LOG_LEVEL.ALL);
+        //initShuffleboard(LOG_LEVEL.ALL);
     }
 
     public void pidTuning_test() {
@@ -65,7 +76,6 @@ public class NoteAssistance implements Reportable{
     public void speedToNote(double targetArea, double targetTX, double targetSkew) {
         if(limelight == null) return;
 
-        limelight.setPipeline(VisionConstants.kNotePipeline);
         boolean hasTarget = limelight.hasValidTarget();
         targetFound.setBoolean(hasTarget);
         if(!hasTarget) return;

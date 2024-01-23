@@ -38,15 +38,16 @@ public class DriverAssist implements Reportable{
      */
     public DriverAssist(String name, int pipeline) {
         limelightName = name;
+        ShuffleboardTab tab = Shuffleboard.getTab(limelightName);
 
         try {
             limelight = new Limelight(name);
             toggleLight(false);
             changePipeline(pipeline);
 
-            SmartDashboard.putBoolean("Limelight: " + name + " inited ", true);
+            tab.add("Limelight: " + name + " inited ", true);
         } catch (Exception e) {
-            SmartDashboard.putBoolean("Limelight-" + name + " inited ", false);
+            tab.add("Limelight-" + name + " inited ", false);
         }
         
     }
