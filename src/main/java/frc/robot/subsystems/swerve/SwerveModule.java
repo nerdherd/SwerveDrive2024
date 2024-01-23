@@ -69,7 +69,7 @@ public class SwerveModule implements Reportable {
      */
     public SwerveModule(int driveMotorId, int turningMotorId, boolean invertDriveMotor, boolean invertTurningMotor, 
         int CANCoderId, boolean CANCoderReversed) {
-        
+        this.canCoder = new CANcoder(CANCoderId, ModuleConstants.kCANivoreName);
         this.driveMotor = new TalonFX(driveMotorId, ModuleConstants.kCANivoreName);
         this.turnMotor = new TalonFX(turningMotorId, ModuleConstants.kCANivoreName);
         
@@ -109,7 +109,6 @@ public class SwerveModule implements Reportable {
 
         this.driveMotor.setInverted(invertDriveMotor);
         this.turnMotor.setInverted(invertTurningMotor);
-        this.canCoder = new CANcoder(CANCoderId, ModuleConstants.kCANivoreName);
         this.invertTurningEncoder = CANCoderReversed;
         
         this.desiredState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
@@ -156,8 +155,6 @@ public class SwerveModule implements Reportable {
         driveConfigurator.apply(drivePIDConfigs);
     }
 
-    private final SwerveModuleState stopState = new SwerveModuleState(0, Rotation2d.fromRadians(getTurningPosition()));
-
     /**
      * Set the percent output of both motors to zero.
      */
@@ -165,7 +162,7 @@ public class SwerveModule implements Reportable {
         driveMotor.setControl(brakeRequest);
         turnMotor.setControl(brakeRequest);
 
-        this.desiredState = this.stopState;
+        this.desiredState = new SwerveModuleState(0, Rotation2d.fromRadians(getTurningPosition()));
     }
 
     public void run() {
