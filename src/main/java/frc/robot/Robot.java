@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.swerveDrive.setBreak(false);
     m_robotContainer.imu.zeroHeading();
     m_robotContainer.imu.zeroAll();
     m_robotContainer.imu.setOffset(180);
@@ -92,6 +93,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    m_robotContainer.swerveDrive.setBreak(false);
     m_robotContainer.swerveDrive.refreshModulePID();
     m_robotContainer.shooter.refreshPID();
     if (m_autonomousCommand != null) {

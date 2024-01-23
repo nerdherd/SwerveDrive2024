@@ -20,6 +20,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
+import frc.robot.commands.autos.AutoSquareTest;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
@@ -174,11 +175,15 @@ public class RobotContainer {
 
 	List<String> paths = AutoBuilder.getAllAutoNames();
     autoChooser.addOption("Do Nothing", Commands.none());
+    // autoChooser.addOption("Do Nothing", Commands.none());
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
         autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
       //else if ....
+      else if(path.equals("squareTestAuto")){
+        autoChooser.addOption(path, new AutoSquareTest(swerveDrive, path));
+      }
     }
 
     // these are the auto paths in the old format (not the actual full auto command)
