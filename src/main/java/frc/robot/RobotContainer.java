@@ -93,7 +93,7 @@ public class RobotContainer {
 
       noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
       apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, null);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, apriltagCamera);
 
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
@@ -110,6 +110,15 @@ public class RobotContainer {
 
     DriverStation.reportWarning("Initalization complete", false);
   }
+
+  public static boolean IsRedSide()
+    {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+    }
 
   public void initDefaultCommands() {
     swerveDrive.setDefaultCommand(
@@ -155,7 +164,7 @@ public class RobotContainer {
       .onFalse(Commands.run(() -> swerveDrive.stopModules()));
       //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
-    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
       .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 

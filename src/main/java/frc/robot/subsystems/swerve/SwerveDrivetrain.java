@@ -29,6 +29,7 @@ import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.Constants.SwerveDriveConstants.CANCoderConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.subsystems.Reportable;
 
@@ -51,7 +52,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final EMPeach vision; 
+    private final DriverAssist vision; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
@@ -74,7 +75,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, EMPeach vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, DriverAssist vision) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
                 frontLeft = new CANSwerveModule(
@@ -152,6 +153,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     double previousVisionX = -1;
 
+    boolean initPoseByVisionDone = false;
     /**
      * Have modules move towards states and update odometry
      */
@@ -187,11 +189,37 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         // else {
         //     SmartDashboard.putBoolean("Vision Used", false);
         // }
+
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            SmartDashboard.putBoolean("Vision Used", true);
+            poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+                vision.getVisionFrameTimestamp());
+        }
+        else
+        {
+            SmartDashboard.putBoolean("Vision Used", false);
+        }
         // field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
     //****************************** RESETTERS ******************************/
 
+    public void resetInitPoseByVision()
+    {
+        if(vision != null && vision.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(!initPoseByVisionDone && (vision.getAprilTagID() == 7 || vision.getAprilTagID() == 4))
+            {
+                initPoseByVisionDone = true;
+                Pose3d p = vision.getCurrentPose3DVision();
+                resetOdometry(p.toPose2d());
+                //Units.radiansToDegrees(p.getRotation().getZ())
+                //gyro.resetHeading(p.getRotation().getDegrees());
+            }
+        }
+    }
 
     /**
      * Resets the odometry to given pose 

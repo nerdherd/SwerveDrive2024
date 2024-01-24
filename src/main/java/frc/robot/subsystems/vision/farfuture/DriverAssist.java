@@ -10,7 +10,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -22,6 +24,7 @@ import frc.robot.subsystems.vision.Limelight.LightMode;
 import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Subsystem that uses Limelight for vision
@@ -41,6 +44,10 @@ public class DriverAssist implements Reportable{
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
     private GenericEntry angularSpeed;
+
+    private GenericEntry botPoseByVisionX;
+    private GenericEntry botPoseByVisionY;
+    private GenericEntry botPoseByVisionR;
     
     /**
      * Makes a new EMPeach to utilize vision
@@ -61,6 +68,8 @@ public class DriverAssist implements Reportable{
         }
         
     }
+
+    
 
     public void resetBuffer()
     {
@@ -97,6 +106,8 @@ public class DriverAssist implements Reportable{
     double calculatedForwardPower;
     double calculatedSidewaysPower;
     double calculatedAngledPower;
+
+    Pose3d currentPose;
 
     // ************************ VISION ***********************
     public void calculateTag(double targetTA, double targetTX, double targetskew, int tagID) {
@@ -219,6 +230,26 @@ public class DriverAssist implements Reportable{
         return -1;
     }
 
+    public Pose3d getCurrentPose3DVision()
+    {
+        currentPose = limelight.getBotPose3D();
+        if(botPoseByVisionX != null)
+        {
+            botPoseByVisionX.setDouble(currentPose.getX());
+            botPoseByVisionY.setDouble(currentPose.getY());
+            botPoseByVisionR.setDouble(Units.radiansToDegrees(currentPose.getRotation().getZ()));
+        }
+        return currentPose;
+    }
+
+    public double getVisionFrameTimestamp()
+    {
+        // with LimelightHelpers.getLatency_Pipeline() and LimelightHelpers.getLatency_Capture() 
+        // Timer.getFPGATimestamp() - (tl/1000.0) - (cl/1000.0) or 
+        // Timer.getFPGATimestamp() - (botpose[6]/1000.0)
+        return Timer.getFPGATimestamp() - (limelight.getLatency_Pipeline()/1000.0) - (limelight.getLatency_Capture()/1000.0);
+    }
+
     /**
      * Sets the limelight pipeline
      * @param pipeline
@@ -275,6 +306,19 @@ public class DriverAssist implements Reportable{
                 currentSkewOffset = tab.add("Skew Avg", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
+                .getEntry();
+
+                botPoseByVisionX = tab.add("PoseX", 0)
+                .withPosition(4,0)
+                .withSize(2,1)
+                .getEntry();
+                botPoseByVisionY = tab.add("PoseY", 0)
+                .withPosition(4,1)
+                .withSize(2,1)
+                .getEntry();
+                botPoseByVisionR = tab.add("PoseR", 0)
+                .withPosition(4,2)
+                .withSize(2,1)
                 .getEntry();
 
             case MINIMAL: 

@@ -1,15 +1,24 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.Arrays;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Reportable;
 import frc.robot.util.NerdyMath;
 
@@ -132,7 +141,16 @@ public class Limelight implements Reportable{
 
     public Limelight(String keyN)
     {
-        m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose");
+        // same as Pathfinder's Coordinate System
+        if(RobotContainer.IsRedSide())
+        {
+            m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose_wpired");
+        }
+        else
+        {
+            m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose_wpiblue");
+        }
+
         m_camPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("targetpose_cameraspace");
 
         reinitBuffer(); // need to reset everytime change pipeline
@@ -147,7 +165,7 @@ public class Limelight implements Reportable{
     }
 
     public double getCamPoseSkew() {
-        // double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        //double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
         // if(botPose.length != 0) {
@@ -171,6 +189,24 @@ public class Limelight implements Reportable{
         }
 
         return camPose[4];
+    }
+
+    public Pose2d getBotPose2D()
+    {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+
+        Translation2d tran2d = new Translation2d(botPose[0], botPose[1]);
+        Rotation2d r2d = new Rotation2d(Units.degreesToRadians(botPose[5]));
+        return new Pose2d(tran2d, r2d);
+    }
+
+    public Pose3d getBotPose3D()
+    {
+        double[] botPose = m_botPos.getDoubleArray(new double[6]);
+        return new Pose3d(
+            new Translation3d(botPose[0], botPose[1], botPose[2]),
+            new Rotation3d(Units.degreesToRadians(botPose[3]), Units.degreesToRadians(botPose[4]),
+                    Units.degreesToRadians(botPose[5])));
     }
 
     public String getName() {
@@ -371,8 +407,12 @@ public class Limelight implements Reportable{
      * @return The pipeline’s latency contribution (ms) Add at least 11ms for image
      *         capture latency.
      */
-    public double getDeltaTime() {
+    public double getLatency_Pipeline() {
         return table.getEntry("tl").getDouble(0);
+    }
+
+    public double getLatency_Capture() {
+        return table.getEntry("cl").getDouble(0);
     }
 
     /**
