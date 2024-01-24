@@ -10,14 +10,16 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.subsystems.vision.Limelight.LightMode;
+import frc.robot.util.NerdyMath;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 
@@ -31,6 +33,14 @@ public class DriverAssist implements Reportable{
     private AprilTagFieldLayout layout;
     private int pipeline;
     private boolean lightsON;
+
+    private GenericEntry targetId;
+    private GenericEntry currentTaOffset;
+    private GenericEntry currentTxOffset;
+    private GenericEntry currentSkewOffset;
+    private GenericEntry forwardSpeed;
+    private GenericEntry sidewaysSpeed;
+    private GenericEntry angularSpeed;
     
     /**
      * Makes a new EMPeach to utilize vision
@@ -45,40 +55,39 @@ public class DriverAssist implements Reportable{
             toggleLight(false);
             changePipeline(pipeline);
 
-            tab.add("Limelight: " + name + " inited ", true);
+            tab.add(name + " inited ", true);
         } catch (Exception e) {
-            tab.add("Limelight-" + name + " inited ", false);
+            tab.add(name + " inited ", false);
         }
         
     }
 
-
-
+    public void resetBuffer()
+    {
+        limelight.reinitBuffer();
+    }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
         calculateTag(targetTA, targetTX, targetSkew, tagID);
-        if(getForwardPower() == 0 && getSidewaysPower() == 0 && getAngledPower() == 0) {
+        /*if(getForwardPower() == 0 && getSidewaysPower() == 0 && getAngledPower() == 0) {
             SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", true);
         } else {
             SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", false);
-        }
+        }*/
         swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower());
     }
 
 
-
-
-
     public double getTA() {
-        return limelight.getArea();
+        return limelight.getArea(); //filter?
     }
 
     public double getTX() {
-        return limelight.getXAngle();
+        return limelight.getXAngle();//filter?
     }
 
     public double getSkew() {
-        return limelight.periodic();
+        return limelight.getCamPoseSkew();//filter?
     }
 
     PIDController pidTA = new PIDController(1.8, 0, 0); // P 1.2
@@ -94,18 +103,28 @@ public class DriverAssist implements Reportable{
         double taOffset;
         double txOffset;
         double skewOffset;
+        int foundId = -1;
 
-        SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
-        if(tagID == getAprilTagID()) {
-            SmartDashboard.putBoolean("Found Right Tag ID: ", true);
+        //SmartDashboard.putNumber("TAG ID: ", getAprilTagID());
+        foundId = getAprilTagID();
+        if(targetId != null)
+            targetId.setInteger(foundId);
+        if(tagID == foundId) {
+            //SmartDashboard.putBoolean("Found Right Tag ID: ", true);
             
             taOffset = targetTA - getTA();
             txOffset = targetTX - getTX();
             skewOffset = targetskew - getSkew();
      
-            SmartDashboard.putNumber("TA Offset: ", taOffset);
-            SmartDashboard.putNumber("TX Offset: ", txOffset);
-            SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+            //SmartDashboard.putNumber("TA Offset: ", taOffset);
+            if(currentTaOffset != null)
+                currentTaOffset.setDouble(taOffset);
+            //SmartDashboard.putNumber("TX Offset: ", txOffset);
+            if(currentTxOffset != null)
+                currentTxOffset.setDouble(txOffset);
+            //SmartDashboard.putNumber("Skew Offset: ", skewOffset);
+            if(currentSkewOffset != null)
+                currentSkewOffset.setDouble(skewOffset);
     
             calculatedForwardPower = pidTA.calculate(taOffset, 0);
             // calculatedForwardPower = calculatedForwardPower * -1;
@@ -116,12 +135,18 @@ public class DriverAssist implements Reportable{
             calculatedAngledPower = pidSkew.calculate(skewOffset, 0);
             calculatedAngledPower = calculatedAngledPower * -1;
     
-            SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
-            SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
-            SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+            //SmartDashboard.putNumber("Calculated Forward Power: ", calculatedForwardPower);
+            if(forwardSpeed != null)
+                forwardSpeed.setDouble(calculatedForwardPower);
+            //SmartDashboard.putNumber("Calculated Sideways Power: ", calculatedSidewaysPower);
+            if(sidewaysSpeed != null)
+                sidewaysSpeed.setDouble(calculatedSidewaysPower);
+            //SmartDashboard.putNumber("Calculated Angled Power: ", calculatedAngledPower);
+            if(angularSpeed != null)
+                angularSpeed.setDouble(calculatedAngledPower);
         }
         else {
-            SmartDashboard.putBoolean("Found Right Tag ID: ", false);
+            //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
             
         }
     }
@@ -159,33 +184,30 @@ public class DriverAssist implements Reportable{
     // }
 
     public double getForwardPower() {
-        boolean isReached = false;
-        if(calculatedForwardPower < 0.25 && calculatedForwardPower > -0.25) {
-            calculatedForwardPower = 0;
-            isReached = true;
-        }
-        SmartDashboard.putBoolean("Forward Condition Met? ", isReached);
-        return calculatedForwardPower;
+        // if(calculatedForwardPower < 0.25 && calculatedForwardPower > -0.25) {
+        //     calculatedForwardPower = 0;
+        //     //SmartDashboard.putBoolean("Forward Condition Met? ", true);
+        // }
+        
+        return NerdyMath.deadband(calculatedForwardPower, -0.25, 0.25);
     }
 
     public double getSidewaysPower() {
-        boolean isReached = false;
-        if(calculatedSidewaysPower < 0.25 && calculatedSidewaysPower > -0.25) {
-            calculatedSidewaysPower = 0;
-            isReached = true;
-        }
-        SmartDashboard.putBoolean("Sideways Condition Met? ", isReached);
-        return calculatedSidewaysPower;
+        // if(calculatedSidewaysPower < 0.25 && calculatedSidewaysPower > -0.25) {
+        //     calculatedSidewaysPower = 0;
+        //     //SmartDashboard.putBoolean("Sideways Condition Met? ", true);
+        // }
+        
+        return NerdyMath.deadband(calculatedSidewaysPower, -0.25, 0.25);
     }
 
     public double getAngledPower() {
-        boolean isReached = false;
-        if(calculatedAngledPower < 0.25 && calculatedAngledPower > -0.25) {
-            calculatedAngledPower = 0;
-            isReached = true;
-        }
-        SmartDashboard.putBoolean("Angled Condition Met? ", isReached);
-        return calculatedAngledPower;
+        // if(calculatedAngledPower < 0.25 && calculatedAngledPower > -0.25) {
+        //     calculatedAngledPower = 0;
+        //     //SmartDashboard.putBoolean("Angled Condition Met? ", true);
+        // }
+        
+        return NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
     }
 
     public int getAprilTagID() {
@@ -222,6 +244,8 @@ public class DriverAssist implements Reportable{
         
     }
 
+
+    
     @Override
     public void initShuffleboard(LOG_LEVEL priority) {
         if (priority == LOG_LEVEL.OFF)  {
@@ -232,12 +256,48 @@ public class DriverAssist implements Reportable{
         //the lack of "break;"'s is intentional
         switch (priority) {
             case ALL:
+                try{
+                    tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightBackIP);
+                }catch(Exception e){}
 
             case MEDIUM:
                 tab.addBoolean("AprilTag Found", () -> limelight.hasValidTarget());
+                currentTaOffset = tab.add("Ta Avg", 0)
+                .withPosition(2, 0)
+                .withSize(2, 1)
+                .getEntry();
+                
+                currentTxOffset = tab.add("Tx Avg", 0)
+                .withPosition(2, 1)
+                .withSize(2, 1)
+                .getEntry();
 
-            case MINIMAL:   
-                tab.addCamera(limelightName + ": Stream", limelightName, VisionConstants.kLimelightBackIP);
+                currentSkewOffset = tab.add("Skew Avg", 0)
+                .withPosition(2, 2)
+                .withSize(2, 1)
+                .getEntry();
+
+            case MINIMAL: 
+             
+                forwardSpeed = tab.add("Forward Speed", 0)
+                .withPosition(3, 0)
+                .withSize(2, 1)
+                .getEntry();
+                
+                sidewaysSpeed = tab.add("Sideways Speed", 0)
+                .withPosition(3, 1)
+                .withSize(2, 1)
+                .getEntry();
+
+                angularSpeed = tab.add("Angular Speed", 0)
+                .withPosition(3, 2)
+                .withSize(2, 1)
+                .getEntry();
+                
+                targetId = tab.add("Target ID", -1)
+                .withPosition(0, 3)
+                .withSize(2, 1)
+                .getEntry();
 
 
             case OFF:
