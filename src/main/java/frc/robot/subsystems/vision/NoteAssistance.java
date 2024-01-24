@@ -44,11 +44,6 @@ public class NoteAssistance implements Reportable{
             limelight = new Limelight(name);
             tab.add(name + " inited", true);
             limelight.setPipeline(VisionConstants.kNotePipeline);
-            
-            // PLEASE comment it out after debuging!!!
-            try{
-                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
-            }catch(Exception e){};
 
         } catch (Exception e) {
             limelight = null;
@@ -73,32 +68,49 @@ public class NoteAssistance implements Reportable{
         skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
+    public void resetBuffer()
+    {
+        limelight.reinitBuffer();
+    }
+
     public void speedToNote(double targetArea, double targetTX, double targetSkew) {
         if(limelight == null) return;
 
+        // Need to add a max TA for over-image ....
+
+        
         boolean hasTarget = limelight.hasValidTarget();
-        targetFound.setBoolean(hasTarget);
+        if(targetFound != null)
+            targetFound.setBoolean(hasTarget);
         if(!hasTarget) return;
 
         // pidTuning_test();
 
-        double area = limelight.getAreaFiltered(15);
-        currentArea.setDouble(area);
+        //double area = limelight.getAreaFiltered(15);
+        double area = limelight.getArea_avg();
+        if(currentArea != null)
+            currentArea.setDouble(area);
         // SmartDashboard.putNumber("area", area);
-        double tx = limelight.getXAngleFiltered(10);
-        currentTX.setDouble(tx);
+        //double tx = limelight.getXAngleFiltered(10);
+        double tx = limelight.getXAngle_avg();
+        if(currentTX != null)
+            currentTX.setDouble(tx);
         // SmartDashboard.putNumber("tx", tx);
         double skew = limelight.getSkew();
-        currentSkew.setDouble(skew);
+        if(currentSkew != null)
+            currentSkew.setDouble(skew);
         // SmartDashboard.putNumber("skew", skew);
 
         speeds[0] = 1 * areaController.calculate(area, targetArea);
-        speeds[1]= -1 * txController.calculate(tx, targetTX);
+        speeds[1]= 1 * txController.calculate(tx, targetTX);
         speeds[2] = 1 * skewController.calculate(skew, targetSkew);
 
-        forwardSpeed.setDouble(speeds[0]);
-        sidewaysSpeed.setDouble(speeds[1]);
-        angularSpeed.setDouble(speeds[2]);
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+        if(angularSpeed != null)
+            angularSpeed.setDouble(speeds[2]);
         // SmartDashboard.putNumber("fs", speeds[0]);
         // SmartDashboard.putNumber("ss", speeds[1]);
         // SmartDashboard.putNumber("as", speeds[2]);
@@ -120,7 +132,6 @@ public class NoteAssistance implements Reportable{
     @Override
     public void reportToSmartDashboard(LOG_LEVEL priority) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'reportToSmartDashboard'");
     }
 
     public void initShuffleboard(LOG_LEVEL priority) {
@@ -132,6 +143,10 @@ public class NoteAssistance implements Reportable{
         //the lack of "break;"'s is intentional
         switch (priority) {
             case ALL:
+       
+            try{
+                tab.addCamera(name + ": Stream", name, VisionConstants.kLimelightFrontIP);
+            }catch(Exception e){};
 
             case MEDIUM:
                 currentArea = tab.add("Area", 0)

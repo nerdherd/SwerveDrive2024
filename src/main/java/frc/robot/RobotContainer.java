@@ -32,7 +32,6 @@ import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
-import frc.robot.commands.autos.PathPlannerAutos;
 import frc.robot.commands.autos.Squarto;
 // import frc.robot.commands.autos.SquareTest;
 // import frc.robot.subsystems.Shooter;
@@ -150,11 +149,15 @@ public class RobotContainer {
     
     
     // Please Comment out one set of these two to run!!!
-    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(12.1, 0, 0)));
-    // commandOperatorController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(noteCamera.getForwardSpeed(), noteCamera.getSidewaysSpeed(), 0))); // turn speed 0 for now
+    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.5, 0, 0)))
+      .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
+    commandOperatorController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))) // turn speed 0 for now
+      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+      //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7)));
-    // commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));
+    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
+      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
 
 
@@ -204,7 +207,7 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, noteCamera));
       else if(path.equals("Squarto")) {
         autoChooser.addOption(path, new Squarto(swerveDrive, path));
       }
@@ -224,7 +227,9 @@ public class RobotContainer {
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
-    noteCamera.initShuffleboard(loggingLevel);
+    apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));

@@ -52,7 +52,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         );
     }
 
-    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, int version) {     
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, NoteAssistance noteAssistance) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -60,21 +60,23 @@ public class Auto4Notes extends SequentialCommandGroup {
         // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d startingPose = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
-        NoteAssistance noteAssistance = new NoteAssistance(VisionConstants.kLimelightFrontName);
-
         addCommands(
-            //Commands.none()
+            //init
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
-            AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
-            Commands.waitSeconds(1),
+
+            // The path of Pickup 1st
+            AutoBuilder.followPath((pathGroup.get(0))), 
+
+            // Find the note
+            Commands.runOnce(() -> noteAssistance.resetBuffer()),
             Commands.race(
-                Commands.run(() -> noteAssistance.driveToNote(swerve, 12.1, 0, 0), swerve),
-                Commands.waitSeconds(2)
+                Commands.run(() -> noteAssistance.driveToNote(swerve, 4.5, 0, 0), swerve), // need to calibrate the ta
+                Commands.waitSeconds(1.5) // to be changed to 1sec or less
             ),
-            Commands.runOnce(() -> swerve.towModules())
+
+            Commands.runOnce(() -> swerve.stopModules()) //faster?
         );
     }
 }

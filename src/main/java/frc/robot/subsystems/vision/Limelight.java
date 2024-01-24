@@ -146,7 +146,7 @@ public class Limelight implements Reportable{
         setLightState(LIGHT_OFF);
     }
 
-    public double periodic() {
+    public double getCamPoseSkew() {
         // double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
 
