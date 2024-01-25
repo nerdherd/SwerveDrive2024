@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision.farfuture;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.signals.Licensing_IsSeasonPassedValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.controller.PIDController;
@@ -40,7 +42,7 @@ public class DriverAssist implements Reportable{
     private GenericEntry targetId;
     private GenericEntry currentTaOffset;
     private GenericEntry currentTxOffset;
-    private GenericEntry currentSkewOffset;
+    private GenericEntry currentAngleOffset;
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
     private GenericEntry angularSpeed;
@@ -69,8 +71,6 @@ public class DriverAssist implements Reportable{
         
     }
 
-    
-
     public void resetBuffer()
     {
         limelight.reinitBuffer();
@@ -78,12 +78,60 @@ public class DriverAssist implements Reportable{
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
         calculateTag(targetTA, targetTX, targetSkew, tagID);
-        /*if(getForwardPower() == 0 && getSidewaysPower() == 0 && getAngledPower() == 0) {
-            SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", true);
-        } else {
-            SmartDashboard.putBoolean("Ladies and Gentlemen, we got em ", false);
-        }*/
+
         swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower());
+    }
+
+    PIDController pidTxRotation = new PIDController(1.1, 0, 0); 
+    public void TagAimingRotation(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetAngle, int tagID) {
+        double taOffset;
+        double txOffset;
+        //double skewOffset;
+
+        // Have to consider the Ta for all coeffs!!! Todo
+
+        int foundId = getAprilTagID();
+        if(targetId != null)
+            targetId.setInteger(foundId);
+
+        if(tagID == foundId) {
+            
+            txOffset = targetTX - getTX();
+            taOffset = getTA();
+                 
+            if(currentTaOffset != null)
+                currentTaOffset.setDouble(0);
+            if(currentTxOffset != null)
+                currentTxOffset.setDouble(0);
+            if(currentAngleOffset != null)
+                currentAngleOffset.setDouble(txOffset);
+
+            calculatedAngledPower = pidTxRotation.calculate(txOffset, 0);
+            calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
+    
+            calculatedForwardPower = 0;//0.1*calculatedAngledPower;
+
+            calculatedSidewaysPower = 0;
+    
+            if(forwardSpeed != null)
+                forwardSpeed.setDouble(calculatedForwardPower);
+            if(sidewaysSpeed != null)
+                sidewaysSpeed.setDouble(calculatedSidewaysPower);
+            if(angularSpeed != null)
+                angularSpeed.setDouble(calculatedAngledPower);
+
+            swerveDrive.drive(calculatedForwardPower, calculatedSidewaysPower, calculatedAngledPower);
+            if(txOffset > -4*taOffset && txOffset < 4*taOffset) // use math fucntion log? todo
+            {
+                limelight.setLightState(LightMode.BLINK);
+            }
+            else{
+                limelight.setLightState(LightMode.ON);
+            }
+        }
+        else {
+            limelight.setLightState(LightMode.OFF);
+        }
     }
 
 
@@ -134,8 +182,8 @@ public class DriverAssist implements Reportable{
             if(currentTxOffset != null)
                 currentTxOffset.setDouble(txOffset);
             //SmartDashboard.putNumber("Skew Offset: ", skewOffset);
-            if(currentSkewOffset != null)
-                currentSkewOffset.setDouble(skewOffset);
+            if(currentAngleOffset != null)
+                currentAngleOffset.setDouble(skewOffset);
     
             calculatedForwardPower = pidTA.calculate(taOffset, 0);
             // calculatedForwardPower = calculatedForwardPower * -1;
@@ -303,7 +351,7 @@ public class DriverAssist implements Reportable{
                 .withSize(2, 1)
                 .getEntry();
 
-                currentSkewOffset = tab.add("Skew Avg", 0)
+                currentAngleOffset = tab.add("Skew Avg", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
                 .getEntry();

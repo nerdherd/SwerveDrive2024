@@ -164,8 +164,11 @@ public class RobotContainer {
       .onFalse(Commands.run(() -> swerveDrive.stopModules()));
       //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
+      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)))
       .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
 
