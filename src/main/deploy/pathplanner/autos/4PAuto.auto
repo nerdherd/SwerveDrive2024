@@ -52,6 +52,12 @@
           "data": {
             "pathName": "MidPickPath"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoSpeakerPath"
+          }
         }
       ]
     }
