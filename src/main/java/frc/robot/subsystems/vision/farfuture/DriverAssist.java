@@ -351,7 +351,7 @@ public class DriverAssist implements Reportable{
                 .withSize(2, 1)
                 .getEntry();
 
-                currentAngleOffset = tab.add("Skew Avg", 0)
+                currentAngleOffset = tab.add("Angle Avg", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
                 .getEntry();

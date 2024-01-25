@@ -141,18 +141,6 @@ public class Limelight implements Reportable{
 
     public Limelight(String keyN)
     {
-        // same as Pathfinder's Coordinate System
-        if(RobotContainer.IsRedSide())
-        {
-            m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose_wpired");
-        }
-        else
-        {
-            m_botPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("botpose_wpiblue");
-        }
-
-        m_camPos = NetworkTableInstance.getDefault().getTable(keyN).getEntry("targetpose_cameraspace");
-
         reinitBuffer(); // need to reset everytime change pipeline
 
         table = NetworkTableInstance.getDefault().getTable(keyN);
@@ -161,6 +149,19 @@ public class Limelight implements Reportable{
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
+
+        // same as Pathfinder's Coordinate System
+        if(RobotContainer.IsRedSide())
+        {
+            m_botPos = table.getEntry("botpose_wpired");
+        }
+        else
+        {
+            m_botPos = table.getEntry("botpose_wpiblue");
+        }
+
+        m_camPos = table.getEntry("targetpose_cameraspace");
+
         setLightState(LIGHT_OFF);
     }
 

@@ -31,6 +31,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
+import frc.robot.commands.autos.Auto9Notes;
 // import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.Squarto;
 // import frc.robot.commands.autos.SquareTest;
@@ -224,6 +225,8 @@ public class RobotContainer {
         autoChooser.addOption(path, new Squarto(swerveDrive, path));
       }
     }
+
+    autoChooser.addOption("Auto9Notes", new Auto9Notes(swerveDrive, "4PAuto", apriltagCamera, noteCamera)); // testing, to be removed
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));

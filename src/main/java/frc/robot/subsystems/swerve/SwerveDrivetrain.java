@@ -192,7 +192,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 Pose3d p = vision.getCurrentPose3DVision();
                 resetOdometry(p.toPose2d());
                 //Units.radiansToDegrees(p.getRotation().getZ())
-                //gyro.resetHeading(p.getRotation().getDegrees());
+                //gyro.resetHeading(p.toPose2d().getRotation().getDegrees());
+                gyro.setOffset(p.getRotation().getZ());
             }
         }
     }

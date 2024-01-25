@@ -159,7 +159,7 @@ public class NoteAssistance implements Reportable{
                 .withSize(2, 1)
                 .getEntry();
 
-                currentSkew = tab.add("Skew", 0)
+                currentSkew = tab.add("Angle", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
                 .getEntry();
