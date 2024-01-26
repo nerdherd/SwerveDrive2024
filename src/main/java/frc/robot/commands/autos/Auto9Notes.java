@@ -38,7 +38,7 @@ public class Auto9Notes extends SequentialCommandGroup {
         }
         else
         {
-            firstNotePose = new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0)));
+            firstNotePose = new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
             aimTargetApriltagID = 7;
         }
 
@@ -49,11 +49,11 @@ public class Auto9Notes extends SequentialCommandGroup {
 
             Path1stCom(firstNotePose), // Pickup 1
             Commands.race(
-                Commands.runOnce(()->noteVision.driveToNote(swerve, 4.5, 0, 0)), // need to use its command format. Todo
+                Commands.run(()->noteVision.driveToNote(swerve, 4.5, 0, 0)), // need to use its command format. Todo
                 Commands.waitSeconds(10)// debug time, intake
             ),
             Commands.race(
-                Commands.runOnce(()->apriltagVision.TagAimingRotation(swerve, 0, 0, 0, aimTargetApriltagID)), // need to use its command format. Todo
+                Commands.run(()->apriltagVision.TagAimingRotation(swerve, 0, 0, 0, aimTargetApriltagID)), // need to use its command format. Todo
                 Commands.waitSeconds(10)// debug time, shoot
             ),
 

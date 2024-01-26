@@ -48,6 +48,8 @@ public class Auto4Notes extends SequentialCommandGroup {
             AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
             Commands.waitSeconds(1),
             AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
+            Commands.waitSeconds(0.5),
+            AutoBuilder.followPath((pathGroup.get(7))), // Back Shoot
             Commands.waitSeconds(0.5)
         );
     }
