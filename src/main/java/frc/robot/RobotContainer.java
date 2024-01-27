@@ -21,6 +21,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.AutoSquareTest;
+import frc.robot.commands.autos.TriangleAuto;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
@@ -184,7 +185,11 @@ public class RobotContainer {
       else if(path.equals("squareTestAuto")){
         autoChooser.addOption(path, new AutoSquareTest(swerveDrive, path));
       }
+      else if(path.equals("rightTriangleTestAuto")){
+        autoChooser.addOption(path, new TriangleAuto(swerveDrive, path));
+      }
     }
+    autoChooser.addOption("RTriangleAuto", AutoBuilder.buildAuto("rightTriangleTestAuto"));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
