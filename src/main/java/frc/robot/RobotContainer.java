@@ -4,14 +4,8 @@
 
 package frc.robot;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -19,23 +13,16 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
-import frc.robot.commands.SwerveJoystickCommand.DodgeDirection;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.Auto9Notes;
-// import frc.robot.commands.VisionAutos.ToNearestGridDebug;
 import frc.robot.commands.autos.Squarto;
 // import frc.robot.commands.autos.SquareTest;
-// import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
 import frc.robot.subsystems.imu.NavX;
@@ -148,10 +135,9 @@ public class RobotContainer {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
-    commandDriverController.options().onTrue(Commands.runOnce(swerveDrive::resetEncoders));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
     // swerveDrive.drive(vision.getMovePowerToImp(0.5)[0], vision.getMovePowerToImp(0.5)[1], vision.getMovePowerToImp(0.5)[2])));
     // commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));

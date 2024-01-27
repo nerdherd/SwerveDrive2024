@@ -59,8 +59,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     private Field2d field;
 
-    private int numEncoderResets = 0;
-
     public enum SwerveModuleType {
         MAG_ENCODER,
         CANCODER
@@ -78,45 +76,39 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, DriverAssist vision) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
-                frontLeft = new CANSwerveModule(
+                frontLeft = new SwerveModule(
                     kFLDriveID,
                     kFLTurningID,
                     kFLDriveReversed,
                     kFLTurningReversed,
                     CANCoderConstants.kFLCANCoderID,
-                    CANCoderConstants.kFLOffsetDeg,
                     CANCoderConstants.kFLCANCoderReversed);
-                frontRight = new CANSwerveModule(
+                frontRight = new SwerveModule(
                     kFRDriveID,
                     kFRTurningID,
                     kFRDriveReversed,
                     kFRTurningReversed,
                     CANCoderConstants.kFRCANCoderID,
-                    CANCoderConstants.kFROffsetDeg,
                     CANCoderConstants.kFRCANCoderReversed);
-                backLeft = new CANSwerveModule(
+                backLeft = new SwerveModule(
                     kBLDriveID,
                     kBLTurningID,
                     kBLDriveReversed,
                     kBLTurningReversed,
                     CANCoderConstants.kBLCANCoderID,
-                    CANCoderConstants.kBLOffsetDeg,
                     CANCoderConstants.kBLCANCoderReversed);
-                backRight = new CANSwerveModule(
+                backRight = new SwerveModule(
                     kBRDriveID,
                     kBRTurningID,
                     kBRDriveReversed,
                     kBRTurningReversed,
                     CANCoderConstants.kBRCANCoderID,
-                    CANCoderConstants.kBROffsetDeg,
                     CANCoderConstants.kBRCANCoderReversed);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid Swerve Module Type provided.");
         }
 
-        numEncoderResets = 0;
-        resetEncoders();
         this.gyro = gyro;
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
         this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
@@ -207,45 +199,15 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
     }
 
-    /**
-     * Reset the turning encoders on each swerve module. 
-     * See {@link MagSwerveModule#resetEncoder() resetEncoder} for more details.
-     */
-    public void resetEncoders() {
-        numEncoderResets += 1;
-        // SmartDashboard.putNumber("Encoder resets", numEncoderResets);
-        CANCoderConstants.kFLOffsetDeg.loadPreferences();
-        CANCoderConstants.kFROffsetDeg.loadPreferences();
-        CANCoderConstants.kBLOffsetDeg.loadPreferences();
-        CANCoderConstants.kBROffsetDeg.loadPreferences();
-        frontLeft.setTurnOffset(CANCoderConstants.kFLOffsetDeg.get());
-        frontRight.setTurnOffset(CANCoderConstants.kFROffsetDeg.get());
-        backLeft.setTurnOffset(CANCoderConstants.kBLOffsetDeg.get());
-        backRight.setTurnOffset(CANCoderConstants.kBROffsetDeg.get());
-        
-        frontLeft.resetEncoder();
-        frontRight.resetEncoder();
-        backLeft.resetEncoder();
-        backRight.resetEncoder();
-    }
-
-    public void zeroModules() {
-        SmartDashboard.putNumber("Time", WPIUtilJNI.getSystemTime());
-        CANCoderConstants.kFLOffsetDeg.set((frontLeft.getTurnOffset() + frontLeft.getTurningPositionDegrees()) % 360);
-        CANCoderConstants.kFROffsetDeg.set((frontRight.getTurnOffset() + frontRight.getTurningPositionDegrees()) % 360);
-        CANCoderConstants.kBLOffsetDeg.set((backLeft.getTurnOffset() + backLeft.getTurningPositionDegrees()) % 360);
-        CANCoderConstants.kBROffsetDeg.set((backRight.getTurnOffset() + backRight.getTurningPositionDegrees()) % 360);
-        CANCoderConstants.kFLOffsetDeg.uploadPreferences();
-        CANCoderConstants.kFROffsetDeg.uploadPreferences();
-        CANCoderConstants.kBLOffsetDeg.uploadPreferences();
-        CANCoderConstants.kBROffsetDeg.uploadPreferences();
-
-        
-        resetEncoders();
+    public void refreshModulePID() {
+        frontLeft.refreshPID();
+        backLeft.refreshPID();
+        frontRight.refreshPID();  
+        backRight.refreshPID();
     }
 
     /**
-     * Stops all modules. See {@link CANSwerveModule#stop()} for more info.
+     * Stops all modules. See {@link SwerveModule#stop()} for more info.
      */
     public void stopModules() {
         frontLeft.stop();
@@ -255,7 +217,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     /**
-     * Have modules move to their desired states. See {@link CANSwerveModule#run()} for more info.
+     * Have modules move to their desired states. See {@link SwerveModule#run()} for more info.
      */
     public void runModules() {
         frontLeft.run();
@@ -316,33 +278,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     public void drive(double xSpeed, double ySpeed) {
         drive(xSpeed, ySpeed, 0);
     }
-
-    //****************************** GO TO COORDINATES VISION ******************************/
-    // public void driveToSunflower(double xCoord, double yCoord) {
-    //     double XOffset;
-    //     double YOffset;
-    //     XOffset = xCoord - sunflower.getPose3dXCoord();
-    //     YOffset = yCoord - sunflower.getPose3dYCoord();
-
-    //     //Make PID Controller for this
-    //     //idk wut u wanted here but i just made a new controller to fix the build error
-    //     PIDController sunflowerController = new PIDController(VisionConstants.kSunflowerP, VisionConstants.kSunflowerI, VisionConstants.kSunflowerD);
-    //     sunflowerController.setTolerance(0.2);
-
-    //     // if(XOffset < 0.1 && XOffset > -0.1) {
-    //     //     XOffset = 0;
-    //     // }
-
-    //     // if(YOffset < 0.1 && YOffset > -0.1) {
-    //     //     YOffset = 0;
-    //     // }
-
-    //     // Should be ~- between 0.1 and 5.0
-    //     double calculatedXOffset = MathUtil.clamp(sunflowerController.calculate(XOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
-    //     double calculatedYOffset = MathUtil.clamp(sunflowerController.calculate(YOffset, 0), -0.5 * SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond, SwerveDriveConstants.kTeleDriveMaxSpeedMetersPerSecond / 2);
-
-        // drive(calculatedXOffset, calculatedYOffset, 0);
-    // }
 
     public void driveFieldOriented(double xSpeed, double ySpeed, double turnSpeed) {
         setModuleStates(
@@ -437,7 +372,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 break;
             case ALL:
                 tab.add("Field Position", field).withSize(6, 3);
-                tab.add("Zero Modules", Commands.runOnce(this::zeroModules));
                 tab.addString(("Current Command"), () -> {
                     Command currCommand = this.getCurrentCommand();
                     if (currCommand == null) {
@@ -451,7 +385,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 tab.addBoolean("Test Mode", () -> isTest);
                 // Might be negative because our swerveDriveKinematics is flipped across the Y axis
             case MEDIUM:
-                tab.addNumber("Encoder Resets", () -> this.numEncoderResets);
             case MINIMAL:
                 tab.addNumber("X Position (m)", () -> poseEstimator.getEstimatedPosition().getX());
                 tab.addNumber("Y Position (m)", () -> poseEstimator.getEstimatedPosition().getY());
@@ -477,7 +410,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     //             break;
     //         case ALL:
     //         case MEDIUM:
-    //             SmartDashboard.putNumber("Encoder Resets", numEncoderResets);
     //             SmartDashboard.putData("Zero Modules", Commands.runOnce(this::zeroModules));
     //         case MINIMAL:
     //             SmartDashboard.putNumber("Odometer X Meters", poseEstimator.getEstimatedPosition().getX());
