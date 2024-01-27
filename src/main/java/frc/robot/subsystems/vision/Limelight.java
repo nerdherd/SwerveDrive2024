@@ -170,6 +170,8 @@ public class Limelight implements Reportable{
         initDoneTA = false;
         tXList = new double[10];
         initDoneTX = false;
+        indexTX = 0;
+        indexTA = 0;
     }
 
     public double getCamPoseSkew() {

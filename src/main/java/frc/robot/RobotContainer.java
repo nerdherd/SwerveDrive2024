@@ -136,8 +136,8 @@ public class RobotContainer {
     // still being held
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
 
     // swerveDrive.drive(vision.getMovePowerToImp(0.5)[0], vision.getMovePowerToImp(0.5)[1], vision.getMovePowerToImp(0.5)[2])));
     // commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.calculateTag(1.8, 0, 0, 7)));
@@ -153,10 +153,10 @@ public class RobotContainer {
       //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
     //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
-    // commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
+    commandOperatorController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)));
     //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
     
-    // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)))
+    commandOperatorController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
     //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
 
