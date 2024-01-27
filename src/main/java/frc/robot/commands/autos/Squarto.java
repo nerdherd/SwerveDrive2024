@@ -36,7 +36,6 @@ public class Squarto extends SequentialCommandGroup {
             Commands.runOnce(() -> {
                 swerve.setPoseMetersWithAlliance(startingPose);
             }),
-            Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
             AutoBuilder.followPath((pathGroup.get(0)))
         );
     }

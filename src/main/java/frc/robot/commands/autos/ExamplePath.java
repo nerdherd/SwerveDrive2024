@@ -32,7 +32,6 @@ public class ExamplePath extends SequentialCommandGroup {
                     swerve.setPoseMeters(startingPose);
                 }
             }),
-            Commands.runOnce(() -> swerve.setPoseMeters(startingPose)),
             AutoBuilder.followPath(pathGroup.get(0)),
             AutoBuilder.followPath(pathGroup.get(1))
         );

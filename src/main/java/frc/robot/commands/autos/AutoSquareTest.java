@@ -32,7 +32,6 @@ public class AutoSquareTest extends SequentialCommandGroup {
             Commands.runOnce(() -> {
                 swerve.setPoseMetersWithAlliance(startingPose);
             }),
-            Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
             AutoBuilder.followPath((pathGroup.get(0))),
             Commands.runOnce(() -> swerve.towModules())
         );
