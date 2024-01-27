@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -127,6 +129,13 @@ public class NoteAssistance implements Reportable{
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetSkew) {
         speedToNote(targetArea, targetTX, targetSkew);
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+    }
+
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double timeout) {
+        return Commands.race(
+            Commands.run(() -> driveToNote(drivetrain, targetArea, 0, 0)),
+            Commands.waitSeconds(timeout)
+        );
     }
 
     public double getForwardSpeed() { return speeds[0]; }

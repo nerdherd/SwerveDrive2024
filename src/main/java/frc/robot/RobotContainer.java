@@ -207,11 +207,13 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, noteCamera));
       else if(path.equals("Squarto")) {
         autoChooser.addOption(path, new Squarto(swerveDrive, path));
       }
     }
+
+    autoChooser.addOption("4PAuto2", AutoBuilder.buildAuto("4PAuto"));
 
     autoChooser.addOption("Auto9Notes", new Auto9Notes(swerveDrive, "4PAuto", apriltagCamera, noteCamera)); // testing, to be removed
 
