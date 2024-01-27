@@ -79,7 +79,7 @@ public class DriverAssist implements Reportable{
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
         calculateTag(targetTA, targetTX, targetSkew, tagID);
 
-        swerveDrive.drive(getForwardPower(), getSidewaysPower(), getAngledPower());
+        swerveDrive.drive(getForwardPower(), 0, 0); //TODO: //getSidewaysPower(), getAngledPower());
     }
 
     PIDController pidTxRotation = new PIDController(1.1, 0, 0); 

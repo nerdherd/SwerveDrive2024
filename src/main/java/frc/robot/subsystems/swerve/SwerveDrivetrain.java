@@ -160,9 +160,12 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
         if(vision != null && vision.getAprilTagID() != -1)
         {
-            SmartDashboard.putBoolean("Vision Used", true);
-            poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+            if(vision.getTA() > 0.5) {
+                SmartDashboard.putBoolean("Vision Used", true);
+                poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
                 vision.getVisionFrameTimestamp());
+            }
+            
         }
         else
         {

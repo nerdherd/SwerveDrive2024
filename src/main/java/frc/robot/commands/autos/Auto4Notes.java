@@ -23,9 +23,10 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.vision.NoteAssistance;
+import frc.robot.subsystems.vision.farfuture.DriverAssist;
 
 public class Auto4Notes extends SequentialCommandGroup {
-    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, NoteAssistance notething) {     
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, NoteAssistance notething, DriverAssist tagAssist) {     
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
@@ -55,23 +56,31 @@ public class Auto4Notes extends SequentialCommandGroup {
             Path1stCom(firstNotePose), // Pickup 1
 
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
-            Commands.waitSeconds(10),
+            Commands.waitSeconds(4),
+
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
             notething.driveToNoteCommand(swerve, 5, 1.5),
-            Commands.waitSeconds(10),
+            Commands.waitSeconds(4),
+
             AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
             notething.driveToNoteCommand(swerve, 5, 1.5),
-            Commands.waitSeconds(10),
+            Commands.waitSeconds(4),
+
             AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(5),
+
             AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(5),
+
             AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(5),
+
             AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(5),
+            
             AutoBuilder.followPath((pathGroup.get(7))), // Back Shoot
-            Commands.waitSeconds(0.5)
+            Commands.waitSeconds(3)
+            // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7)
         );
     }
 
