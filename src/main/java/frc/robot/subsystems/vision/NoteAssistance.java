@@ -121,8 +121,8 @@ public class NoteAssistance implements Reportable{
         // SmartDashboard.putNumber("ss", speeds[1]);
         // SmartDashboard.putNumber("as", speeds[2]);
 
-        speeds[0] = NerdyMath.deadband(speeds[0], -0.5, 0.5);
-        speeds[1] = NerdyMath.deadband(speeds[1], -0.5, 0.5);
+        speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
+        speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
         speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
     }
 
@@ -136,7 +136,7 @@ public class NoteAssistance implements Reportable{
             Commands.runOnce(() -> limelight.resetLists()),
             Commands.run(
                 () -> driveToNote(drivetrain, targetArea, 0, 0)
-            ).until(() -> getForwardSpeed() == 0 && getSidewaysSpeed() == 0)
+            ).until(() -> getForwardSpeed() <= 0.1 && getSidewaysSpeed() <= 0.1)
         );
     }
 
