@@ -174,7 +174,7 @@ public class SwerveModule implements Reportable {
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
-        if (Math.abs(velocity) < 0.001) {
+    if (Math.abs(velocity) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
         else if (this.velocityControl) {

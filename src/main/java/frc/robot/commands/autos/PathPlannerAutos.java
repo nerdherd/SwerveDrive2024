@@ -134,6 +134,9 @@ public class PathPlannerAutos {
         return Commands.sequence(
             
             Commands.runOnce(() -> swerveDrive.getImu().zeroAll()),
+            // Commands.runOnce(() -> {
+            //     swerve.setPoseMetersWithAlliance(startingPose);
+            // }),
             Commands.runOnce(() -> swerveDrive.setPoseMeters(startingPose)),
             AutoBuilder.followPath(path)
             // TODO: Once we get real odometry with vision, get rid of this

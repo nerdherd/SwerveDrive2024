@@ -6,8 +6,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 // import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -26,7 +29,9 @@ public class AutoSquareTest extends SequentialCommandGroup {
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(() -> swerve.getImu().setOffset(startingPose.getRotation().getDegrees())),
-
+            Commands.runOnce(() -> {
+                swerve.setPoseMetersWithAlliance(startingPose);
+            }),
             Commands.runOnce(()->swerve.setPoseMeters(startingPose)),
             AutoBuilder.followPath((pathGroup.get(0))),
             Commands.runOnce(() -> swerve.towModules())

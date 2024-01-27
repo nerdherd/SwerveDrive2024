@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -29,6 +30,7 @@ import static frc.robot.Constants.PathPlannerConstants.kPPTranslationPIDConstant
 import static frc.robot.Constants.SwerveDriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.GeometryUtil;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
@@ -340,6 +342,15 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     public void setPoseMeters(Pose2d pose) {
         // odometer.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
         poseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
+    }
+
+    public void setPoseMetersWithAlliance(Pose2d pose){
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get().equals(Alliance.Red)) {
+            setPoseMeters(GeometryUtil.flipFieldPose(pose));
+        } else {
+            setPoseMeters(pose);
+        }
     }
 
     public void initShuffleboard(LOG_LEVEL level) {
