@@ -131,10 +131,12 @@ public class NoteAssistance implements Reportable{
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double timeout) {
-        return Commands.race(
-            Commands.run(() -> driveToNote(drivetrain, targetArea, 0, 0)),
-            Commands.waitSeconds(timeout)
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea) {
+        return Commands.sequence(
+            Commands.runOnce(() -> limelight.resetLists()),
+            Commands.run(
+                () -> driveToNote(drivetrain, targetArea, 0, 0)
+            ).until(() -> getForwardSpeed() == 0 && getSidewaysSpeed() == 0)
         );
     }
 

@@ -59,11 +59,11 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.waitSeconds(4),
 
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
-            notething.driveToNoteCommand(swerve, 5, 1.5),
+            notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
 
             AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
-            notething.driveToNoteCommand(swerve, 5, 1.5),
+            notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
 
             AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
@@ -77,7 +77,7 @@ public class Auto4Notes extends SequentialCommandGroup {
 
             AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
             Commands.waitSeconds(5),
-            
+
             AutoBuilder.followPath((pathGroup.get(7))), // Back Shoot
             Commands.waitSeconds(3)
             // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7)
@@ -89,7 +89,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         return AutoBuilder.pathfindToPose(
             destPose,//new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
             new PathConstraints(
-                4.0, 4.0, 
+                1.5, 1.5, 
                 Units.degreesToRadians(360), Units.degreesToRadians(540)
             ), 
             0, 
