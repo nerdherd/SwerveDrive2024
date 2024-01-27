@@ -36,8 +36,8 @@ public class NoteAssistance implements Reportable{
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
         //TODO set pid constants to preferences for easy tuning
-        areaController = new PIDController(1.8, 0, 0);
-        txController = new PIDController(0.06, 0, 0.006);
+        areaController = new PIDController(0.34, 0, 0);
+        txController = new PIDController(0.08, 0, 0.006);
         skewController = new PIDController(0.05, 0, 0);
 
         try {
@@ -73,6 +73,10 @@ public class NoteAssistance implements Reportable{
         limelight.reinitBuffer();
     }
 
+    public void reset() {
+        limelight.resetLists();
+    }
+
     public void speedToNote(double targetArea, double targetTX, double targetSkew) {
         if(limelight == null) return;
 
@@ -86,12 +90,12 @@ public class NoteAssistance implements Reportable{
 
         // pidTuning_test();
 
-        //double area = limelight.getAreaFiltered(15);
+        // double area = limelight.getAreaFiltered(10);
         double area = limelight.getArea_avg();
         if(currentArea != null)
             currentArea.setDouble(area);
         // SmartDashboard.putNumber("area", area);
-        //double tx = limelight.getXAngleFiltered(10);
+        // double tx = limelight.getXAngleFiltered(3);
         double tx = limelight.getXAngle_avg();
         if(currentTX != null)
             currentTX.setDouble(tx);

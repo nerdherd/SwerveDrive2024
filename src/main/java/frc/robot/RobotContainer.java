@@ -145,18 +145,19 @@ public class RobotContainer {
     
     
     // Please Comment out one set of these two to run!!!
-    commandOperatorController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.5, 0, 0)))
+    commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
       .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    commandOperatorController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))) // turn speed 0 for now
-      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    commandDriverController.R1().onTrue(Commands.run(() -> noteCamera.reset()));
+    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); // turn speed 0 for now
+      // .onFalse(Commands.run(() -> swerveDrive.stopModules()));
       //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
     //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
-      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    // commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1.8, 0, 0, 7)))
+    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
     
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)))
-      .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    // commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)))
+    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
 
 
 

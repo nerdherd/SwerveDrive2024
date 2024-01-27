@@ -165,6 +165,13 @@ public class Limelight implements Reportable{
         setLightState(LIGHT_OFF);
     }
 
+    public void resetLists() {
+        tAList = new double[10];
+        initDoneTA = false;
+        tXList = new double[10];
+        initDoneTX = false;
+    }
+
     public double getCamPoseSkew() {
         //double[] botPose = m_botPos.getDoubleArray(new double[6]);
         double[] camPose = m_camPos.getDoubleArray(new double[6]);
