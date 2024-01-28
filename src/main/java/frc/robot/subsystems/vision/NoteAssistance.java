@@ -70,11 +70,6 @@ public class NoteAssistance implements Reportable{
         skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
-    public void resetBuffer()
-    {
-        limelight.reinitBuffer();
-    }
-
     public void reset() {
         limelight.resetLists();
     }
@@ -136,7 +131,7 @@ public class NoteAssistance implements Reportable{
             Commands.runOnce(() -> limelight.resetLists()),
             Commands.run(
                 () -> driveToNote(drivetrain, targetArea, 0, 0)
-            ).until(() -> getForwardSpeed() <= 0.1 && getSidewaysSpeed() <= 0.1)
+            ).until(() -> Math.abs(getForwardSpeed()) <= 0.1 && Math.abs(getSidewaysSpeed()) <= 0.1)
         );
     }
 
