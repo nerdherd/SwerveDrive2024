@@ -120,8 +120,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
          *     the vision pose measurement less.
         */
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO
           //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
         //   kVisionSTDx,
         //   kVisionSTDy,
@@ -188,7 +188,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         {
             SmartDashboard.putBoolean("Vision Used", false);
         }
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     
     //****************************** RESETTERS ******************************/
@@ -203,8 +204,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 initPoseByVisionDone = true;
                 Pose3d p = vision.getCurrentPose3DVision();
                 resetOdometry(p.toPose2d());
-                //Units.radiansToDegrees(p.getRotation().getZ())
-                //gyro.resetHeading(p.toPose2d().getRotation().getDegrees());
                 gyro.setOffset(p.getRotation().getZ());
             }
         }
