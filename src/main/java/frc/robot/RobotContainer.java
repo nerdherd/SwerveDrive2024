@@ -147,11 +147,9 @@ public class RobotContainer {
     // Please Comment out one set of these two to run!!!
     // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
     //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    // commandDriverController.R1().onTrue(Commands.run(() -> noteCamera.reset()));
-    // commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); // turn speed 0 for now
+    // commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); 
+    //  .onFalse(Commands.run(() -> noteCamera.reset()));
       
-      // .onFalse(Commands.run(() -> swerveDrive.stopModules()));
-      //.onFalse(Commands.run(() -> noteCamera.resetBuffer())); // can we do doulbe actions?
     
     //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
     commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
@@ -213,8 +211,6 @@ public class RobotContainer {
         autoChooser.addOption(path, new Squarto(swerveDrive, path));
       }
     }
-
-    autoChooser.addOption("4PAuto2", AutoBuilder.buildAuto("4PAuto"));
 
     autoChooser.addOption("Auto9Notes", new Auto9Notes(swerveDrive, "4PAuto", apriltagCamera, noteCamera)); // testing, to be removed
 
