@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Reportable;
@@ -81,12 +83,28 @@ public class DriverAssist implements Reportable{
 
         swerveDrive.drive(getForwardPower(), 0, 0); //TODO: //getSidewaysPower(), getAngledPower());
     }
+    public Command driveToApriltagCommand(SwerveDrivetrain drivetrain, double targetTA, double targetTX, double targetSkew, int tagID) {
+        return Commands.sequence(
+            Commands.run(
+                () -> TagDriving(drivetrain, targetTA, targetTX, targetSkew, tagID)
+            ).until(() -> Math.abs(getForwardPower()) <= 0.1 && Math.abs(getSidewaysPower()) <= 0.1 && Math.abs(getAngledPower()) <= 0.1)
+        );
+    }
 
-    PIDController pidTxRotation = new PIDController(1.1, 0, 0); 
+    
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, double targetTA, double targetTX, double targetSkew, int tagID) {
+        return Commands.sequence(
+            Commands.run(
+                () -> TagAimingRotation(drivetrain, targetTA, targetTX, targetSkew, tagID)
+            ).until(() -> Math.abs(calculatedAngledPower) <= 0.1)
+        );
+    }
+
+    PIDController pidTxRotation = new PIDController(0.3, 0, 0); 
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetAngle, int tagID) {
         double taOffset;
         double txOffset;
-        //double skewOffset;
+        double skewOffset;
 
         // Have to consider the Ta for all coeffs!!! Todo
 
@@ -96,17 +114,18 @@ public class DriverAssist implements Reportable{
 
         if(tagID == foundId) {
             
-            txOffset = targetTX - getTX();
             taOffset = getTA();
+            txOffset = getTX();
+            skewOffset = getSkew();
                  
             if(currentTaOffset != null)
-                currentTaOffset.setDouble(0);
+                currentTaOffset.setDouble(taOffset);
             if(currentTxOffset != null)
-                currentTxOffset.setDouble(0);
+                currentTxOffset.setDouble(txOffset);
             if(currentAngleOffset != null)
-                currentAngleOffset.setDouble(txOffset);
+                currentAngleOffset.setDouble(skewOffset);
 
-            calculatedAngledPower = pidTxRotation.calculate(txOffset, 0);
+            calculatedAngledPower = pidTxRotation.calculate(skewOffset, 0);
             calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
     
             calculatedForwardPower = 0;//0.1*calculatedAngledPower;
@@ -121,18 +140,20 @@ public class DriverAssist implements Reportable{
                 angularSpeed.setDouble(calculatedAngledPower);
 
             swerveDrive.drive(calculatedForwardPower, calculatedSidewaysPower, calculatedAngledPower);
-            if(txOffset > -4*taOffset && txOffset < 4*taOffset) // use math fucntion log? todo
-            {
-                limelight.setLightState(LightMode.BLINK);
-            }
-            else{
-                limelight.setLightState(LightMode.ON);
-            }
+            // if(txOffset > -4*taOffset && txOffset < 4*taOffset) // use math fucntion log? todo
+            // {
+            //     limelight.setLightState(LightMode.BLINK);
+            // }
+            // else{
+            //     limelight.setLightState(LightMode.ON);
+            // }
         }
         else {
             limelight.setLightState(LightMode.OFF);
         }
     }
+
+    
 
 
     public double getTA() {

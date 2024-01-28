@@ -85,7 +85,7 @@ public class Auto4Notes extends SequentialCommandGroup {
             AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
             Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(7))), // Back Shoot
+            AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
             Commands.waitSeconds(3)
             // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7)
         );
