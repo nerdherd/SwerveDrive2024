@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.WPIMathJNI;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -110,8 +112,22 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         }
 
         this.gyro = gyro;
-        this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
-        this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
+        /** @param stateStdDevs Standard deviations of the pose estimate (x position in meters, y position
+         *     in meters, and heading in radians). Increase these numbers to trust your state estimate
+         *     less.
+         * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement (x position
+         *     in meters, y position in meters, and heading in radians). Increase these numbers to trust
+         *     the vision pose measurement less.
+        */
+        this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
+        //   kVisionSTDx,
+        //   kVisionSTDy,
+        //   kVisionSTDtheta
+        // this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
+
         this.vision = vision;
         // this.odometer = new SwerveDriveOdometry(
         //     kDriveKinematics, 
