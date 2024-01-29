@@ -150,6 +150,7 @@ public class DriverAssist implements Reportable{
             // }
         }
         else {
+            calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
             limelight.setLightState(LightMode.OFF);
         }
     }
@@ -227,6 +228,7 @@ public class DriverAssist implements Reportable{
                 angularSpeed.setDouble(calculatedAngledPower);
         }
         else {
+            calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
             //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
             
         }
@@ -294,6 +296,7 @@ public class DriverAssist implements Reportable{
     public int getAprilTagID() {
         if (limelight != null) {
             if (limelight.hasValidTarget()) {
+                // todo, add ta size checking!!
                 return limelight.getAprilTagID();
             }
         }

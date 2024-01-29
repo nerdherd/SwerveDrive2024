@@ -51,7 +51,6 @@ public class NoteAssistance implements Reportable{
             limelight = null;
             tab.add(name + " inited", false);
         }
-        //initShuffleboard(LOG_LEVEL.ALL);
     }
 
     public void pidTuning_test() {
@@ -76,35 +75,52 @@ public class NoteAssistance implements Reportable{
 
     public void speedToNote(double targetArea, double targetTX, double targetSkew) {
         if(limelight == null) return;
-
-        // Need to add a max TA for over-image ....
-
         
         boolean hasTarget = limelight.hasValidTarget();
         if(targetFound != null)
             targetFound.setBoolean(hasTarget);
-        if(!hasTarget) return;
+        if(hasTarget) 
+        {
+            // pidTuning_test();
 
-        // pidTuning_test();
+            // double area = limelight.getAreaFiltered(10);
+            double area = limelight.getArea_avg();
+            if(currentArea != null)
+                currentArea.setDouble(area);
+            // SmartDashboard.putNumber("area", area);
+            // double tx = limelight.getXAngleFiltered(3);
+            double tx = limelight.getXAngle_avg();
+            if(currentTX != null)
+                currentTX.setDouble(tx);
+            // SmartDashboard.putNumber("tx", tx);
+            double skew = limelight.getSkew();
+            if(currentSkew != null)
+                currentSkew.setDouble(skew);
+            // SmartDashboard.putNumber("skew", skew);
 
-        // double area = limelight.getAreaFiltered(10);
-        double area = limelight.getArea_avg();
-        if(currentArea != null)
-            currentArea.setDouble(area);
-        // SmartDashboard.putNumber("area", area);
-        // double tx = limelight.getXAngleFiltered(3);
-        double tx = limelight.getXAngle_avg();
-        if(currentTX != null)
-            currentTX.setDouble(tx);
-        // SmartDashboard.putNumber("tx", tx);
-        double skew = limelight.getSkew();
-        if(currentSkew != null)
-            currentSkew.setDouble(skew);
-        // SmartDashboard.putNumber("skew", skew);
+            if( targetArea < 0.5 || targetArea > 5.5 ) // todo, tuning pls!!!
+            {
+                speeds[0] = speeds[1] = speeds[2] = 0; // something is wrong
+            } 
+            else
+            {
+                speeds[0] = 1 * areaController.calculate(area, targetArea);
+                speeds[1]= 1 * txController.calculate(tx, targetTX);
+                speeds[2] = 1 * skewController.calculate(skew, targetSkew);
 
-        speeds[0] = 1 * areaController.calculate(area, targetArea);
-        speeds[1]= 1 * txController.calculate(tx, targetTX);
-        speeds[2] = 1 * skewController.calculate(skew, targetSkew);
+                // SmartDashboard.putNumber("fs", speeds[0]);
+                // SmartDashboard.putNumber("ss", speeds[1]);
+                // SmartDashboard.putNumber("as", speeds[2]);
+
+                speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
+                speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
+            }
+        }
+        else
+        {
+            speeds[0] = speeds[1] = speeds[2] = 0;
+        }
 
         if(forwardSpeed != null)
             forwardSpeed.setDouble(speeds[0]);
@@ -112,13 +128,6 @@ public class NoteAssistance implements Reportable{
             sidewaysSpeed.setDouble(speeds[1]);
         if(angularSpeed != null)
             angularSpeed.setDouble(speeds[2]);
-        // SmartDashboard.putNumber("fs", speeds[0]);
-        // SmartDashboard.putNumber("ss", speeds[1]);
-        // SmartDashboard.putNumber("as", speeds[2]);
-
-        speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
-        speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
-        speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
     }
 
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetSkew) {
