@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.SwerveAutoConstants;
 import frc.robot.Constants.SwerveDriveConstants;
+import frc.robot.util.filters.DeadbandFilter;
 import frc.robot.util.filters.Filter;
+import frc.robot.util.filters.FilterSeries;
+import frc.robot.util.filters.ScaleFilter;
 import frc.robot.filters.OldDriverFilter2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
@@ -79,13 +82,10 @@ public class SwerveJoystickCommand extends Command {
             kDriveAlpha, 
             kTeleMaxAcceleration, 
             kTeleMaxDeceleration);
-        this.turningFilter = new OldDriverFilter2(
-            ControllerConstants.kRotationDeadband, 
-            kMinimumMotorOutput,
-            kTeleDriveMaxAngularSpeedRadiansPerSecond, 
-            kDriveAlpha, 
-            kTeleMaxAcceleration, 
-            kTeleMaxDeceleration);
+        this.turningFilter = new FilterSeries(
+            new DeadbandFilter(ControllerConstants.kRotationDeadband),
+            new ScaleFilter(kTeleDriveMaxAngularSpeedRadiansPerSecond)
+            );
         
         this.turnToAngleController = new PIDController(
             SwerveAutoConstants.kPTurnToAngle, 
