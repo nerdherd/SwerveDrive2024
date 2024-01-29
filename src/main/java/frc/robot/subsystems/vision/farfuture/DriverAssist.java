@@ -100,7 +100,7 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    PIDController pidTxRotation = new PIDController(0.3, 0, 0); 
+    PIDController pidTxRotation = new PIDController(0.1, 0, 0); 
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetAngle, int tagID) {
         double taOffset;
         double txOffset;
@@ -125,8 +125,9 @@ public class DriverAssist implements Reportable{
             if(currentAngleOffset != null)
                 currentAngleOffset.setDouble(skewOffset);
 
-            calculatedAngledPower = pidTxRotation.calculate(skewOffset, 0);
-            calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.25, 0.25);
+                // pid based on tx, and adding ta/distance as the factor
+            calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+            calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3);
     
             calculatedForwardPower = 0;//0.1*calculatedAngledPower;
 
