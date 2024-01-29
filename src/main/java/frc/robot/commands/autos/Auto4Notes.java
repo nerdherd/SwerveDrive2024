@@ -32,6 +32,72 @@ public class Auto4Notes extends SequentialCommandGroup {
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
 
         // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
+        Pose2d startPose2d = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
+
+        Pose2d firstNotePose;
+
+        int aimTargetApriltagID;
+
+        if(RobotContainer.IsRedSide())
+        {
+            firstNotePose = new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0)));
+            aimTargetApriltagID = 4;
+        }
+        else // Blue side
+        {
+            firstNotePose = new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
+            aimTargetApriltagID = 7;
+        }
+
+        addCommands(
+            //Commands.none()
+            Commands.runOnce(swerve.getImu()::zeroAll),
+            Commands.runOnce(()->swerve.resetInitPoseByVision()),
+            Commands.waitSeconds(2), // debug time
+
+            PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
+            //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
+            //notething.driveToNoteCommand(swerve, 5),
+            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            Commands.waitSeconds(4),
+
+            //PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
+            AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
+            //notething.driveToNoteCommand(swerve, 5),
+            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            Commands.waitSeconds(4),
+
+            //PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
+            AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
+            //notething.driveToNoteCommand(swerve, 5),
+            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            Commands.waitSeconds(4),
+
+            AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
+            Commands.waitSeconds(5),
+
+            AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
+            Commands.waitSeconds(5),
+
+            AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
+            Commands.waitSeconds(5),
+
+            AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
+            Commands.waitSeconds(5),
+
+            AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
+            Commands.waitSeconds(3),
+            // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7),
+            Commands.none()
+        );
+    }
+
+    public Auto4Notes(SwerveDrivetrain swerve, String autoPath, NoteAssistance notething, DriverAssist tagAssist, boolean usingPose) {     
+        
+        // Use the PathPlannerAuto class to get a path group from an auto
+        List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
+
+        // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d firstNotePose;// = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
         Pose2d secondNotePose;
         Pose2d thirdNotePose;
@@ -43,6 +109,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         {
             firstNotePose = new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0)));
             secondNotePose = new Pose2d(); // todo
+            thirdNotePose = new Pose2d();
             aimTargetApriltagID = 4;
         }
         else // Blue side
@@ -60,34 +127,36 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(()->swerve.resetInitPoseByVision()),
             Commands.waitSeconds(2), // debug time
 
-            PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 2.0), // Pickup 1
+            PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
             Commands.waitSeconds(4),
 
-            PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 2.0), // Pickup 1
+            PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
             //AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
-            notething.driveToNoteCommand(swerve, 5),
+            //notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
 
-            AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
-            notething.driveToNoteCommand(swerve, 5),
+            PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
+            //AutoBuilder.followPath((pathGroup.get())), // Pickup 3
+            //notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
 
-            AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
-            Commands.waitSeconds(3)
+            // AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
+            // Commands.waitSeconds(3)
             // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7)
+            Commands.none()
         );
     }
 
