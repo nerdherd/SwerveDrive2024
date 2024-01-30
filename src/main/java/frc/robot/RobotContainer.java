@@ -146,8 +146,8 @@ public class RobotContainer {
     // Please Comment out one set of these two to run!!!
     // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
     //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0))); 
-    //  .onFalse(Commands.run(() -> noteCamera.reset()));
+    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.5, 0, 0.1, -1)))
+      .onFalse(Commands.run(() -> noteCamera.reset()));
       
     
     //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing

@@ -167,12 +167,13 @@ public class Limelight implements Reportable{
     }
 
     public void resetLists() {
-        tAList = new double[10]; // do not need it?
+        //tAList = new double[10]; // do not need it?
         initDoneTA = false;
-        tXList = new double[10]; // do not need it?
+        //tXList = new double[10]; // do not need it?
         initDoneTX = false;
-        tYList = new double[10]; // do not need it?
+        //tYList = new double[10]; // do not need it?
         initDoneTY = false;
+        
         indexTX = 0;
         indexTY = 0;
         indexTA = 0;

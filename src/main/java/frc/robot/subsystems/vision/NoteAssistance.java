@@ -38,7 +38,7 @@ public class NoteAssistance implements Reportable{
         areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
         txController = new PIDController(0.08, 0, 0.006);// todo, tuning pls!!!
 
-        try {
+        try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
             tab.add(name + " inited", true);
             limelight.setPipeline(VisionConstants.kNotePipeline);
@@ -65,12 +65,14 @@ public class NoteAssistance implements Reportable{
         //skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
+    int dataSampleCount = 0;
     public void reset() {
         limelight.resetLists();
+        dataSampleCount = 0;
     }
 
     public void speedToNote(double targetArea, double targetTX, double targetTY) {
-        if(limelight == null) return;
+        if(limelight == null) return; // todo, never happens
         
         boolean hasTarget = limelight.hasValidTarget();
         if(targetFound != null)
@@ -93,13 +95,13 @@ public class NoteAssistance implements Reportable{
             {
                 speeds[0] = speeds[1] = 0; // something is wrong, or filted out by camera dashboard
             } 
-            else if( ty < targetTY ) 
-            {
-                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the notes
-            } 
             else if( tx < 6 && tx > -6 && area > 3.7 ) // todo, tuning pls!!!
             {
                 speeds[0] = speeds[1] = 0; // good range to get the note. faster than the pid
+            } 
+            else if( ty < targetTY ) // need a lot of testing here
+            {
+                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the notes
             } 
             else
             {
@@ -121,17 +123,25 @@ public class NoteAssistance implements Reportable{
             sidewaysSpeed.setDouble(speeds[1]);
     }
 
-    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY) {
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
+        // must reset before or after call this function!!!
+        dataSampleCount++;
         speedToNote(targetArea, targetTX, targetTY);
-        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+        if(maxSamples > 0 && dataSampleCount > maxSamples)
+            drivetrain.drive(0, 0, 0);
+        else
+            drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea) {
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples) {
         return Commands.sequence(
-            Commands.runOnce(() -> limelight.resetLists()),
+            Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> driveToNote(drivetrain, targetArea, 0, 0.1)// todo, tuning pls!!!
-            ).until(() -> Math.abs(getForwardSpeed()) <= 0.1 && Math.abs(getSidewaysSpeed()) <= 0.1)// todo, tuning pls!!!
+                () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples)// todo, tuning pls!!!
+            ).until(() -> (dataSampleCount >= minSamples && 
+                Math.abs(getForwardSpeed()) <= 0.1 && 
+                Math.abs(getSidewaysSpeed()) <= 0.1) ||// todo, tuning pls!!!
+                dataSampleCount > maxSamples)
         );
     }
 
