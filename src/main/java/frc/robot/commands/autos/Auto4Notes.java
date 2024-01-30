@@ -53,25 +53,24 @@ public class Auto4Notes extends SequentialCommandGroup {
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
             Commands.runOnce(()->swerve.resetInitPoseByVision(startPose2d)),
-            //Commands.runOnce(()->swerve.setPoseMeters()),
             Commands.waitSeconds(2), // debug time
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
             notething.driveToNoteCommand(swerve, 4.5, 10, 40),
-            tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
 
             //PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
-            //notething.driveToNoteCommand(swerve, 4.5),
-            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
+            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
 
             //PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
             AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
-            //notething.driveToNoteCommand(swerve, 4.5),
-            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
+            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
 
             // AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid

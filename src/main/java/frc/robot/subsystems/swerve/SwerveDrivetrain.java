@@ -121,7 +121,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         */
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
-          VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5))); // TODO
+          VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5))); // TODO // default values:0.5, 0.5, Units.degreesToRadians(30)
           //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
         //   kVisionSTDx,
         //   kVisionSTDy,
@@ -177,7 +177,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if(vision != null && vision.getAprilTagID() != -1)
         {
             //TODO: Commented this out
-            if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO
+            if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO. move it to vision code
                 SmartDashboard.putBoolean("Vision Used", true);
                 // poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
                 // vision.getVisionFrameTimestamp());

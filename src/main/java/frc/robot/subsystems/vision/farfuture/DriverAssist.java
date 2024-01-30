@@ -73,9 +73,10 @@ public class DriverAssist implements Reportable{
         
     }
 
-    public void resetBuffer()
+    public void reset()
     {
         limelight.reinitBuffer();
+        dataSampleCount = 0;
     }
 
     public void TagDriving(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetSkew, int tagID) {
@@ -91,68 +92,71 @@ public class DriverAssist implements Reportable{
         );
     }
 
-    
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, double targetTA, double targetTX, double targetSkew, int tagID) {
+    int dataSampleCount = 0;
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
         return Commands.sequence(
+            Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> TagAimingRotation(drivetrain, targetTA, targetTX, targetSkew, tagID)
-            ).until(() -> Math.abs(calculatedAngledPower) <= 0.1)
+                () -> TagAimingRotation(drivetrain, tagID, maxSamples)
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1)
         );
     }
 
-    PIDController pidTxRotation = new PIDController(0.1, 0, 0); 
-    public void TagAimingRotation(SwerveDrivetrain swerveDrive, double targetTA, double targetTX, double targetAngle, int tagID) {
+    PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
+    public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
+        // make sure to reset before or after calling this function
+        // make sure the cross is at the center!!! for tx
         double taOffset;
         double txOffset;
-        double skewOffset;
 
-        // Have to consider the Ta for all coeffs!!! Todo
-
-        int foundId = getAprilTagID();
-        if(targetId != null)
-            targetId.setInteger(foundId);
-
-        if(tagID == foundId) {
-            
-            taOffset = getTA();
-            txOffset = getTX();
-            skewOffset = getSkew();
-                 
-            if(currentTaOffset != null)
-                currentTaOffset.setDouble(taOffset);
-            if(currentTxOffset != null)
-                currentTxOffset.setDouble(txOffset);
-            if(currentAngleOffset != null)
-                currentAngleOffset.setDouble(skewOffset);
-
-                // pid based on tx, and adding ta/distance as the factor
-            calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
-            calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3);
-    
-            calculatedForwardPower = 0;//0.1*calculatedAngledPower;
-
-            calculatedSidewaysPower = 0;
-    
-            if(forwardSpeed != null)
-                forwardSpeed.setDouble(calculatedForwardPower);
-            if(sidewaysSpeed != null)
-                sidewaysSpeed.setDouble(calculatedSidewaysPower);
-            if(angularSpeed != null)
-                angularSpeed.setDouble(calculatedAngledPower);
-
-            swerveDrive.drive(calculatedForwardPower, calculatedSidewaysPower, calculatedAngledPower);
-            // if(txOffset > -4*taOffset && txOffset < 4*taOffset) // use math fucntion log? todo
-            // {
-            //     limelight.setLightState(LightMode.BLINK);
-            // }
-            // else{
-            //     limelight.setLightState(LightMode.ON);
-            // }
+        dataSampleCount++;
+        if(maxSamples > 0 && dataSampleCount >= maxSamples)
+        {
+            calculatedAngledPower = 0;
         }
-        else {
-            calculatedForwardPower = calculatedAngledPower = calculatedSidewaysPower = 0;
-            limelight.setLightState(LightMode.OFF);
+        else
+        {
+            int foundId = getAprilTagID();
+            if(targetId != null)
+                targetId.setInteger(foundId);
+
+            if(tagID == foundId) {
+                
+                taOffset = limelight.getArea_avg();
+                txOffset = limelight.getXAngle_avg();
+                    
+                if(currentTaOffset != null)
+                    currentTaOffset.setDouble(taOffset);
+                if(currentTxOffset != null)
+                    currentTxOffset.setDouble(txOffset);
+                if(currentAngleOffset != null)
+                    currentAngleOffset.setDouble(0);
+
+                // if( txOffset < 6 && txOffset > -6 && taOffset > 3.7 ) // todo, tuning pls!!!
+                // {
+                //     calculatedAngledPower = 0; // good ranges. faster than the pid
+                // } 
+                // else if(){} // out of range cases. todo 
+                // else
+                {
+                    // pid based on tx, and adding ta/distance as the factor
+                    calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
+                    calculatedAngledPower = NerdyMath.deadband(calculatedAngledPower, -0.3, 0.3); // todo, tuning pls. Have to consider the Ta for all coeffs!!! Todo
+                }
+
+                if(forwardSpeed != null)
+                    forwardSpeed.setDouble(0);
+                if(sidewaysSpeed != null)
+                    sidewaysSpeed.setDouble(0);
+                if(angularSpeed != null)
+                    angularSpeed.setDouble(calculatedAngledPower);
+            }
+            else {
+                calculatedAngledPower = 0;
+            }
         }
+
+        swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
     

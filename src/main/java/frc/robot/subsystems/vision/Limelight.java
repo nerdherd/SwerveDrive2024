@@ -228,7 +228,7 @@ public class Limelight implements Reportable{
         return this.name;
     }
 
-    public void reinitBuffer()
+    public void reinitBuffer() // todo: duplct
     {
         indexTX = 0;
         initDoneTX = false;
