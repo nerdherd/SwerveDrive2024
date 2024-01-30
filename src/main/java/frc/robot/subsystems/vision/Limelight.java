@@ -35,6 +35,7 @@ public class Limelight implements Reportable{
 
     private double tXList[] = new double[10];
     private double tAList[] = new double[10];
+    private double tYList[] = new double[10];
 
     public enum LightMode {
         DEFAULT(0), OFF(1), BLINK(2), ON(3);
@@ -170,7 +171,10 @@ public class Limelight implements Reportable{
         initDoneTA = false;
         tXList = new double[10]; // do not need it?
         initDoneTX = false;
+        tYList = new double[10]; // do not need it?
+        initDoneTY = false;
         indexTX = 0;
+        indexTY = 0;
         indexTA = 0;
     }
 
@@ -229,6 +233,8 @@ public class Limelight implements Reportable{
         initDoneTX = false;
         indexTA = 0;
         initDoneTA = false;
+        indexTY = 0;
+        initDoneTY = false;
     }
     
     /**
@@ -329,6 +335,37 @@ public class Limelight implements Reportable{
      */
     public double getYAngle() {
         return ty.getDouble(0);
+    }
+
+    int indexTY = 0;
+    boolean initDoneTY = false;
+    public double getYAngle_avg() {
+        tYList[indexTY] = ty.getDouble(0);
+        indexTY ++;
+        if(indexTY >= tYList.length) {
+            indexTY = 0;
+            initDoneTY = true;
+        }
+
+        //SmartDashboard.putNumberArray("txFiltered", tXList);
+
+        double TYSum = 0;
+        if(initDoneTY) {
+            for(int i = 0; i < tYList.length; i++) {
+                TYSum += tYList[i];
+            }
+            
+            //SmartDashboard.putNumber("TXAverage", TXSum / tXList.length);
+
+            return TYSum / tYList.length;
+        }
+        else {
+            for(int i = 0; i < indexTY; i++) {
+                TYSum += tYList[i];
+            }
+
+            return TYSum / indexTY;
+        }
     }
 
     /**

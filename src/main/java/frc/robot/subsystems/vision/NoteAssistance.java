@@ -19,28 +19,24 @@ public class NoteAssistance implements Reportable{
 
     private PIDController areaController;
     private PIDController txController;
-    private PIDController skewController;
 
     private GenericEntry targetFound;
     private GenericEntry currentArea;
     private GenericEntry currentTX;
-    private GenericEntry currentSkew;
+    private GenericEntry currentTY;
+
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
-    private GenericEntry angularSpeed;
 
-    double[] speeds = {0.0, 0.0, 0.0};
-
-    //ComplexWidget v;
+    double[] speeds = {0.0, 0.0};
 
     public NoteAssistance(String name) {
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
         //TODO set pid constants to preferences for easy tuning
-        areaController = new PIDController(0.34, 0, 0);
-        txController = new PIDController(0.08, 0, 0.006);
-        skewController = new PIDController(0.05, 0, 0);
+        areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
+        txController = new PIDController(0.08, 0, 0.006);// todo, tuning pls!!!
 
         try {
             limelight = new Limelight(name);
@@ -60,20 +56,20 @@ public class NoteAssistance implements Reportable{
         VisionConstants.kPNoteSide.loadPreferences();
         VisionConstants.kINoteSide.loadPreferences();
         VisionConstants.kDNoteSide.loadPreferences();
-        VisionConstants.kPNoteAngle.loadPreferences();
-        VisionConstants.kINoteAngle.loadPreferences();
-        VisionConstants.kDNoteAngle.loadPreferences();
+        // VisionConstants.kPNoteAngle.loadPreferences();
+        // VisionConstants.kINoteAngle.loadPreferences();
+        // VisionConstants.kDNoteAngle.loadPreferences();
         
         areaController = new PIDController(VisionConstants.kPNoteForward.get(), VisionConstants.kINoteForward.get(), VisionConstants.kDNoteForward.get());
         txController = new PIDController(VisionConstants.kPNoteSide.get(), VisionConstants.kINoteSide.get(), VisionConstants.kDNoteSide.get());
-        skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
+        //skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
     public void reset() {
         limelight.resetLists();
     }
 
-    public void speedToNote(double targetArea, double targetTX, double targetSkew) {
+    public void speedToNote(double targetArea, double targetTX, double targetTY) {
         if(limelight == null) return;
         
         boolean hasTarget = limelight.hasValidTarget();
@@ -81,61 +77,52 @@ public class NoteAssistance implements Reportable{
             targetFound.setBoolean(hasTarget);
         if(hasTarget) 
         {
-            // pidTuning_test();
-
-            // double area = limelight.getAreaFiltered(10);
             double area = limelight.getArea_avg();
             if(currentArea != null)
                 currentArea.setDouble(area);
-            // SmartDashboard.putNumber("area", area);
-            // double tx = limelight.getXAngleFiltered(3);
+                
             double tx = limelight.getXAngle_avg();
             if(currentTX != null)
                 currentTX.setDouble(tx);
-            // SmartDashboard.putNumber("tx", tx);
-            double ty = limelight.getYAngle();
-            if(currentSkew != null)
-                currentSkew.setDouble(ty);
-            // SmartDashboard.putNumber("skew", skew);
+                
+            double ty = limelight.getYAngle_avg();
+            if(currentTY != null)
+                currentTY.setDouble(ty);
 
             if( area < 0.5 || area > 5.5 ) // todo, tuning pls!!!
             {
-                speeds[0] = speeds[1] = speeds[2] = 0; // something is wrong
+                speeds[0] = speeds[1] = 0; // something is wrong, or filted out by camera dashboard
             } 
-            else if( ty < 0 ) 
+            else if( ty < targetTY ) 
             {
-                speeds[0] = speeds[1] = speeds[2] = 0; // something is wrong
+                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the notes
+            } 
+            else if( tx < 6 && tx > -6 && area > 3.7 ) // todo, tuning pls!!!
+            {
+                speeds[0] = speeds[1] = 0; // good range to get the note. faster than the pid
             } 
             else
             {
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
                 speeds[1]= 1 * txController.calculate(tx, targetTX);
-                //speeds[2] = 1 * skewController.calculate(skew, targetSkew);
 
-                // SmartDashboard.putNumber("fs", speeds[0]);
-                // SmartDashboard.putNumber("ss", speeds[1]);
-                // SmartDashboard.putNumber("as", speeds[2]);
-
-                speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
-                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
-                //speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
+                speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);// todo, tuning pls!!!
             }
         }
         else
         {
-            speeds[0] = speeds[1] = speeds[2] = 0;
+            speeds[0] = speeds[1] = 0;
         }
 
         if(forwardSpeed != null)
             forwardSpeed.setDouble(speeds[0]);
         if(sidewaysSpeed != null)
             sidewaysSpeed.setDouble(speeds[1]);
-        if(angularSpeed != null)
-            angularSpeed.setDouble(speeds[2]);
     }
 
-    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetSkew) {
-        speedToNote(targetArea, targetTX, targetSkew);
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY) {
+        speedToNote(targetArea, targetTX, targetTY);
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
@@ -143,14 +130,13 @@ public class NoteAssistance implements Reportable{
         return Commands.sequence(
             Commands.runOnce(() -> limelight.resetLists()),
             Commands.run(
-                () -> driveToNote(drivetrain, targetArea, 0, 0)
-            ).until(() -> Math.abs(getForwardSpeed()) <= 0.1 && Math.abs(getSidewaysSpeed()) <= 0.1)
+                () -> driveToNote(drivetrain, targetArea, 0, 0.1)// todo, tuning pls!!!
+            ).until(() -> Math.abs(getForwardSpeed()) <= 0.1 && Math.abs(getSidewaysSpeed()) <= 0.1)// todo, tuning pls!!!
         );
     }
 
     public double getForwardSpeed() { return speeds[0]; }
     public double getSidewaysSpeed() { return speeds[1]; }
-    public double getAngularSpeed() { return speeds[2]; }
 
     @Override
     public void reportToSmartDashboard(LOG_LEVEL priority) {
@@ -177,12 +163,12 @@ public class NoteAssistance implements Reportable{
                 .withSize(2, 1)
                 .getEntry();
                 
-                currentTX = tab.add("TX", 0)
+                currentTX = tab.add("Tx", 0)
                 .withPosition(2, 1)
                 .withSize(2, 1)
                 .getEntry();
 
-                currentSkew = tab.add("Angle", 0)
+                currentTY = tab.add("Ty", 0)
                 .withPosition(2, 2)
                 .withSize(2, 1)
                 .getEntry();
@@ -195,11 +181,6 @@ public class NoteAssistance implements Reportable{
                 
                 sidewaysSpeed = tab.add("Sideways Speed", 0)
                 .withPosition(0, 1)
-                .withSize(2, 1)
-                .getEntry();
-
-                angularSpeed = tab.add("Angular Speed", 0)
-                .withPosition(0, 2)
                 .withSize(2, 1)
                 .getEntry();
                 
