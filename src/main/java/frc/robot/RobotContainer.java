@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.AutoSquareTest;
 import frc.robot.commands.autos.TriangleAuto;
@@ -104,7 +105,9 @@ public class RobotContainer {
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> driverController.getCircleButton(), // Turn to angle
+        () -> false, // Turn to angle
+        () -> driverController.getR1Button(), // Turn to angle
+        () -> commandDriverController.getRightY(), // Turn to rightJoy angle
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
           return 0.0;
@@ -120,6 +123,8 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
 
+    commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(SwerveJoystickCommand.getTargetAngle(), swerveDrive, 20)));
+      
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 
@@ -134,11 +139,11 @@ public class RobotContainer {
       .onTrue(shooter.setTopSpeed(75))
       .onFalse(shooter.setPowerZeroCommand());
     
-    commandOperatorController.square()
+    commandOperatorController.R2()
       .onTrue(shooter.setTopSpeed(100))
       .onFalse(shooter.setPowerZeroCommand());
 
-    commandOperatorController.circle()
+    commandOperatorController.L2()
       .onTrue(shooter.setBottomSpeed(100))
       .onFalse(shooter.setPowerZeroCommand());
     

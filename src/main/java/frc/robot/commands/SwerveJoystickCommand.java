@@ -6,7 +6,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.SwerveAutoConstants;
 import frc.robot.Constants.SwerveDriveConstants;
@@ -15,6 +19,7 @@ import frc.robot.util.filters.Filter;
 import frc.robot.util.filters.FilterSeries;
 import frc.robot.util.filters.ScaleFilter;
 import frc.robot.filters.OldDriverFilter2;
+import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 
@@ -27,8 +32,12 @@ public class SwerveJoystickCommand extends Command {
     private final Supplier<Boolean> towSupplier, precisionSupplier;
     private final Supplier<Double> desiredAngle;
     private final Supplier<Boolean> turnToAngleSupplier;
+    private final Supplier<Boolean> turnToAngleJoystickSupplier;
+    private final Supplier<Double> turnToAngleJoystickMovementSupplier;
     private final PIDController turnToAngleController;
     private Filter xFilter, yFilter, turningFilter;
+
+    private static double targetAngle;
 
     public enum DodgeDirection {
         LEFT,
@@ -54,7 +63,9 @@ public class SwerveJoystickCommand extends Command {
             Supplier<Double> turningSpdFunction,
             Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> towSupplier, 
             Supplier<Boolean> precisionSupplier,
-            Supplier<Boolean> turnToAngleSupplier, 
+            Supplier<Boolean> turnToAngleSupplier,
+            Supplier<Boolean> turnToAngleJoystickSupplier,
+            Supplier<Double> turnToAngleJoystickMovementSupplier,
             Supplier<Double> desiredAngleSupplier
         ) {
         this.swerveDrive = swerveDrive;
@@ -64,8 +75,10 @@ public class SwerveJoystickCommand extends Command {
         this.fieldOrientedFunction = fieldOrientedFunction;
         this.towSupplier = towSupplier;
         this.precisionSupplier = precisionSupplier;
-
+        
         this.turnToAngleSupplier = turnToAngleSupplier;
+        this.turnToAngleJoystickSupplier = turnToAngleJoystickSupplier;
+        this.turnToAngleJoystickMovementSupplier = turnToAngleJoystickMovementSupplier;
         this.desiredAngle = desiredAngleSupplier;
 
         this.xFilter = new OldDriverFilter2(
@@ -96,7 +109,8 @@ public class SwerveJoystickCommand extends Command {
         this.turnToAngleController.setTolerance(
             SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
             SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
-        
+    
+
         this.turnToAngleController.enableContinuousInput(-180, 180);
 
         addRequirements(swerveDrive);
@@ -122,11 +136,27 @@ public class SwerveJoystickCommand extends Command {
         double filteredYSpeed = yFilter.calculate(ySpeed);
 
         // Turn to angle
-        if (turnToAngleSupplier.get()) {
+        // if (turnToAngleSupplier.get()) {
+        //     // turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle));
+        //     // turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle));
+        //     // turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle));
+        //     double targetAngle = desiredAngle.get();
+        //     turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
+        //     turningSpeed = Math.toRadians(turningSpeed);
+        //     turningSpeed = MathUtil.clamp(
+        //         turningSpeed, 
+        //         -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
+        //         SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+        //     filteredTurningSpeed = turningSpeed;
+        //     xSpeed += 0.01;
+        //     ySpeed += 0.01;
+        // } 
+        // else 
+        if (turnToAngleJoystickSupplier.get()) {
             // turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle));
             // turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle));
             // turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle));
-            double targetAngle = desiredAngle.get();
+            targetAngle = Math.atan(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get());
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
             turningSpeed = Math.toRadians(turningSpeed);
             turningSpeed = MathUtil.clamp(
@@ -136,12 +166,14 @@ public class SwerveJoystickCommand extends Command {
             filteredTurningSpeed = turningSpeed;
             xSpeed += 0.01;
             ySpeed += 0.01;
-        } else {
+        }
+        else {
             // Manual turning
             turningSpeed = turningSpdFunction.get();
             turningSpeed *= -1;
             filteredTurningSpeed = turningFilter.calculate(turningSpeed);
         }
+
 
         if (precisionSupplier.get()) {
             filteredXSpeed /= 4;
@@ -168,5 +200,46 @@ public class SwerveJoystickCommand extends Command {
         
         // Calculate swerve module states
         swerveDrive.setModuleStates(moduleStates);
+
+        
+    }
+
+    public static double getTargetAngle() {
+        return targetAngle;
+    }
+
+    public void reportToSmartDashboard(LOG_LEVEL level) {
+        switch (level) {
+        case OFF:
+            break;
+        case ALL:
+            SmartDashboard.putNumber("ArcTan: ", targetAngle);
+        case MEDIUM:
+            SmartDashboard.putNumber("ArcTan: ", targetAngle);
+        case MINIMAL:
+            SmartDashboard.putNumber("ArcTan: ", targetAngle);
+        }
+    }
+
+    public void initShuffleboard(LOG_LEVEL level) {
+        if (level == LOG_LEVEL.OFF)  {
+            return;
+        }
+        ShuffleboardTab tab;
+        if (level == LOG_LEVEL.MINIMAL) {
+            tab = Shuffleboard.getTab("Main");
+        } else {
+            tab = Shuffleboard.getTab("Imu");
+        }
+        switch (level) {
+            case OFF:
+                break;
+            case ALL:
+                break;
+            case MEDIUM:
+               break;
+            case MINIMAL:
+                break;
+        }
     }
 }
