@@ -161,7 +161,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
 
     double previousVisionX = -1;
 
-    boolean initPoseByVisionDone = false;
     /**
      * Have modules move towards states and update odometry
      */
@@ -177,7 +176,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         if(vision != null && vision.getAprilTagID() != -1)
         {
             //TODO: Commented this out
-            if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO. move it to vision code
+            //if(vision.getTA() > 0.5) // distance limitation, to be calibrated. TODO. move it to vision code
+            { 
                 SmartDashboard.putBoolean("Vision Used", true);
                 // poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
                 // vision.getVisionFrameTimestamp());
@@ -193,25 +193,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
     
     //****************************** RESETTERS ******************************/
-
-    public void resetInitPoseByVision(Pose2d defaultPose)
-    {
-        if(vision != null && vision.getAprilTagID() != -1)
-        {
-            // 7 is blue side, 4 is red side, center of speaker
-            if(!initPoseByVisionDone && (vision.getAprilTagID() == 7 || vision.getAprilTagID() == 4))
-            {
-                initPoseByVisionDone = true;
-                Pose3d p = vision.getCurrentPose3DVision();
-                resetOdometry(p.toPose2d());
-                gyro.setOffset(p.getRotation().getZ());
-                return;
-            }
-        }
-        
-            resetOdometry(defaultPose);
-            gyro.setOffset(defaultPose.getRotation().getRadians());
-    }
 
     /**
      * Resets the odometry to given pose 

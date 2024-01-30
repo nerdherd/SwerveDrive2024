@@ -7,6 +7,7 @@ import com.ctre.phoenix6.signals.Licensing_IsSeasonPassedValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -236,6 +237,26 @@ public class DriverAssist implements Reportable{
             //SmartDashboard.putBoolean("Found Right Tag ID: ", false);
             
         }
+    }
+
+    boolean initPoseByVisionDone = false;
+    public void resetInitPoseByVision(SwerveDrivetrain swerveDrive, Pose2d defaultPose, int apriltagId)
+    {
+        if(limelight != null && limelight.getAprilTagID() != -1)
+        {
+            // 7 is blue side, 4 is red side, center of speaker
+            if(!initPoseByVisionDone && (limelight.getAprilTagID() == apriltagId))
+            {
+                initPoseByVisionDone = true;
+                Pose3d p = getCurrentPose3DVision();
+                swerveDrive.resetOdometry(p.toPose2d());
+                swerveDrive.getImu().setOffset(p.getRotation().getZ());
+                return;
+            }
+        }
+        
+        swerveDrive.resetOdometry(defaultPose);
+        swerveDrive.getImu().setOffset(defaultPose.getRotation().getRadians());
     }
 
     // Add any tag ID (align to closest tag) functionality same method different signature

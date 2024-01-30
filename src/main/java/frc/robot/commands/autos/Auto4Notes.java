@@ -52,7 +52,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         addCommands(
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->swerve.resetInitPoseByVision(startPose2d)),
+            Commands.runOnce(()->tagAssist.resetInitPoseByVision(swerve, startPose2d, aimTargetApriltagID) ),
             Commands.waitSeconds(2), // debug time
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
@@ -127,7 +127,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         addCommands(
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->swerve.resetInitPoseByVision(startPose2d)),
+            Commands.runOnce(()->tagAssist.resetInitPoseByVision(swerve, startPose2d, aimTargetApriltagID)),
             Commands.waitSeconds(2), // debug time
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
