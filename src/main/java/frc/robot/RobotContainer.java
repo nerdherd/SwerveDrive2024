@@ -154,8 +154,8 @@ public class RobotContainer {
     //commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
     //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
     
-    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 0, 0, 0, 7)));
-    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 7, -1)))
+       .onFalse(Commands.run(() -> apriltagCamera.reset()));
 
 
 

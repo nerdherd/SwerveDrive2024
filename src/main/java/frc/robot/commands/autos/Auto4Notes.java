@@ -61,13 +61,11 @@ public class Auto4Notes extends SequentialCommandGroup {
             tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
 
-            //PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
             //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
             //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
 
-            //PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
             AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
             //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
             //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
