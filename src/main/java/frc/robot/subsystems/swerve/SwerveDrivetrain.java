@@ -121,7 +121,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         */
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d(),
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO
+          VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5))); // TODO
           //VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6)
         //   kVisionSTDx,
         //   kVisionSTDy,
@@ -179,8 +179,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             //TODO: Commented this out
             if(vision.getTA() > 0.5) { // distance limitation, to be calibrated. TODO
                 SmartDashboard.putBoolean("Vision Used", true);
-                poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
-                vision.getVisionFrameTimestamp());
+                // poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+                // vision.getVisionFrameTimestamp());
             }
             
         }
@@ -194,7 +194,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     
     //****************************** RESETTERS ******************************/
 
-    public void resetInitPoseByVision()
+    public void resetInitPoseByVision(Pose2d defaultPose)
     {
         if(vision != null && vision.getAprilTagID() != -1)
         {
@@ -205,8 +205,12 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
                 Pose3d p = vision.getCurrentPose3DVision();
                 resetOdometry(p.toPose2d());
                 gyro.setOffset(p.getRotation().getZ());
+                return;
             }
         }
+        
+            resetOdometry(defaultPose);
+            gyro.setOffset(defaultPose.getRotation().getRadians());
     }
 
     /**

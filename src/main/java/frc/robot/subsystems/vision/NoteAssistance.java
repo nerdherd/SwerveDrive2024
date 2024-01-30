@@ -93,12 +93,16 @@ public class NoteAssistance implements Reportable{
             if(currentTX != null)
                 currentTX.setDouble(tx);
             // SmartDashboard.putNumber("tx", tx);
-            double skew = limelight.getSkew();
+            double ty = limelight.getYAngle();
             if(currentSkew != null)
-                currentSkew.setDouble(skew);
+                currentSkew.setDouble(ty);
             // SmartDashboard.putNumber("skew", skew);
 
-            if( targetArea < 0.5 || targetArea > 5.5 ) // todo, tuning pls!!!
+            if( area < 0.5 || area > 5.5 ) // todo, tuning pls!!!
+            {
+                speeds[0] = speeds[1] = speeds[2] = 0; // something is wrong
+            } 
+            else if( ty < 0 ) 
             {
                 speeds[0] = speeds[1] = speeds[2] = 0; // something is wrong
             } 
@@ -106,7 +110,7 @@ public class NoteAssistance implements Reportable{
             {
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
                 speeds[1]= 1 * txController.calculate(tx, targetTX);
-                speeds[2] = 1 * skewController.calculate(skew, targetSkew);
+                //speeds[2] = 1 * skewController.calculate(skew, targetSkew);
 
                 // SmartDashboard.putNumber("fs", speeds[0]);
                 // SmartDashboard.putNumber("ss", speeds[1]);
@@ -114,7 +118,7 @@ public class NoteAssistance implements Reportable{
 
                 speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2);
                 speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);
-                speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
+                //speeds[2] = NerdyMath.deadband(speeds[2], -0.5, 0.5);
             }
         }
         else

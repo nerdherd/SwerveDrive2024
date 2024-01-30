@@ -52,41 +52,42 @@ public class Auto4Notes extends SequentialCommandGroup {
         addCommands(
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->swerve.resetInitPoseByVision()),
+            Commands.runOnce(()->swerve.resetInitPoseByVision(startPose2d)),// adding real pose when the vision is not available
+            //Commands.runOnce(()->swerve.setPoseMeters()),
             Commands.waitSeconds(2), // debug time
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
-            //notething.driveToNoteCommand(swerve, 5),
-            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            //notething.driveToNoteCommand(swerve, 4.5),
+            tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
             Commands.waitSeconds(4),
 
             //PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
-            //notething.driveToNoteCommand(swerve, 5),
-            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            //notething.driveToNoteCommand(swerve, 4.5),
+            tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
             Commands.waitSeconds(4),
 
             //PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
             AutoBuilder.followPath((pathGroup.get(2))), // Pickup 3
-            //notething.driveToNoteCommand(swerve, 5),
-            //tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
+            //notething.driveToNoteCommand(swerve, 4.5),
+            tagAssist.aimToApriltagCommand(swerve, 0, 0, 0, aimTargetApriltagID),
             Commands.waitSeconds(4),
 
-            AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(4))), // Back Shoot
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(5))), // Pos Mid
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
-            Commands.waitSeconds(5),
+            // AutoBuilder.followPath((pathGroup.get(6))), // Back Shoot
+            // Commands.waitSeconds(5),
 
-            AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
-            Commands.waitSeconds(3),
+            // AutoBuilder.followPath((pathGroup.get(7))), // back to init spot, testing code
+            // Commands.waitSeconds(3),
             // tagAssist.TagDriving(swerve, 1.6, -2.77, 26, 7),
             Commands.none()
         );
@@ -96,6 +97,9 @@ public class Auto4Notes extends SequentialCommandGroup {
         
         // Use the PathPlannerAuto class to get a path group from an auto
         List<PathPlannerPath> pathGroup = PathPlannerAuto.getPathGroupFromAutoFile(autoPath);
+
+        // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
+        Pose2d startPose2d = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
         // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d firstNotePose;// = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
@@ -124,7 +128,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         addCommands(
             //Commands.none()
             Commands.runOnce(swerve.getImu()::zeroAll),
-            Commands.runOnce(()->swerve.resetInitPoseByVision()),
+            Commands.runOnce(()->swerve.resetInitPoseByVision(startPose2d)),
             Commands.waitSeconds(2), // debug time
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
