@@ -93,15 +93,41 @@ public class DriverAssist implements Reportable{
         );
     }
 
+    private void setRobotPoseByApriltag(SwerveDrivetrain drivetrain, int tagID, boolean resetToCurrentPose)
+    {
+        if(resetToCurrentPose)
+        {
+            dataSampleCount++;
+            if(limelight != null && limelight.getAprilTagID() == tagID)
+            {
+                Pose3d p = getCurrentPose3DVision();
+                drivetrain.resetOdometry(p.toPose2d());
+                drivetrain.getImu().setOffset(p.getRotation().getZ());
+                return;
+            }
+        }
+        else
+        {
+            dataSampleCount = 10000;
+        }
+    }
+
     int dataSampleCount = 0;
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d defaultPose) {
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d defaultPose, boolean resetToDefaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
                 () -> TagAimingRotation(drivetrain, tagID, maxSamples)
-            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1)
+            ).until(() -> dataSampleCount >= minSamples && Math.abs(calculatedAngledPower) <= 0.1),
+
+            Commands.runOnce(() -> reset()),
+            Commands.run(
+                () -> setRobotPoseByApriltag(drivetrain, tagID, true)
+            ).until(() -> dataSampleCount >= minSamples )
         );
     }
+
+
 
     final double MaxTA = 5;
     final double MinTA = 1;
