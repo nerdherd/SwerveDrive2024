@@ -179,7 +179,7 @@ public class SwerveModule implements Reportable {
         // double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kDriveTicksPer100MsToMetersPerSec / ModuleConstants.kDriveMotorGearRatio;
         this.desiredVelocity = velocity;
         
-        if (Math.abs(velocity) < 0.001) {
+    if (Math.abs(velocity) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
         else if (this.velocityControl) {
@@ -233,7 +233,7 @@ public class SwerveModule implements Reportable {
      * @return Angle in degrees
      */
     public double getTurningPositionDegrees() {
-        double turningPosition = 360 * canCoder.getAbsolutePosition().getValue();
+        double turningPosition = (360 * canCoder.getAbsolutePosition().getValue()) % 360;
         return turningPosition;
     }
 
@@ -340,13 +340,13 @@ public class SwerveModule implements Reportable {
                 tab.addNumber("Drive percent (current)", () -> this.currentPercent);
                 
                 tab.addNumber("Drive ticks", this::getDrivePositionTicks);
-                tab.addNumber("Turn angle", this::getTurningPositionDegrees);
                 tab.addNumber("Turn angle percent", () -> turnMotor.getDutyCycle().getValue());
-                tab.addNumber("Desired Angle", () -> desiredAngle);
                 tab.addNumber("Angle Difference", () -> desiredAngle - currentAngle);
             case MINIMAL:
+                tab.addNumber("Turn angle", this::getTurningPositionDegrees);
+                tab.addNumber("Desired Angle", () -> desiredAngle);
                 tab.addNumber("Drive Motor Current", () -> driveMotor.getSupplyCurrent().getValue());
-                tab.addNumber("Module Velocity", this::getDriveVelocity);
+                // tab.addNumber("Module Velocity", this::getDriveVelocity);
                 tab.addNumber("Module Velocity RPS", this::getDriveVelocityRPS);
                 tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
                 tab.addBoolean("Velocity Control", () -> this.velocityControl);
