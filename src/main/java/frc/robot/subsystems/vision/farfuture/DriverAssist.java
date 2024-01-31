@@ -94,7 +94,7 @@ public class DriverAssist implements Reportable{
     }
 
     int dataSampleCount = 0;
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples) {
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(

@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,18 +35,18 @@ public class Auto4Notes extends SequentialCommandGroup {
         // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d startPose2d = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
-        Pose2d firstNotePose;
+        // Blue side
+        Pose2d firstNotePose = new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
 
         int aimTargetApriltagID;
 
         if(RobotContainer.IsRedSide())
         {
-            firstNotePose = new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0)));
+            firstNotePose = GeometryUtil.flipFieldPose(firstNotePose);
             aimTargetApriltagID = 4;
         }
         else // Blue side
         {
-            firstNotePose = new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
             aimTargetApriltagID = 7;
         }
 
@@ -57,8 +58,8 @@ public class Auto4Notes extends SequentialCommandGroup {
 
             PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
-            notething.driveToNoteCommand(swerve, 4.5, 10, 40),
-            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
+            notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstNotePose),
+            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstNotePose),
             Commands.waitSeconds(4),
 
             AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2

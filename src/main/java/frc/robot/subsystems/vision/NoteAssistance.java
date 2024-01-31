@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -133,7 +134,7 @@ public class NoteAssistance implements Reportable{
     }
 
     // a min running time is required by minSamples for the auto command calling
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples) {
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
