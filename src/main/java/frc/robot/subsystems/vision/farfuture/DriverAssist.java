@@ -103,6 +103,15 @@ public class DriverAssist implements Reportable{
         );
     }
 
+    final double MaxTA = 5;
+    final double MinTA = 1;
+    final double MaxTxIn = 10;
+    final double MinTxIn = 2;
+    private double TxTargetOffsetForCurrentTa(double currentTa )
+    {
+        // make sure to return positive value
+        return ((MaxTxIn-MinTxIn)/(MaxTA-MinTA))*(currentTa-MinTA) + MinTxIn;
+    }
     PIDController pidTxRotation = new PIDController(0.1, 0, 0); // todo, tuning pls.
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
         // make sure to reset before or after calling this function
@@ -133,12 +142,13 @@ public class DriverAssist implements Reportable{
                 if(currentAngleOffset != null)
                     currentAngleOffset.setDouble(0);
 
-                // if( txOffset < 6 && txOffset > -6 && taOffset > 3.7 ) // todo, tuning pls!!!
-                // {
-                //     calculatedAngledPower = 0; // good ranges. faster than the pid
-                // } 
+                double txInRangeValue = Math.abs(TxTargetOffsetForCurrentTa(taOffset));
+                if( txOffset < txInRangeValue && txOffset > -1*txInRangeValue ) // todo, tuning pls!!!
+                {
+                    calculatedAngledPower = 0; // in good tx ranges. faster than the pid
+                } 
                 // else if(){} // out of range cases. todo 
-                // else
+                else
                 {
                     // pid based on tx, and adding ta/distance as the factor
                     calculatedAngledPower = pidTxRotation.calculate(txOffset, 0)  * Math.sqrt(taOffset);
