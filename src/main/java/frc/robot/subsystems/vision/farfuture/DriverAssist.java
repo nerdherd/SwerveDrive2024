@@ -98,7 +98,7 @@ public class DriverAssist implements Reportable{
         if(resetToCurrentPose)
         {
             dataSampleCount++;
-            if(limelight != null && limelight.getAprilTagID() == tagID)
+            if(limelight.getAprilTagID() == tagID)
             {
                 Pose3d p = getCurrentPose3DVision();
                 drivetrain.resetOdometry(p.toPose2d());
@@ -108,12 +108,12 @@ public class DriverAssist implements Reportable{
         }
         else
         {
-            dataSampleCount = 10000;
+            dataSampleCount = 10000; // make it very big to exit
         }
     }
 
     int dataSampleCount = 0;
-    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d defaultPose, boolean resetToDefaultPose) {
+    public Command aimToApriltagCommand(SwerveDrivetrain drivetrain, int tagID, int minSamples, int maxSamples, Pose2d plannedPose, boolean resetToCurrentPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
             Commands.run(
@@ -122,7 +122,7 @@ public class DriverAssist implements Reportable{
 
             Commands.runOnce(() -> reset()),
             Commands.run(
-                () -> setRobotPoseByApriltag(drivetrain, tagID, true)
+                () -> setRobotPoseByApriltag(drivetrain, tagID, resetToCurrentPose)
             ).until(() -> dataSampleCount >= minSamples )
         );
     }

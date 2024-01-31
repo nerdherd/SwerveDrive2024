@@ -56,13 +56,16 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(()->tagAssist.resetInitPoseByVision(swerve, startPose2d, aimTargetApriltagID) ),
             Commands.waitSeconds(2), // debug time
 
+            // Pickup 1
             PathCurrentToDest(firstPickPose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
-            //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
+            //AutoBuilder.followPath((pathGroup.get(0))), 
             notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstPickPose),
-            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstPickPose),
+            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstPickPose, true),
             Commands.waitSeconds(4),
 
-            AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
+            // Pickup 2
+            FindPathThenFollowPlanned(pathGroup.get(1), 1.5, 1.5, 360.0, 540.0), // because the pose reset in the previous step
+            //AutoBuilder.followPath((pathGroup.get(1))), 
             //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
             //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
             Commands.waitSeconds(4),
@@ -176,5 +179,19 @@ public class Auto4Notes extends SequentialCommandGroup {
             goalEndVelocity, 
             rotationDelayDistance
         );
+    }
+
+    public Command FindPathThenFollowPlanned(PathPlannerPath goalPath, 
+        double maxVelocity, double MaxAcceleration,
+        double maxAngleVelocity, double MaxAngleAcceleration)
+    {
+        return AutoBuilder.pathfindThenFollowPath(
+            goalPath,
+            new PathConstraints(
+                maxVelocity, MaxAcceleration, 
+                Units.degreesToRadians(maxAngleVelocity), Units.degreesToRadians(MaxAngleAcceleration)
+            )
+        );
+        
     }
 }
