@@ -7,6 +7,7 @@ import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
 //import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -15,6 +16,7 @@ import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,13 +38,15 @@ public class Auto4Notes extends SequentialCommandGroup {
         Pose2d startPose2d = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
         // Blue side
-        Pose2d firstPickPose = new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
+        Pose2d firstPickPose = GetEndPointInPath(pathGroup.get(0));//new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20))); // todo. testing it
+        Pose2d secondPickPose = GetEndPointInPath(pathGroup.get(1));//new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
 
         int aimTargetApriltagID;
 
         if(RobotContainer.IsRedSide())
         {
             firstPickPose = GeometryUtil.flipFieldPose(firstPickPose);
+            secondPickPose = GeometryUtil.flipFieldPose(secondPickPose);
             aimTargetApriltagID = 4;
         }
         else // Blue side
@@ -57,23 +61,24 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.waitSeconds(2), // debug time
 
             // Pickup 1
-            PathCurrentToDest(firstPickPose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), 
+            PathCurrentToDest(firstPickPose, 1.5, 1.5, 360.0, 540.0), 
             //AutoBuilder.followPath((pathGroup.get(0))), 
             notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstPickPose),
-            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstPickPose, true),
+            // skip this aim&shoot, do it at next location
             Commands.waitSeconds(4),
 
             // Pickup 2
-            FindPathThenFollowPlanned(pathGroup.get(1), 1.5, 1.5, 360.0, 540.0), // because the pose reset in the previous step
+            FindPathThenFollowPlanned(pathGroup.get(1), 1.5, 1.5, 360.0, 540.0), // because the pose was changed in the previous step
             //AutoBuilder.followPath((pathGroup.get(1))), 
-            //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
-            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
+            notething.driveToNoteCommand(swerve, 4.5, 10, 40, secondPickPose),
+            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
+            // shoot twice 
             Commands.waitSeconds(4),
 
             // Pickup 3
             AutoBuilder.followPath((pathGroup.get(2))), 
-            //notething.driveToNoteCommand(swerve, 4.5, 10, 40),
-            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20),
+            //notething.driveToNoteCommand(swerve, 4.5, 10, 40, thirdPickPose),
+            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, thirdPickPose, true),
             Commands.waitSeconds(4),
 
             // AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
@@ -133,16 +138,16 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.runOnce(()->tagAssist.resetInitPoseByVision(swerve, startPose2d, aimTargetApriltagID)),
             Commands.waitSeconds(2), // debug time
 
-            PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 1
+            PathCurrentToDest(firstNotePose, 1.5, 1.5, 360.0, 540.0), // Pickup 1
             //AutoBuilder.followPath((pathGroup.get(0))), // Pickup 1
             Commands.waitSeconds(4),
 
-            PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 2
+            PathCurrentToDest(secondNotePose, 1.5, 1.5, 360.0, 540.0), // Pickup 2
             //AutoBuilder.followPath((pathGroup.get(1))), // Pickup 2
             //notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
 
-            PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0, 0.0, 0), // Pickup 3
+            PathCurrentToDest(thirdNotePose, 1.5, 1.5, 360.0, 540.0), // Pickup 3
             //AutoBuilder.followPath((pathGroup.get())), // Pickup 3
             //notething.driveToNoteCommand(swerve, 5),
             Commands.waitSeconds(4),
@@ -168,17 +173,14 @@ public class Auto4Notes extends SequentialCommandGroup {
 
     public Command PathCurrentToDest(Pose2d destPose, 
         double maxVelocity, double MaxAcceleration,
-        double maxAngleVelocity, double MaxAngleAcceleration,
-        double goalEndVelocity, double rotationDelayDistance)
+        double maxAngleVelocity, double MaxAngleAcceleration)
     {
         return AutoBuilder.pathfindToPose(
             destPose,
             new PathConstraints(
                 maxVelocity, MaxAcceleration, 
                 Units.degreesToRadians(maxAngleVelocity), Units.degreesToRadians(MaxAngleAcceleration)
-            ), 
-            goalEndVelocity, 
-            rotationDelayDistance
+            )
         );
     }
 
@@ -195,4 +197,12 @@ public class Auto4Notes extends SequentialCommandGroup {
         );
         
     }
+
+    public static Pose2d GetEndPointInPath(PathPlannerPath path)
+    {
+        PathPoint tail  = path.getPoint(path.numPoints()-1);
+        Translation2d pos = tail.position;
+        double rad = tail.rotationTarget.getTarget().getRadians();
+        return new Pose2d(pos, new Rotation2d(rad));
+    } 
 }
