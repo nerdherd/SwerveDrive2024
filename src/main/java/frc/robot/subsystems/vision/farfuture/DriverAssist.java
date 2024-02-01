@@ -142,6 +142,7 @@ public class DriverAssist implements Reportable{
     public void TagAimingRotation(SwerveDrivetrain swerveDrive, int tagID, int maxSamples) {
         // make sure to reset before or after calling this function
         // make sure the cross is at the center!!! for tx
+        // tagID == 0 means: don't care of tag's id, be careful for multi-tags location
         double taOffset;
         double txOffset;
 
@@ -156,7 +157,7 @@ public class DriverAssist implements Reportable{
             if(targetId != null)
                 targetId.setInteger(foundId);
 
-            if(tagID == foundId) {
+            if(tagID == foundId || (tagID == 0 && foundId != -1)) {
                 
                 taOffset = limelight.getArea_avg();
                 txOffset = limelight.getXAngle_avg();
@@ -196,7 +197,21 @@ public class DriverAssist implements Reportable{
         swerveDrive.drive(0, 0, calculatedAngledPower);
     }
 
-    
+    // be careful to use this function!!! todo, not finished yet.....
+    public void rotationSeekApriltag(SwerveDrivetrain swerveDrive)
+    {
+        Pose2d currentPose = swerveDrive.getPose();
+
+        if(!limelight.hasValidTarget())
+        {
+            swerveDrive.drive(0, 0, 0.08);
+            reset();
+        }
+        else
+        {
+            TagAimingRotation(swerveDrive, 0, 100);
+        }
+    }
 
 
     public double getTA() {
