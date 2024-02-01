@@ -64,7 +64,6 @@ public class NoteAssistance implements Reportable{
     public void reset() {
         limelight.resetLists();
         dataSampleCount = 0;
-        outOfRange = false;
     }
 
     private void speedToNote(double targetArea, double targetTX, double targetTY) {
@@ -93,11 +92,11 @@ public class NoteAssistance implements Reportable{
             } 
             else if( tx < 6 && tx > -6 && area > 3.7 ) // todo, tuning pls!!!
             {
-                speeds[0] = speeds[1] = 0; // good ranges to get the note. faster than the pid
+                speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
             } 
             else if( ty < targetTY ) // need a lot of testing here
             {
-                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the notes
+                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
             } 
             else
             {
@@ -120,9 +119,11 @@ public class NoteAssistance implements Reportable{
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
         // must reset counts before or after call this function!!!
         dataSampleCount++;
-        speedToNote(targetArea, targetTX, targetTY);
+        
         if(maxSamples > 0 && dataSampleCount > maxSamples)
             speeds[0] = speeds[1] = 0;
+        else
+            speedToNote(targetArea, targetTX, targetTY);
 
         if(forwardSpeed != null)
             forwardSpeed.setDouble(speeds[0]);
@@ -147,17 +148,20 @@ public class NoteAssistance implements Reportable{
         double defaultY = defaultPose.getX();
         double defaultR = defaultPose.getRotation().getDegrees();
 
+        // todo, need to convert angle to continues value!!! bug
         if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
            currentY < defaultY-1 || currentY > defaultY+1 ||
            currentR < defaultR-30 || currentR > defaultR+30 )
         {
-            speeds[0] = speeds[1] = 0;
+            speeds[0] = speeds[1] = 0; // stop because moved too far
+        }
+        else if(maxSamples > 0 && dataSampleCount > maxSamples)
+        {
+            speeds[0] = speeds[1] = 0; // stop because running time too long
         }
         else 
         {
             speedToNote(targetArea, targetTX, targetTY);
-            if(maxSamples > 0 && dataSampleCount > maxSamples)
-                speeds[0] = speeds[1] = 0;
         }
 
         if(forwardSpeed != null)
@@ -167,8 +171,8 @@ public class NoteAssistance implements Reportable{
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
-    boolean outOfRange = false;
-    // a min running time is required by minSamples for the auto command calling
+    // for the auto 
+    // a min running time is required by minSamples 
     public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
