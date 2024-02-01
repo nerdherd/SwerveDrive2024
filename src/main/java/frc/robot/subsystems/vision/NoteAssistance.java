@@ -55,19 +55,16 @@ public class NoteAssistance implements Reportable{
         VisionConstants.kPNoteSide.loadPreferences();
         VisionConstants.kINoteSide.loadPreferences();
         VisionConstants.kDNoteSide.loadPreferences();
-        // VisionConstants.kPNoteAngle.loadPreferences();
-        // VisionConstants.kINoteAngle.loadPreferences();
-        // VisionConstants.kDNoteAngle.loadPreferences();
         
         areaController = new PIDController(VisionConstants.kPNoteForward.get(), VisionConstants.kINoteForward.get(), VisionConstants.kDNoteForward.get());
         txController = new PIDController(VisionConstants.kPNoteSide.get(), VisionConstants.kINoteSide.get(), VisionConstants.kDNoteSide.get());
-        //skewController = new PIDController(VisionConstants.kPNoteAngle.get(), VisionConstants.kINoteAngle.get(), VisionConstants.kDNoteAngle.get());
     }
 
     int dataSampleCount = 0;
     public void reset() {
         limelight.resetLists();
         dataSampleCount = 0;
+        outOfRange = false;
     }
 
     private void speedToNote(double targetArea, double targetTX, double targetTY) {
@@ -115,33 +112,70 @@ public class NoteAssistance implements Reportable{
         {
             speeds[0] = speeds[1] = 0;
         }
-
-        if(forwardSpeed != null)
-            forwardSpeed.setDouble(speeds[0]);
-        if(sidewaysSpeed != null)
-            sidewaysSpeed.setDouble(speeds[1]);
     }
 
     // no time limit if MaxSamples is less than 0
+    // robot can move to any location 
+    // for Teleop, PID tuning...
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
         // must reset counts before or after call this function!!!
         dataSampleCount++;
         speedToNote(targetArea, targetTX, targetTY);
         if(maxSamples > 0 && dataSampleCount > maxSamples)
             speeds[0] = speeds[1] = 0;
-            
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
         drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
     }
 
+    // no time limit if MaxSamples is less than 0
+    // robot runs in limited zone
+    // for Auto
+    public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples, Pose2d defaultPose) {
+        // must reset counts before or after call this function!!!
+        dataSampleCount++;
+
+        Pose2d currentPose = drivetrain.getPose();
+        double currentX = currentPose.getX();
+        double currentY = currentPose.getX();
+        double currentR = currentPose.getRotation().getDegrees();
+
+        double defaultX = defaultPose.getX();
+        double defaultY = defaultPose.getX();
+        double defaultR = defaultPose.getRotation().getDegrees();
+
+        if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
+           currentY < defaultY-1 || currentY > defaultY+1 ||
+           currentR < defaultR-30 || currentR > defaultR+30 )
+        {
+            speeds[0] = speeds[1] = 0;
+        }
+        else 
+        {
+            speedToNote(targetArea, targetTX, targetTY);
+            if(maxSamples > 0 && dataSampleCount > maxSamples)
+                speeds[0] = speeds[1] = 0;
+        }
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+    }
+
+    boolean outOfRange = false;
     // a min running time is required by minSamples for the auto command calling
     public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
-            Commands.run(
-                () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples)// todo, tuning pls!!!
-            ).until(() -> (dataSampleCount >= minSamples && 
-                Math.abs(getForwardSpeed()) <= 0.1 && 
-                Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
+            Commands.run( () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+                .until(() -> (dataSampleCount >= minSamples && 
+                    Math.abs(getForwardSpeed()) <= 0.1 && 
+                    Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
         );
     }
 
