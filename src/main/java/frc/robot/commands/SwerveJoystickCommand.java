@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.SwerveAutoConstants;
 import frc.robot.Constants.SwerveDriveConstants;
@@ -18,7 +17,6 @@ import frc.robot.util.filters.DeadbandFilter;
 import frc.robot.util.filters.Filter;
 import frc.robot.util.filters.FilterSeries;
 import frc.robot.util.filters.ScaleFilter;
-import frc.robot.filters.OldDriverFilter2;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
@@ -75,20 +73,14 @@ public class SwerveJoystickCommand extends Command {
         this.turnToAngleSupplier = turnToAngleSupplier;
         this.desiredAngle = desiredAngleSupplier;
 
-        this.xFilter = new OldDriverFilter2(
-            ControllerConstants.kDeadband, 
-            kMinimumMotorOutput,
-            kTeleDriveMaxSpeedMetersPerSecond, 
-            kDriveAlpha, 
-            kTeleMaxAcceleration, 
-            kTeleMaxDeceleration);
-        this.yFilter = new OldDriverFilter2(
-            ControllerConstants.kDeadband, 
-            kMinimumMotorOutput,
-            kTeleDriveMaxSpeedMetersPerSecond, 
-            kDriveAlpha, 
-            kTeleMaxAcceleration, 
-            kTeleMaxDeceleration);
+        this.xFilter = new FilterSeries(
+            new DeadbandFilter(ControllerConstants.kRotationDeadband),
+            new ScaleFilter(kTeleDriveMaxSpeedMetersPerSecond)
+            );
+        this.yFilter = new FilterSeries(
+            new DeadbandFilter(ControllerConstants.kRotationDeadband),
+            new ScaleFilter(kTeleDriveMaxSpeedMetersPerSecond)
+            );
         this.turningFilter = new FilterSeries(
             new DeadbandFilter(ControllerConstants.kRotationDeadband),
             new ScaleFilter(kTeleDriveMaxAngularSpeedRadiansPerSecond)
@@ -100,12 +92,6 @@ public class SwerveJoystickCommand extends Command {
             SwerveAutoConstants.kITurnToAngle.get(),
             SwerveAutoConstants.kDTurnToAngle.get()
             );
-
-        // this.turnToAngleController = new PIDController(
-        //     SwerveAutoConstants.kPTurnToAngle, 
-        //     SwerveAutoConstants.kITurnToAngle, 
-        //     SwerveAutoConstants.kDTurnToAngle, 
-        //     0.02);
         
         this.turnToAngleController.setTolerance(
             SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
@@ -115,10 +101,6 @@ public class SwerveJoystickCommand extends Command {
         this.turnToAngleController.enableContinuousInput(-180, 180);
 
         addRequirements(swerveDrive);
-
-        SmartDashboard.putNumber("kP Theta Teleop", 0);
-        SmartDashboard.putNumber("kI Theta Teleop", 0);
-        SmartDashboard.putNumber("kD Theta Teleop", 0);
     }
 
     @Override
@@ -140,23 +122,6 @@ public class SwerveJoystickCommand extends Command {
         double filteredXSpeed = xFilter.calculate(xSpeed);
         double filteredYSpeed = yFilter.calculate(ySpeed);
 
-        // Turn to angle
-        // if (turnToAngleSupplier.get()) {
-        //     // turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle));
-        //     // turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle));
-        //     // turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle));
-        //     double targetAngle = desiredAngle.get();
-        //     turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
-        //     turningSpeed = Math.toRadians(turningSpeed);
-        //     turningSpeed = MathUtil.clamp(
-        //         turningSpeed, 
-        //         -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
-        //         SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
-        //     filteredTurningSpeed = turningSpeed;
-        //     xSpeed += 0.01;
-        //     ySpeed += 0.01;
-        // } 
-        // else 
         if (turnToAngleSupplier.get()) {
             turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
             turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
