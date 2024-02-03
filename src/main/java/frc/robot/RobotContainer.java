@@ -45,8 +45,17 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+  //if(Robot.RobotIdendification == Constants.kitbotRobotID)
   public Shooter shooter = new Shooter();
+  //else 
+  //public Shooter shooter = null;
+  
+  //if(Robot.RobotIdendification == Constants.kitbotRobotID)
   public Gyro imu = new PigeonV2(1);
+  //else if() Robot.RobotIdendification == Constants.ismeRobotID)
+  //public Gyro imu = new NavX();
+
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
@@ -220,7 +229,8 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    shooter.initShuffleboard(loggingLevel);
+    if(Robot.RobotIdendification == Constants.kitbotRobotID)
+      shooter.initShuffleboard(loggingLevel);
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
