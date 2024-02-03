@@ -41,9 +41,6 @@ public class SwerveModule implements Reportable {
     private final int turnMotorID;
     private final int CANCoderID;
 
-    private final PIDController turningController;
-    private final boolean invertTurningEncoder;
-
     private double currentPercent = 0;
     private double currentTurnPercent = 0;
     private double currentAngle = 0;
@@ -75,27 +72,20 @@ public class SwerveModule implements Reportable {
         this.driveConfigurator = driveMotor.getConfigurator();
         this.turnConfigurator = turnMotor.getConfigurator();
         
-        this.driveRequest = new MotionMagicVelocityVoltage(0).withEnableFOC(true);
-        this.turnRequest = new PositionVoltage(0).withEnableFOC(true);
+        this.driveRequest = new MotionMagicVelocityVoltage(0).withEnableFOC(false);
+        this.turnRequest = new PositionVoltage(0).withEnableFOC(false);
         this.brakeRequest = new NeutralOut();
 
         this.driveMotorID = driveMotorId;
         this.turnMotorID = turningMotorId;
         this.CANCoderID = CANCoderId;
 
-        this.turningController = new PIDController(
-            ModuleConstants.kPTurning.get(),
-            ModuleConstants.kITurning.get(),
-            ModuleConstants.kDTurning.get());
-        turningController.enableContinuousInput(0, 2 * Math.PI); // Originally was -pi to pi
-        turningController.setTolerance(.005);
-
         this.driveMotor.setInverted(invertDriveMotor);
         this.turnMotor.setInverted(invertTurningMotor);
-        this.invertTurningEncoder = CANCoderReversed;
         
         this.desiredState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
 
+        configureMotors();
         refreshPID();
     }
 
@@ -117,7 +107,7 @@ public class SwerveModule implements Reportable {
 
         TalonFXConfiguration turnMotorConfigs = new TalonFXConfiguration();
         turnConfigurator.refresh(turnMotorConfigs);
-        turnMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        turnMotorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         turnMotorConfigs.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
         turnMotorConfigs.Feedback.RotorToSensorRatio = ModuleConstants.kTurnMotorGearRatio;
         turnMotorConfigs.Feedback.SensorToMechanismRatio = 1;
@@ -208,9 +198,9 @@ public class SwerveModule implements Reportable {
             driveMotor.setControl(brakeRequest);
         }
 
-        driveRequest.Slot = 0;
-        driveMotor.setControl(driveRequest.withVelocity(velocity));
-        this.currentPercent = 0;
+        // driveRequest.Slot = 0;
+        // driveMotor.setControl(driveRequest.withVelocity(velocity));
+        // this.currentPercent = 0;
         
         turnRequest.Slot = 0;
         turnRequest.Position = desiredState.angle.getRotations();

@@ -99,7 +99,7 @@ public class RobotContainer {
         () -> -commandDriverController.getLeftY(), // Horizontal translation
         commandDriverController::getLeftX, // Vertical Translation
         // () -> 0.0, // debug
-        commandDriverController::getRightX, // Rotationaq
+        commandDriverController::getRightX, // Rotation
 
         // driverController::getSquareButton, // Field oriented
         () -> false, // Field oriented
@@ -107,7 +107,7 @@ public class RobotContainer {
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> true, // Turn to angle
+        () -> false, // Turn to angle
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
           double xValue = commandDriverController.getRightX();
@@ -149,11 +149,11 @@ public class RobotContainer {
       .onTrue(shooter.setTopSpeed(75))
       .onFalse(shooter.setPowerZeroCommand());
     
-    commandOperatorController.R2()
+    commandOperatorController.L2()
       .onTrue(shooter.setTopSpeed(100))
       .onFalse(shooter.setPowerZeroCommand());
 
-    commandOperatorController.L2()
+    commandOperatorController.R2()
       .onTrue(shooter.setBottomSpeed(100))
       .onFalse(shooter.setPowerZeroCommand());
     
