@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
+import frc.robot.util.NerdyMath;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -105,12 +107,18 @@ public class RobotContainer {
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> false, // Turn to angle
-        () -> driverController.getR1Button(), // Turn to angle
-        () -> commandDriverController.getRightY(), // Turn to rightJoy angle
+        () -> true, // Turn to angle
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          return 0.0;
+          double xValue = commandDriverController.getRightX();
+          double yValue = commandDriverController.getRightY();
+          double magnitude = (xValue*xValue) + (yValue*yValue);
+          if (magnitude > 0.49) {
+            double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
+            SmartDashboard.putNumber("desired angle", angle);
+            return angle;
+          }
+          return 1000.0;
         }
       ));
   }
@@ -118,13 +126,15 @@ public class RobotContainer {
   private void configureBindings() {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
-    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
+    commandDriverController.share().onTrue(
+      Commands.runOnce(imu::zeroHeading)
+        .andThen(() -> imu.setOffset(0))
+        .andThen(() -> SwerveJoystickCommand.targetAngle = 0)
+      );
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
-
-    commandDriverController.R1().whileTrue(Commands.run(() -> new TurnToAngle(SwerveJoystickCommand.getTargetAngle(), swerveDrive, 20)));
-      
+    
     commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
     commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
 

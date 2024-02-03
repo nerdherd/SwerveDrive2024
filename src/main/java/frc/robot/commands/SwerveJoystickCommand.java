@@ -32,12 +32,10 @@ public class SwerveJoystickCommand extends Command {
     private final Supplier<Boolean> towSupplier, precisionSupplier;
     private final Supplier<Double> desiredAngle;
     private final Supplier<Boolean> turnToAngleSupplier;
-    private final Supplier<Boolean> turnToAngleJoystickSupplier;
-    private final Supplier<Double> turnToAngleJoystickMovementSupplier;
     private final PIDController turnToAngleController;
     private Filter xFilter, yFilter, turningFilter;
 
-    private static double targetAngle;
+    public static double targetAngle = 0;
 
     public enum DodgeDirection {
         LEFT,
@@ -64,8 +62,6 @@ public class SwerveJoystickCommand extends Command {
             Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> towSupplier, 
             Supplier<Boolean> precisionSupplier,
             Supplier<Boolean> turnToAngleSupplier,
-            Supplier<Boolean> turnToAngleJoystickSupplier,
-            Supplier<Double> turnToAngleJoystickMovementSupplier,
             Supplier<Double> desiredAngleSupplier
         ) {
         this.swerveDrive = swerveDrive;
@@ -77,8 +73,6 @@ public class SwerveJoystickCommand extends Command {
         this.precisionSupplier = precisionSupplier;
         
         this.turnToAngleSupplier = turnToAngleSupplier;
-        this.turnToAngleJoystickSupplier = turnToAngleJoystickSupplier;
-        this.turnToAngleJoystickMovementSupplier = turnToAngleJoystickMovementSupplier;
         this.desiredAngle = desiredAngleSupplier;
 
         this.xFilter = new OldDriverFilter2(
@@ -100,11 +94,18 @@ public class SwerveJoystickCommand extends Command {
             new ScaleFilter(kTeleDriveMaxAngularSpeedRadiansPerSecond)
             );
         
+
         this.turnToAngleController = new PIDController(
-            SwerveAutoConstants.kPTurnToAngle, 
-            SwerveAutoConstants.kITurnToAngle, 
-            SwerveAutoConstants.kDTurnToAngle, 
-            0.02);
+            SwerveAutoConstants.kPTurnToAngle.get(),
+            SwerveAutoConstants.kITurnToAngle.get(),
+            SwerveAutoConstants.kDTurnToAngle.get()
+            );
+
+        // this.turnToAngleController = new PIDController(
+        //     SwerveAutoConstants.kPTurnToAngle, 
+        //     SwerveAutoConstants.kITurnToAngle, 
+        //     SwerveAutoConstants.kDTurnToAngle, 
+        //     0.02);
         
         this.turnToAngleController.setTolerance(
             SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
@@ -114,6 +115,10 @@ public class SwerveJoystickCommand extends Command {
         this.turnToAngleController.enableContinuousInput(-180, 180);
 
         addRequirements(swerveDrive);
+
+        SmartDashboard.putNumber("kP Theta Teleop", 0);
+        SmartDashboard.putNumber("kI Theta Teleop", 0);
+        SmartDashboard.putNumber("kD Theta Teleop", 0);
     }
 
     @Override
@@ -152,11 +157,15 @@ public class SwerveJoystickCommand extends Command {
         //     ySpeed += 0.01;
         // } 
         // else 
-        if (turnToAngleJoystickSupplier.get()) {
-            // turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle));
-            // turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle));
-            // turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle));
-            targetAngle = Math.atan(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get());
+        if (turnToAngleSupplier.get()) {
+            turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle.get()));
+            turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle.get()));
+            turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle.get()));
+            // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
+            double tempAngle = desiredAngle.get();
+            if (tempAngle != 1000.0) {
+                targetAngle = tempAngle;
+            }
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
             turningSpeed = Math.toRadians(turningSpeed);
             turningSpeed = MathUtil.clamp(
@@ -204,7 +213,7 @@ public class SwerveJoystickCommand extends Command {
         
     }
 
-    public static double getTargetAngle() {
+    public double getTargetAngle() {
         return targetAngle;
     }
 
