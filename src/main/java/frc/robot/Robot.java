@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  private static int RobotIdendification =  Constants.kitbotRobotID;
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;

@@ -37,9 +37,9 @@ import frc.robot.util.preferences.PrefDouble;
  */
 
  // COMMENT ROBOT IDS INSTEAD OF DELETING
-public final class Constants {
+public final class Constants_isMe3 {
 
-  public final static int kitbotRobotID = 4577643; // kitbot 2024
+  public final static int ismeRobotID = 3453452; // isMe3
 
   public static class DriveConstants {
     public static final double kDriveAlpha = 0.11765;
@@ -108,39 +108,37 @@ public final class Constants {
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+    public static final int kFRDriveID = 11;
+    public static final int kFLDriveID = 21;
+    public static final int kBLDriveID = 31;
+    public static final int kBRDriveID = 41;
 
-      // to be fixed by firmware of motors...for testing now
-    public static final int kFRDriveID = 31;//11;
-    public static final int kFLDriveID = 41;//21;
-    public static final int kBLDriveID = 11;//31;
-    public static final int kBRDriveID = 21;//41;
+    public static final int kFRTurningID = 12;
+    public static final int kFLTurningID = 22;
+    public static final int kBLTurningID = 32;
+    public static final int kBRTurningID = 42;
 
-    public static final int kFRTurningID = 32;//12;
-    public static final int kFLTurningID = 42;//22;
-    public static final int kBLTurningID = 12;//32;
-    public static final int kBRTurningID = 22;//42;
+    public static final boolean kFRTurningReversed = true;
+    public static final boolean kFLTurningReversed = true; 
+    public static final boolean kBLTurningReversed = true; 
+    public static final boolean kBRTurningReversed = true; 
 
-    public static final boolean kFRTurningReversed = false;//true;
-    public static final boolean kFLTurningReversed = false;//true; 
-    public static final boolean kBLTurningReversed = false;//true; 
-    public static final boolean kBRTurningReversed = false;//true; 
-
-    public static final boolean kFRDriveReversed = true;//false;
-    public static final boolean kFLDriveReversed = true;//false;     
-    public static final boolean kBLDriveReversed = true;//false;      
-    public static final boolean kBRDriveReversed = true;//false;
+    public static final boolean kFRDriveReversed = false;
+    public static final boolean kFLDriveReversed = false;     
+    public static final boolean kBLDriveReversed = false;      
+    public static final boolean kBRDriveReversed = false;
 
     public static final class CANCoderConstants {
       
-      public static final int kFRCANCoderID = 34;//14;
-      public static final int kFLCANCoderID = 44;//24;
-      public static final int kBLCANCoderID = 14;//34;
-      public static final int kBRCANCoderID = 24;//44;
+      public static final int kFRCANCoderID = 14;
+      public static final int kFLCANCoderID = 24;
+      public static final int kBLCANCoderID = 34;
+      public static final int kBRCANCoderID = 44;
 
-      public static final boolean kFRCANCoderReversed = true;//false;    
-      public static final boolean kFLCANCoderReversed = true;//false;      
-      public static final boolean kBLCANCoderReversed = true;//false;       
-      public static final boolean kBRCANCoderReversed = true;//false; 
+      public static final boolean kFRCANCoderReversed = false;    
+      public static final boolean kFLCANCoderReversed = false;      
+      public static final boolean kBLCANCoderReversed = false;       
+      public static final boolean kBRCANCoderReversed = false; 
     }
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;    
