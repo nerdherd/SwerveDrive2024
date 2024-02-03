@@ -158,9 +158,9 @@ public class SwerveJoystickCommand extends Command {
         // } 
         // else 
         if (turnToAngleSupplier.get()) {
-            turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle.get()));
-            turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle.get()));
-            turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle.get()));
+            turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
+            turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
+            turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
             double tempAngle = desiredAngle.get();
             if (tempAngle != 1000.0) {
