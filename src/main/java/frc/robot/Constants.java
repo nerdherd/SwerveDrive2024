@@ -144,7 +144,7 @@ public final class Constants {
     public static final double kTeleMaxDeceleration = -5; // Russell says he likes 2.5 from sims, but keep at 3 until tested on real robot 
 
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-      kPhysicalMaxAngularSpeedRadiansPerSecond * 0.75;
+      kPhysicalMaxAngularSpeedRadiansPerSecond * 0.125;
     public static final double kTurnToAngleMaxAngularSpeedRadiansPerSecond 
       = kPhysicalMaxAngularSpeedRadiansPerSecond;
     public static final double kTurnToBigAngleMaxAngularSpeedRadiansPerSecond = 1.5 * Math.PI;
