@@ -21,6 +21,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.autos.Auto4Notes;
 import frc.robot.commands.autos.Squarto;
+import frc.robot.subsystems.Shooter;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
@@ -44,10 +45,8 @@ import frc.robot.subsystems.vision.farfuture.EMPeach;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // public Gyro imu = new NavX();
-  // public Shooter shooter = new Shooter();
-  public Gyro imu = new NavX();
-  // public Gyro imu = new NavX();
+  public Shooter shooter = new Shooter();
+  public Gyro imu = new PigeonV2(1);
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 
@@ -221,6 +220,7 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
+    shooter.initShuffleboard(loggingLevel);
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);

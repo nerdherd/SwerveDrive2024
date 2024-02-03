@@ -95,6 +95,10 @@ public final class Constants {
                                                               kVisionSTDy,
                                                               kVisionSTDtheta);
     // VecBuilder.fill(kVisionSTDx, kVisionSTDy, kVisionSTDtheta);
+    public static final PrefDouble kPThetaTeleop = new PrefDouble("kP Theta Teleop", 0);
+    public static final PrefDouble kIThetaTeleop = new PrefDouble("kI Theta Teleop", 0);
+    public static final PrefDouble kDThetaTeleop = new PrefDouble("kD Theta Teleop", 0);
+
 
 
     // Distance between right and left wheels
