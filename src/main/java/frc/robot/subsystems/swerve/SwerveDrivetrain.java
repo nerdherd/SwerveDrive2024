@@ -179,8 +179,8 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             //if(vision.getTA() > 0.5) // distance limitation, to be calibrated. TODO. move it to vision code
             { 
                 SmartDashboard.putBoolean("Vision Used", true);
-                // poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
-                // vision.getVisionFrameTimestamp());
+                poseEstimator.addVisionMeasurement(vision.getCurrentPose3DVision().toPose2d(), 
+                vision.getVisionFrameTimestamp());
             }
             
         }

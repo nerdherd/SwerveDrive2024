@@ -61,25 +61,28 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.waitSeconds(2), // debug time
 
             // Pickup 1
-            PathCurrentToDest(firstPickPose, 1.5, 1.5, 360.0, 540.0), 
+            PathCurrentToDest(firstPickPose, 3, 3, 360.0, 540.0), 
             //AutoBuilder.followPath((pathGroup.get(0))), 
-            notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstPickPose),
+            // notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstPickPose),
+            Commands.waitSeconds(1),
+            // tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
             // skip this aim&shoot, do it at next location
             Commands.waitSeconds(4),
 
             // Pickup 2
             FindPathThenFollowPlanned(pathGroup.get(1), 1.5, 1.5, 360.0, 540.0), // because the pose was changed in the previous step
             //AutoBuilder.followPath((pathGroup.get(1))), 
-            notething.driveToNoteCommand(swerve, 4.5, 10, 40, secondPickPose),
             tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
+            // notething.driveToNoteCommand(swerve, 4.5, 10, 40, secondPickPose),
+            // tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
             // shoot twice 
             Commands.waitSeconds(4),
 
-            // Pickup 3
-            AutoBuilder.followPath((pathGroup.get(2))), 
-            //notething.driveToNoteCommand(swerve, 4.5, 10, 40, thirdPickPose),
-            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, thirdPickPose, true),
-            Commands.waitSeconds(4),
+            // // Pickup 3
+            // AutoBuilder.followPath((pathGroup.get(2))), 
+            // //notething.driveToNoteCommand(swerve, 4.5, 10, 40, thirdPickPose),
+            // //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, thirdPickPose, true),
+            // Commands.waitSeconds(4),
 
             // AutoBuilder.followPath((pathGroup.get(3))), // Pos Mid
             // Commands.waitSeconds(5),

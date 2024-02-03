@@ -35,7 +35,7 @@ public class NoteAssistance implements Reportable{
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
         areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
-        txController = new PIDController(0.08, 0, 0.006);// todo, tuning pls!!!
+        txController = new PIDController(0.072, 0, 0.006);// todo, tuning pls!!!
 
         try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
@@ -90,7 +90,7 @@ public class NoteAssistance implements Reportable{
             {
                 speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
             } 
-            else if( tx < 6 && tx > -6 && area > 3.7 ) // todo, tuning pls!!!
+            else if( tx < 9 && tx > -9 && area > 3.7 ) // todo, tuning pls!!!
             {
                 speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
             } 
@@ -109,6 +109,7 @@ public class NoteAssistance implements Reportable{
         }
         else
         {
+            // todo, move the robot a bit and retry?
             speeds[0] = speeds[1] = 0;
         }
     }
@@ -141,11 +142,11 @@ public class NoteAssistance implements Reportable{
 
         Pose2d currentPose = drivetrain.getPose();
         double currentX = currentPose.getX();
-        double currentY = currentPose.getX();
+        double currentY = currentPose.getY();
         double currentR = currentPose.getRotation().getDegrees();
 
         double defaultX = defaultPose.getX();
-        double defaultY = defaultPose.getX();
+        double defaultY = defaultPose.getY();
         double defaultR = defaultPose.getRotation().getDegrees();
 
         // todo, need to convert angle to continues value!!! bug
