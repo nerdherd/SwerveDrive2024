@@ -157,31 +157,31 @@ public class SwerveJoystickCommand extends Command {
         //     ySpeed += 0.01;
         // } 
         // else 
-        if (turnToAngleSupplier.get()) {
-            turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
-            turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
-            turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
-            // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
-            double tempAngle = desiredAngle.get();
-            if (tempAngle != 1000.0) {
-                targetAngle = tempAngle;
-            }
-            turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
-            turningSpeed = Math.toRadians(turningSpeed);
-            turningSpeed = MathUtil.clamp(
-                turningSpeed, 
-                -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
-                SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
-            filteredTurningSpeed = turningSpeed;
-            xSpeed += 0.01;
-            ySpeed += 0.01;
-        }
-        else {
+        // if (turnToAngleSupplier.get()) {
+        //     turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
+        //     turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
+        //     turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
+        //     // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
+        //     double tempAngle = desiredAngle.get();
+        //     if (tempAngle != 1000.0) {
+        //         targetAngle = tempAngle;
+        //     }
+        //     turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
+        //     turningSpeed = Math.toRadians(turningSpeed);
+        //     turningSpeed = MathUtil.clamp(
+        //         turningSpeed, 
+        //         -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
+        //         SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+        //     filteredTurningSpeed = turningSpeed;
+        //     xSpeed += 0.01;
+        //     ySpeed += 0.01;
+        // }
+        // else {
             // Manual turning
-            turningSpeed = turningSpdFunction.get();
-            turningSpeed *= -1;
-            filteredTurningSpeed = turningFilter.calculate(turningSpeed);
-        }
+        turningSpeed = turningSpdFunction.get();
+        turningSpeed *= -1;
+        filteredTurningSpeed = turningFilter.calculate(turningSpeed);
+        // }
 
 
         if (precisionSupplier.get()) {

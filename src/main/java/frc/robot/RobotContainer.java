@@ -65,7 +65,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
   private EMPeach vision;
-  private DriverAssist driverAssist = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  private DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -81,7 +81,7 @@ public class RobotContainer {
     }
 
     // driverAssist.changePipeline(4);
-    driverAssist.toggleLight(false);
+    apriltagCamera.toggleLight(false);
 
     initAutoChoosers();
     initShuffleboard();
@@ -90,6 +90,14 @@ public class RobotContainer {
     configureBindings();
 
     DriverStation.reportWarning("Initalization complete", false);
+  }
+
+  public static boolean IsRedSide() {
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+      }
+      return false;
   }
 
   public void initDefaultCommands() {
@@ -102,7 +110,7 @@ public class RobotContainer {
         commandDriverController::getRightX, // Rotationaq
 
         // driverController::getSquareButton, // Field oriented
-        () -> false, // Field oriented
+        () -> true, // Field oriented
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
@@ -135,8 +143,12 @@ public class RobotContainer {
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
     
-    commandDriverController.L2().whileTrue(Commands.run(() -> driverAssist.driveToATag(5, 10, 0, 6)));
-    commandDriverController.L1().whileTrue(Commands.run(() -> swerveDrive.drive(driverAssist.getForwardPower(), driverAssist.getSidewaysPower(), driverAssist.getAngledPower())));
+
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
+      // .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+
+    commandDriverController.R1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
     // commandDriverController.povUp().onTrue(shooter.increaseTop());
