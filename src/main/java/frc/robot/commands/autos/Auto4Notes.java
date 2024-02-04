@@ -62,13 +62,13 @@ public class Auto4Notes extends SequentialCommandGroup {
 
             // Pickup 1
             PathCurrentToDest(firstPickPose, 0.45, 0.45, 360.0, 540.0), 
-            Commands.run(() -> swerve.drive(0,0,0)),
+            //Commands.run(() -> swerve.drive(0,0,0)),
             //AutoBuilder.followPath((pathGroup.get(0))), 
             // notething.driveToNoteCommand(swerve, 4.5, 10, 40, firstPickPose),
             // Commands.waitSeconds(1),
             // tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
             // skip this aim&shoot, do it at next location
-            // Commands.waitSeconds(4),
+            Commands.waitSeconds(4),
 
             // Pickup 2
             FindPathThenFollowPlanned(pathGroup.get(1), 0.45, 0.45, 360.0, 540.0), // because the pose was changed in the previous step

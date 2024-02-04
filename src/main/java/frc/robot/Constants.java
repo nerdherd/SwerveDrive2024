@@ -106,15 +106,15 @@ public final class Constants {
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
     
-    public static final int kFRDriveID = 11; // 11
-    public static final int kFLDriveID = 21; // 21
-    public static final int kBLDriveID = 31; // 31
-    public static final int kBRDriveID = 41; // 41
+    public static final int kFRDriveID = 11;
+    public static final int kFLDriveID = 21;
+    public static final int kBLDriveID = 31;
+    public static final int kBRDriveID = 41;
 
-    public static final int kFRTurningID = 12; // 12
-    public static final int kFLTurningID = 22; // 22
-    public static final int kBLTurningID = 32; // 32
-    public static final int kBRTurningID = 42; // 42
+    public static final int kFRTurningID = 12;
+    public static final int kFLTurningID = 22;
+    public static final int kBLTurningID = 32;
+    public static final int kBRTurningID = 42;
 
     public static final boolean kFRTurningReversed = true;
     public static final boolean kFLTurningReversed = true; 
@@ -127,10 +127,10 @@ public final class Constants {
     public static final boolean kBRDriveReversed = false;
 
     public static final class CANCoderConstants {
-      public static final int kFRCANCoderID = 14; // 14
-      public static final int kFLCANCoderID = 24; // 24
-      public static final int kBLCANCoderID = 34; // 34
-      public static final int kBRCANCoderID = 44; // 44
+      public static final int kFRCANCoderID = 14;
+      public static final int kFLCANCoderID = 24;
+      public static final int kBLCANCoderID = 34;
+      public static final int kBRCANCoderID = 44;
 
       public static final boolean kFRCANCoderReversed = false;    
       public static final boolean kFLCANCoderReversed = false;      
@@ -218,9 +218,9 @@ public final class Constants {
     public static final double kSunflowerP = 0.2;
     public static final double kSunflowerI = 0;
     public static final double kSunflowerD = 0;
-    public static final String kLimelightFrontName = "limelight-front";
-    public static final String kLimelightFrontIP = "10.6.87.25:5802";
-    public static final int kAprilTagPipeline = 4;
+    public static final String kLimelightFrontName = "limelight-front"; // notes
+    public static final String kLimelightFrontIP = "10.6.87.25:5800";
+    public static final int kNotePipeline = 0;
     public static final double fieldXOffset = 8.27; // Certified (Half field dimensions)
     public static final double fieldYOffset = 4.01; // Certified (Half as well)
     public static final double kMinimumTA = 0.7;
@@ -235,6 +235,10 @@ public final class Constants {
       new Rotation3d()
     ); // distance from camera to center of robot
 
+    public static final String kLimelightBackName = "limelight-back"; // apriltag
+    public static final String kLimelightBackIP = "10.6.87.51:5800";
+    public static final int kAprilTagPipeline = 4;
+
     public static final PrefDouble kPNoteForward = new PrefDouble("P Note Forward", 0);
     public static final PrefDouble kINoteForward = new PrefDouble("I Note Forward", 0);
     public static final PrefDouble kDNoteForward = new PrefDouble("D Note Forward", 0);
@@ -244,8 +248,6 @@ public final class Constants {
     public static final PrefDouble kPNoteAngle = new PrefDouble("P Note Angle", 0);
     public static final PrefDouble kINoteAngle = new PrefDouble("I Note Angle", 0);
     public static final PrefDouble kDNoteAngle = new PrefDouble("D Note Angle", 0);
-
-    public static final int kNotePipeline = 0;
   }
 
   public static final class ShooterConstants {

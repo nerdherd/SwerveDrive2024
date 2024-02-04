@@ -22,8 +22,9 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.autos.Auto4Notes;
-import frc.robot.commands.autos.AutoSquareTest;
-import frc.robot.commands.autos.TriangleAuto;
+import frc.robot.commands.autos.Squarto;
+//import frc.robot.commands.autos.AutoSquareTest;
+//import frc.robot.commands.autos.TriangleAuto;
 // import frc.robot.commands.autos.SquareTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
@@ -35,7 +36,7 @@ import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
 import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
-import frc.robot.subsystems.vision.farfuture.EMPeach;
+//import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.util.NerdyMath;
 
 /**
@@ -65,8 +66,8 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private NoteAssistance vision;
-  private DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
+  private NoteAssistance noteCamera;
+  private DriverAssist apriltagCamera;// = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -75,8 +76,11 @@ public class RobotContainer {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
-      vision = new NoteAssistance(VisionConstants.kLimelightFrontName);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER);
+
+      noteCamera = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      apriltagCamera = new DriverAssist(VisionConstants.kLimelightBackName, 4);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, apriltagCamera);
+
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -111,23 +115,15 @@ public class RobotContainer {
         commandDriverController::getRightX, // Rotationaq
 
         // driverController::getSquareButton, // Field oriented
-        () -> true, // Field oriented is false
+        () -> false, // Field oriented
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
         () -> driverController.getR2Button(), // Precision mode (disabled)
-        () -> true, // Turn to angle
+        () -> driverController.getCircleButton(), // Turn to angle
         // () -> false, // Turn to angle (disabled)
         () -> { // Turn To angle Direction
-          double xValue = commandDriverController.getRightX();
-          double yValue = commandDriverController.getRightY();
-          double magnitude = (xValue*xValue) + (yValue*yValue);
-          if (magnitude > 0.49) {
-            double angle = (90 + NerdyMath.radiansToDegrees(Math.atan2(commandDriverController.getRightY(), commandDriverController.getRightX())));
-            SmartDashboard.putNumber("desired angle", angle);
-            return angle;
-          }
-          return 1000.0;
+          return 0.0;
         }
       ));
   }
@@ -135,21 +131,25 @@ public class RobotContainer {
   private void configureBindings() {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
-    commandDriverController.share().onTrue(
-      Commands.runOnce(imu::zeroHeading)
-        .andThen(() -> imu.setOffset(0))
-        .andThen(() -> SwerveJoystickCommand.targetAngle = 0)
-      );
+    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
-      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)))
-      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)));
+      .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
+      .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
     
-
-    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
-    commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
-      // .onFalse(Commands.run(() -> swerveDrive.stopModules()));
-
-    commandDriverController.R1().whileTrue(Commands.run(() -> swerveDrive.drive(apriltagCamera.getForwardPower(), apriltagCamera.getSidewaysPower(), apriltagCamera.getAngledPower())));
+    
+    // Please Comment out one set of these two to run!!!
+    // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
+    //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
+    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 4.1, 0, 0.1, -1)))
+      .onFalse(Commands.run(() -> noteCamera.reset()));
+      
+    
+    //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
+    //commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
+    //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
+    
+    commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.TagAimingRotation(swerveDrive, 7, -1)))
+       .onFalse(Commands.run(() -> apriltagCamera.reset()));
 
     // driverAssist.changePipeline(1); // Change to pipeline 1 for drive to ring
     // commandDriverController.povUp().onTrue(shooter.increaseTop());
@@ -208,16 +208,15 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, vision, apriltagCamera));
-      //else if ....
-      else if(path.equals("squareTestAuto")){
-        autoChooser.addOption(path, new AutoSquareTest(swerveDrive, path));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, noteCamera, apriltagCamera));
+      else if(path.equals("Squarto")) {
+        autoChooser.addOption(path, new Squarto(swerveDrive, path));
       }
       else if(path.equals("rightTriangleTestAuto")){
-        autoChooser.addOption(path, new TriangleAuto(swerveDrive, path));
+        //autoChooser.addOption(path, new TriangleAuto(swerveDrive, path));
       }
     }
-    autoChooser.addOption("RTriangleAuto", AutoBuilder.buildAuto("rightTriangleTestAuto"));
+    //autoChooser.addOption("RTriangleAuto", AutoBuilder.buildAuto("rightTriangleTestAuto"));
 
     // these are the auto paths in the old format (not the actual full auto command)
     // autoChooser.addOption("Path Planner Test Auto", () -> PathPlannerAutos.pathplannerAuto("TestPath", swerveDrive));
@@ -229,12 +228,15 @@ public class RobotContainer {
   
   public void initShuffleboard() {
     imu.initShuffleboard(loggingLevel);
-    shooter.initShuffleboard(loggingLevel);
+    //if(Robot.RobotIdendification == Constants.kitbotRobotID)
+      shooter.initShuffleboard(loggingLevel);
     // backSunflower.initShuffleboard(loggingLevel);
     // frontSunflower.initShuffleboard(loggingLevel);
     swerveDrive.initShuffleboard(loggingLevel);
     swerveDrive.initModuleShuffleboard(loggingLevel);
-    vision.initShuffleboard(loggingLevel);
+    apriltagCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+    noteCamera.initShuffleboard(LOG_LEVEL.MEDIUM);
+
     ShuffleboardTab tab = Shuffleboard.getTab("Main");
     // tab.addNumber("Total Current Draw", pdp::getTotalCurrent);
     tab.addNumber("Voltage", () -> Math.abs(pdp.getVoltage()));
