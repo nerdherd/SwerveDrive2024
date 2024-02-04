@@ -32,25 +32,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4th piece"
+            "pathName": "4thPickPath"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3rdPickPath"
+            "pathName": "MidPickPath"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2ndPickPath"
+            "pathName": "4thPickPath"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1stPickPath"
+            "pathName": "MidPickPath"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoSpeakerPath"
           }
         }
       ]

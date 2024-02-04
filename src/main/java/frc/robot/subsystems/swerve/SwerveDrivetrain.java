@@ -44,7 +44,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     // private final SwerveDriveOdometry odometer;
     private boolean isTest = false;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final EMPeach vision; 
+    //private final EMPeach vision; 
     private DRIVE_MODE driveMode = DRIVE_MODE.FIELD_ORIENTED;
     private int counter = 0;
     private int visionFrequency = 1;
@@ -65,7 +65,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Construct a new {@link SwerveDrivetrain}
      */
-    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType, EMPeach vision) throws IllegalArgumentException {
+    public SwerveDrivetrain(Gyro gyro, SwerveModuleType moduleType) throws IllegalArgumentException {
         switch (moduleType) {
             case CANCODER:
                 frontLeft = new SwerveModule(
@@ -104,7 +104,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         this.gyro = gyro;
         this.poseEstimator = new SwerveDrivePoseEstimator(kDriveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
         this.poseEstimator.setVisionMeasurementStdDevs(kBaseVisionPoseSTD);
-        this.vision = vision;
+        // this.vision = vision;
         // this.odometer = new SwerveDriveOdometry(
         //     kDriveKinematics, 
         //     new Rotation2d(0), 
@@ -149,29 +149,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
         counter = (counter + 1) % visionFrequency;
         
-        if (counter == 0) {
-            Pose3d sunflowerPose3d = vision.getCurrentGrassTile();
-            if (sunflowerPose3d != null && vision.getEMPRadius() > VisionConstants.kMinimumTA) {
-                SmartDashboard.putNumber("Vision X Value", sunflowerPose3d.getX());
-                SmartDashboard.putNumber("Vision Y Value", sunflowerPose3d.getY());
-                if (previousVisionX != -1) {
-                    if ((Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2) ) {
-                        poseEstimator.addVisionMeasurement(sunflowerPose3d.toPose2d(), Timer.getFPGATimestamp());
-                        SmartDashboard.putBoolean("Vision Used", true);
-                        previousVisionX = sunflowerPose3d.toPose2d().getX();
-                    }
-                    SmartDashboard.putBoolean("Filtered out", (Math.abs(previousVisionX - sunflowerPose3d.toPose2d().getX())) < (previousVisionX * 0.2));
-                    SmartDashboard.putNumber("Prev Vis X", previousVisionX);
-                } else {
-                    previousVisionX = sunflowerPose3d.toPose2d().getX();
-                }
-            } else {
-                SmartDashboard.putBoolean("Vision Used", false);
-            }
-        }
-        else {
-            SmartDashboard.putBoolean("Vision Used", false);
-        }
         // field.setRobotPose(poseEstimator.getEstimatedPosition());
     }
     

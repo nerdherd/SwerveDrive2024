@@ -33,6 +33,7 @@ import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 import frc.robot.subsystems.swerve.SwerveDrivetrain.SwerveModuleType;
+import frc.robot.subsystems.vision.NoteAssistance;
 import frc.robot.subsystems.vision.farfuture.DriverAssist;
 import frc.robot.subsystems.vision.farfuture.EMPeach;
 import frc.robot.util.NerdyMath;
@@ -64,7 +65,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private EMPeach vision;
+  private NoteAssistance vision;
   private DriverAssist apriltagCamera = new DriverAssist(VisionConstants.kLimelightFrontName, 4);
   //private Citron frontCitron = new Citron(VisionConstants.kPhotonVisionFrontName);
   /**
@@ -74,8 +75,8 @@ public class RobotContainer {
     try {
       // Pass in "sunflowers" in reverse order of priority (most important last)
       // swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, frontSunflower);
-      vision = new EMPeach(VisionConstants.kLimelightFrontName);
-      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER, vision);
+      vision = new NoteAssistance(VisionConstants.kLimelightFrontName);
+      swerveDrive = new SwerveDrivetrain(imu, SwerveModuleType.CANCODER);
     } catch (IllegalArgumentException e) {
       DriverStation.reportError("Illegal Swerve Drive Module Type", e.getStackTrace());
     }
@@ -110,7 +111,7 @@ public class RobotContainer {
         commandDriverController::getRightX, // Rotationaq
 
         // driverController::getSquareButton, // Field oriented
-        () -> false, // Field oriented is false
+        () -> true, // Field oriented is false
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
@@ -207,7 +208,7 @@ public class RobotContainer {
 
     for (String path : paths) {
       if(path.equals("4PAuto"))
-        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path));
+        autoChooser.addOption(path, new Auto4Notes(swerveDrive, path, vision, apriltagCamera));
       //else if ....
       else if(path.equals("squareTestAuto")){
         autoChooser.addOption(path, new AutoSquareTest(swerveDrive, path));
