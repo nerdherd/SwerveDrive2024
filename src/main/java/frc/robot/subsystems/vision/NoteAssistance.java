@@ -86,11 +86,11 @@ public class NoteAssistance implements Reportable{
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
-            if( area < 0.5 || area > 5.5 ) // todo, tuning pls!!!
+            if( area < 0.5 || area > targetArea*1.2 ) // todo, tuning pls!!!
             {
                 speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
             } 
-            else if( tx < 9 && tx > -9 && area > 3.7 ) // todo, tuning pls!!!
+            else if( tx < targetTX && tx > -1*targetTX && area > targetArea*0.8 ) // todo, tuning pls!!!
             {
                 speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
             } 
@@ -101,7 +101,7 @@ public class NoteAssistance implements Reportable{
             else
             {
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
-                speeds[1]= 1 * txController.calculate(tx, targetTX);
+                speeds[1]= 1 * txController.calculate(tx, 0);
 
                 speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
                 speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);// todo, tuning pls!!!
@@ -117,6 +117,9 @@ public class NoteAssistance implements Reportable{
     // no time limit if MaxSamples is less than 0
     // robot can move to any location 
     // for Teleop, PID tuning...
+    // double targetArea: the ta to pickup
+    // double targetTX: max left tx value to pickup, min right tx value(-1*)
+    // double targetTY: the bottom cutoff value
     public void driveToNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples) {
         // must reset counts before or after call this function!!!
         dataSampleCount++;
@@ -174,10 +177,13 @@ public class NoteAssistance implements Reportable{
 
     // for the auto 
     // a min running time is required by minSamples 
-    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
+    // double targetArea: the ta to pickup
+    // double targetTX: max left tx value to pickup, min right tx value(-1*)
+    // double targetTY: the bottom cutoff value
+    public Command driveToNoteCommand(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int minSamples, int maxSamples, Pose2d defaultPose) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
-            Commands.run( () -> driveToNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+            Commands.run( () -> driveToNote(drivetrain, targetArea, targetTX, targetTY, maxSamples, defaultPose))// todo, tuning pls!!!
                 .until(() -> (dataSampleCount >= minSamples && 
                     Math.abs(getForwardSpeed()) <= 0.1 && 
                     Math.abs(getSidewaysSpeed()) <= 0.1) )// todo, tuning pls!!!
