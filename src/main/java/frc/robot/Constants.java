@@ -106,36 +106,36 @@ public final class Constants {
       new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
       new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
     
-    public static final int kFRDriveID = 31; // 11
-    public static final int kFLDriveID = 41; // 21
-    public static final int kBLDriveID = 11; // 31
-    public static final int kBRDriveID = 21; // 41
+    public static final int kFRDriveID = 11; // 11
+    public static final int kFLDriveID = 21; // 21
+    public static final int kBLDriveID = 31; // 31
+    public static final int kBRDriveID = 41; // 41
 
-    public static final int kFRTurningID = 32; // 12
-    public static final int kFLTurningID = 42; // 22
-    public static final int kBLTurningID = 12; // 32
-    public static final int kBRTurningID = 22; // 42
+    public static final int kFRTurningID = 12; // 12
+    public static final int kFLTurningID = 22; // 22
+    public static final int kBLTurningID = 32; // 32
+    public static final int kBRTurningID = 42; // 42
 
     public static final boolean kFRTurningReversed = true;
     public static final boolean kFLTurningReversed = true; 
     public static final boolean kBLTurningReversed = true; 
     public static final boolean kBRTurningReversed = true; 
 
-    public static final boolean kFRDriveReversed = true;
-    public static final boolean kFLDriveReversed = true;     
-    public static final boolean kBLDriveReversed = true;      
-    public static final boolean kBRDriveReversed = true;
+    public static final boolean kFRDriveReversed = false;
+    public static final boolean kFLDriveReversed = false;     
+    public static final boolean kBLDriveReversed = false;      
+    public static final boolean kBRDriveReversed = false;
 
     public static final class CANCoderConstants {
-      public static final int kFRCANCoderID = 34; // 14
-      public static final int kFLCANCoderID = 44; // 24
-      public static final int kBLCANCoderID = 14; // 34
-      public static final int kBRCANCoderID = 24; // 44
+      public static final int kFRCANCoderID = 14; // 14
+      public static final int kFLCANCoderID = 24; // 24
+      public static final int kBLCANCoderID = 34; // 34
+      public static final int kBRCANCoderID = 44; // 44
 
-      public static final boolean kFRCANCoderReversed = true;    
-      public static final boolean kFLCANCoderReversed = true;      
-      public static final boolean kBLCANCoderReversed = true;       
-      public static final boolean kBRCANCoderReversed = true; 
+      public static final boolean kFRCANCoderReversed = false;    
+      public static final boolean kFLCANCoderReversed = false;      
+      public static final boolean kBLCANCoderReversed = false;       
+      public static final boolean kBRCANCoderReversed = false; 
     }
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;    

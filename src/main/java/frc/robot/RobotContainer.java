@@ -110,7 +110,7 @@ public class RobotContainer {
         commandDriverController::getRightX, // Rotationaq
 
         // driverController::getSquareButton, // Field oriented
-        () -> true, // Field oriented
+        () -> false, // Field oriented is false
 
         driverController::getCrossButton, // Towing
         // driverController::getR2Button, // Precision/"Sniper Button"
