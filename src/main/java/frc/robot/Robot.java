@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.subsystems.swerve.SwerveDrivetrain.DRIVE_MODE;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -71,7 +72,12 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
+
+    m_robotContainer.configureBindings_Auto();
+
     m_robotContainer.swerveDrive.setBreak(false);
+    m_robotContainer.swerveDrive.setVelocityControl(false);
     m_robotContainer.imu.zeroHeading();
     m_robotContainer.imu.zeroAll();
     m_robotContainer.imu.setOffset(180);
@@ -89,6 +95,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.swerveDrive.setDriveMode(DRIVE_MODE.FIELD_ORIENTED);
     // SmartDashboard.putNumber("kP Theta Teleop", 10.0);
     // SmartDashboard.putNumber("kI Theta Teleop", 0);
     // SmartDashboard.putNumber("kD Theta Teleop", 0.2);
@@ -107,8 +114,9 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     // m_robotContainer.imu.setOffset(180);
+    m_robotContainer.configureBindings_Teleop();
 
-    m_robotContainer.initDefaultCommands();
+    m_robotContainer.initDefaultCommands_Teleop();
 
     // m_robotContainer.wrist.zeroEncodersStow();
 
@@ -123,8 +131,25 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    m_robotContainer.swerveDrive.setDriveMode(DRIVE_MODE.ROBOT_ORIENTED);
+    
+    m_robotContainer.swerveDrive.setBreak(false);
+    m_robotContainer.swerveDrive.refreshModulePID();
+    m_robotContainer.shooter.refreshPID();
+    SwerveDriveConstants.kPThetaTeleop.loadPreferences();
+    SwerveDriveConstants.kIThetaTeleop.loadPreferences();
+    SwerveDriveConstants.kDThetaTeleop.loadPreferences();
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+
+    m_robotContainer.initDefaultCommands_Teleop();
+
+    m_robotContainer.configureBindings_Test();
+
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+    //CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called periodically during test mode. */

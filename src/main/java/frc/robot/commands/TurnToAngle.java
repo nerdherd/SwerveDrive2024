@@ -4,7 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.SwerveAutoConstants;
+import frc.robot.Constants.SwerveTeleopConstants;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
 import frc.robot.util.NerdyMath;
@@ -26,14 +26,14 @@ public class TurnToAngle extends Command {
         this.swerveDrive = swerveDrive;
 
         this.pidController = new PIDController(
-            SwerveAutoConstants.kPTurnToAngle.get(), 
-            SwerveAutoConstants.kITurnToAngle.get(), 
-            SwerveAutoConstants.kDTurnToAngle.get(), 
+            SwerveTeleopConstants.kPTurnToAngle.get(), 
+            SwerveTeleopConstants.kITurnToAngle.get(), 
+            SwerveTeleopConstants.kDTurnToAngle.get(), 
             period);
         
         this.pidController.setTolerance(
-            SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
-            SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * period);
+            SwerveTeleopConstants.kTurnToAnglePositionToleranceAngle, 
+            SwerveTeleopConstants.kTurnToAngleVelocityToleranceAnglesPerSec * period);
         
         this.pidController.enableContinuousInput(0, 360);
         

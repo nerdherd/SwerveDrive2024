@@ -92,7 +92,7 @@ public class RobotContainer {
     initShuffleboard();
 
     // Configure the trigger bindings
-    configureBindings();
+    //configureBindings();
 
     DriverStation.reportWarning("Initalization complete", false);
   }
@@ -105,7 +105,7 @@ public class RobotContainer {
       return false;
   }
 
-  public void initDefaultCommands() {
+  public void initDefaultCommands_Teleop() {
     swerveDrive.setDefaultCommand(
       new SwerveJoystickCommand(
         swerveDrive,
@@ -128,14 +128,48 @@ public class RobotContainer {
       ));
   }
 
-  private void configureBindings() {
+  public void configureBindings_Teleop() {
     // Note: whileTrue() does not restart the command if it ends while the button is
     // still being held
     commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     commandDriverController.triangle()
       .onTrue(Commands.runOnce(() -> swerveDrive.setVelocityControl(true)))
       .onFalse(Commands.runOnce(() -> swerveDrive.setVelocityControl(false)));
+
+    // commandDriverController.povUp().onTrue(shooter.increaseTop());
+    // commandDriverController.povDown().onTrue(shooter.decreaseTop());
+
+    // commandDriverController.povLeft().onTrue(shooter.increaseBottom());
+    // commandDriverController.povRight().onTrue(shooter.decreaseBottom());
     
+    commandOperatorController.cross()
+      .onTrue(shooter.setTopSpeed(75))
+      .onFalse(shooter.setPowerZeroCommand());
+    
+    commandOperatorController.R2()
+      .onTrue(shooter.setTopSpeed(100))
+      .onFalse(shooter.setPowerZeroCommand());
+
+    commandOperatorController.L2()
+      .onTrue(shooter.setBottomSpeed(100))
+      .onFalse(shooter.setPowerZeroCommand());
+    
+    
+    commandOperatorController.triangle()
+      .onTrue(shooter.setSpeed(-10, -10))
+      .onFalse(shooter.setPowerZeroCommand());
+
+  }
+
+
+  public void configureBindings_Auto() {
+    // we may not need the controllers during auto time
+  }
+
+  public void configureBindings_Test() {
+    // Note: whileTrue() does not restart the command if it ends while the button is
+    // still being held
+    commandDriverController.share().onTrue(Commands.runOnce(imu::zeroHeading).andThen(() -> imu.setOffset(0)));
     
     // Please Comment out one set of these two to run!!!
     // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
@@ -258,7 +292,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     Command currentAuto = autoChooser.getSelected();
 
-    swerveDrive.setDriveMode(DRIVE_MODE.AUTONOMOUS);
+    
     return currentAuto;
   }
 }

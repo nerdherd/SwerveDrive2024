@@ -138,10 +138,10 @@ public final class Constants {
       public static final boolean kBRCANCoderReversed = false; 
     }
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 3;    
+    public static final double kPhysicalMaxSpeedMetersPerSecond[] = new double[]{3, 3 ,1.5};    
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * Math.PI;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond[0];
     public static final double kTeleMaxAcceleration = 3;
     // THIS CONSTANT HAS TO BE NEGATIVE OTHERWISE THE ROBOT WILL CRASH
     //TODO: Change deceleration with driver feedback, only in small increments (<= -2 is dangerous)
@@ -169,9 +169,10 @@ public final class Constants {
     };
 
     public static final double kGravityMPS = 9.80665; 
+  
   }
 
-  public static final class SwerveAutoConstants {
+  public static final class SwerveTeleopConstants { // parameters for the control during teleop time
     public static final PrefDouble kPTurnToAngle = new PrefDouble("kP Theta Teleop", 6);
     public static final PrefDouble kITurnToAngle = new PrefDouble("kI Theta Teleop", 0);
     public static final PrefDouble kDTurnToAngle = new PrefDouble("kD Theta Teleop", 0.2);

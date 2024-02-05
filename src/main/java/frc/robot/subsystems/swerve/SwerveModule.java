@@ -170,7 +170,7 @@ public class SwerveModule implements Reportable {
         this.desiredState = new SwerveModuleState(0, Rotation2d.fromRadians(getTurningPosition()));
     }
 
-    public void run() {
+    public void run(int mode) {
         desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromRadians(getTurningPosition()));
 
         desiredAngle = desiredState.angle.getDegrees();
@@ -187,7 +187,7 @@ public class SwerveModule implements Reportable {
             driveMotor.setControl(driveVelocityRequest.withVelocity(velocity));
             this.currentPercent = 0;
         } else {
-            this.currentPercent = desiredState.speedMetersPerSecond / SwerveDriveConstants.kPhysicalMaxSpeedMetersPerSecond;
+            this.currentPercent = desiredState.speedMetersPerSecond / SwerveDriveConstants.kPhysicalMaxSpeedMetersPerSecond[mode];
             this.driveRequest.Output = currentPercent;
             driveMotor.setControl(this.driveRequest);
         }

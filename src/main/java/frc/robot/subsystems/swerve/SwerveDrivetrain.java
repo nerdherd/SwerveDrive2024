@@ -60,9 +60,18 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     }
 
     public enum DRIVE_MODE {
-        FIELD_ORIENTED,
-        ROBOT_ORIENTED,
-        AUTONOMOUS
+        FIELD_ORIENTED(0),
+        ROBOT_ORIENTED(1),
+        AUTONOMOUS(2);
+
+        private final int value;
+        private DRIVE_MODE(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     /**
@@ -152,7 +161,6 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
             this);
     }
 
-    double previousVisionX = -1;
 
     /**
      * Have modules move towards states and update odometry
@@ -160,11 +168,10 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     @Override
     public void periodic() {
         if (!isTest) {
-            runModules();
+            runModules(driveMode.getValue());
         }
         // odometer.update(gyro.getRotation2d(), getModulePositions());
         poseEstimator.update(gyro.getRotation2d(), getModulePositions());
-        counter = (counter + 1) % visionFrequency;
 
         if(vision != null && vision.getAprilTagID() != -1)
         {
@@ -217,11 +224,11 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
     /**
      * Have modules move to their desired states. See {@link SwerveModule#run()} for more info.
      */
-    public void runModules() {
-        frontLeft.run();
-        frontRight.run();
-        backLeft.run();
-        backRight.run();
+    public void runModules(int mode) {
+        frontLeft.run(mode);
+        frontRight.run(mode);
+        backLeft.run(mode);
+        backRight.run(mode);
     }
 
     //****************************** GETTERS ******************************/
@@ -331,7 +338,7 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
      * @param desiredStates desired states of the four modules (FL, FR, BL, BR)
      */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, kPhysicalMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, kPhysicalMaxSpeedMetersPerSecond[driveMode.getValue()]);
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);

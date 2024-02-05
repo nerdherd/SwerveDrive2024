@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.SwerveAutoConstants;
+import frc.robot.Constants.SwerveTeleopConstants;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.util.filters.DeadbandFilter;
 import frc.robot.util.filters.Filter;
@@ -96,9 +96,9 @@ public class SwerveJoystickCommand extends Command {
         
 
         this.turnToAngleController = new PIDController(
-            SwerveAutoConstants.kPTurnToAngle.get(),
-            SwerveAutoConstants.kITurnToAngle.get(),
-            SwerveAutoConstants.kDTurnToAngle.get()
+            SwerveTeleopConstants.kPTurnToAngle.get(),
+            SwerveTeleopConstants.kITurnToAngle.get(),
+            SwerveTeleopConstants.kDTurnToAngle.get()
             );
 
         // this.turnToAngleController = new PIDController(
@@ -108,8 +108,8 @@ public class SwerveJoystickCommand extends Command {
         //     0.02);
         
         this.turnToAngleController.setTolerance(
-            SwerveAutoConstants.kTurnToAnglePositionToleranceAngle, 
-            SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
+            SwerveTeleopConstants.kTurnToAnglePositionToleranceAngle, 
+            SwerveTeleopConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
     
 
         this.turnToAngleController.enableContinuousInput(-180, 180);
