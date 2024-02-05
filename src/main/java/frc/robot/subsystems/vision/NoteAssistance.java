@@ -34,8 +34,8 @@ public class NoteAssistance implements Reportable{
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        areaController = new PIDController(0.34, 0, 0);// todo, tuning pls!!!
-        txController = new PIDController(0.072, 0, 0.006);// todo, tuning pls!!!
+        areaController = new PIDController(0.045, 0, 0);// todo, tuning pls!!!
+        txController = new PIDController(0.02, 0, 0.006);// todo, tuning pls!!!
 
         try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
@@ -86,7 +86,7 @@ public class NoteAssistance implements Reportable{
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
-            if( area < 0.5 || area > targetArea*1.2 ) // todo, tuning pls!!!
+            if( area < 0.5 || area > targetArea*1.1 ) // todo, tuning pls!!!
             {
                 speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
             } 
