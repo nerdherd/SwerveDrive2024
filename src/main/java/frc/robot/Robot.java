@@ -134,6 +134,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.swerveDrive.setDriveMode(DRIVE_MODE.ROBOT_ORIENTED);
     
     m_robotContainer.swerveDrive.setBreak(false);
+    m_robotContainer.swerveDrive.setVelocityControl(false);
     m_robotContainer.swerveDrive.refreshModulePID();
     m_robotContainer.shooter.refreshPID();
     SwerveDriveConstants.kPThetaTeleop.loadPreferences();
