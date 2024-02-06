@@ -19,6 +19,7 @@ public class NoteAssistance implements Reportable{
 
     private PIDController areaController;
     private PIDController txController;
+    private PIDController rotationController;
 
     private GenericEntry targetFound;
     private GenericEntry currentArea;
@@ -27,6 +28,7 @@ public class NoteAssistance implements Reportable{
 
     private GenericEntry forwardSpeed;
     private GenericEntry sidewaysSpeed;
+    private GenericEntry rotationSpeed;
 
     double[] speeds = {0.0, 0.0};
 
@@ -36,6 +38,7 @@ public class NoteAssistance implements Reportable{
 
         areaController = new PIDController(0.045, 0, 0);// todo, tuning pls!!!
         txController = new PIDController(0.02, 0, 0.006);// todo, tuning pls!!!
+        rotationController = new PIDController(0.02, 0, 0.006);
 
         try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
@@ -190,6 +193,47 @@ public class NoteAssistance implements Reportable{
         );
     }
 
+    public void turnToNote(double targetTX, int maxSamples) {
+        if(dataSampleCount > maxSamples && maxSamples > 0) {
+            speeds[2] = 0;
+            return;
+        }
+        
+        boolean hasTarget = limelight.hasValidTarget();
+        if(targetFound != null)
+            targetFound.setBoolean(hasTarget);
+
+        if(!hasTarget) {
+            speeds[2] = 0;
+            return;
+        }
+
+        double currentTX = limelight.getXAngle_avg();
+        dataSampleCount++;
+        
+        if(NerdyMath.inRange(currentTX, -0.1, 0.1)) {
+            speeds[2] = 0;
+            return;
+        }
+
+        speeds[2] = 1 * rotationController.calculate(currentTX, targetTX);
+
+        if(rotationSpeed != null)
+            rotationSpeed.setDouble(speeds[2]);
+    }
+
+    public Command turnToNoteCommand(SwerveDrivetrain drivetrain, double targetTX, int maxSamples) {
+        return Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.parallel(
+                Commands.run(() -> turnToNote(targetTX, maxSamples)),
+                Commands.run(() -> drivetrain.drive(0, 0, speeds[2]))
+            ).until(() ->
+                    Math.abs(speeds[2]) == 0
+                )
+        );
+    }
+
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
 
@@ -241,6 +285,11 @@ public class NoteAssistance implements Reportable{
                 
                 sidewaysSpeed = tab.add("Sideways Speed", 0)
                 .withPosition(0, 1)
+                .withSize(2, 1)
+                .getEntry();
+
+                rotationSpeed = tab.add("Rotation Speed", 0)
+                .withPosition(0, 2)
                 .withSize(2, 1)
                 .getEntry();
                 
