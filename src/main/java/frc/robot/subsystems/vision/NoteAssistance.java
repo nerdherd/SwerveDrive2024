@@ -30,7 +30,7 @@ public class NoteAssistance implements Reportable{
     private GenericEntry sidewaysSpeed;
     private GenericEntry rotationSpeed;
 
-    double[] speeds = {0.0, 0.0};
+    double[] speeds = {0.0, 0.0, 0.0};
 
     public NoteAssistance(String name) {
         this.name = name;
