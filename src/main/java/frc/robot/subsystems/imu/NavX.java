@@ -217,7 +217,7 @@ public class NavX extends SubsystemBase implements Gyro {
                 tab.add("Reset Pitch", new InstantCommand(this::zeroPitch));
             case MINIMAL:
                 tab.addNumber("IMU Resets", () -> numResets);
-                tab.addNumber("Robot Heading", () -> getHeading());
+                tab.addNumber("Robot Heading", () -> getHeading() % 360);
                 break;
         }
     }

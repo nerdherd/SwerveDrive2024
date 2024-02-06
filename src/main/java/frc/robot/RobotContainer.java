@@ -28,6 +28,7 @@ import frc.robot.commands.autos.TriangleAuto;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Reportable.LOG_LEVEL;
 import frc.robot.subsystems.imu.Gyro;
+import frc.robot.subsystems.imu.NavX;
 // import frc.robot.subsystems.imu.Pigeon;
 import frc.robot.subsystems.imu.PigeonV2;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
@@ -48,7 +49,7 @@ import frc.robot.util.NerdyMath;
  */
 public class RobotContainer {
   public Shooter shooter = new Shooter();
-  public Gyro imu = new PigeonV2(1);
+  public Gyro imu = new NavX();
   public SwerveDrivetrain swerveDrive;
   public PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
 

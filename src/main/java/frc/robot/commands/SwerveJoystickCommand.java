@@ -115,10 +115,6 @@ public class SwerveJoystickCommand extends Command {
         this.turnToAngleController.enableContinuousInput(-180, 180);
 
         addRequirements(swerveDrive);
-
-        SmartDashboard.putNumber("kP Theta Teleop", 0);
-        SmartDashboard.putNumber("kI Theta Teleop", 0);
-        SmartDashboard.putNumber("kD Theta Teleop", 0);
     }
 
     @Override
@@ -158,13 +154,16 @@ public class SwerveJoystickCommand extends Command {
         // } 
         // else 
         if (turnToAngleSupplier.get()) {
-            turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
-            turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
-            turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
             double tempAngle = desiredAngle.get();
             if (tempAngle != 1000.0) {
                 targetAngle = tempAngle;
+                SwerveDriveConstants.kPThetaTeleop.loadPreferences();
+                SwerveDriveConstants.kIThetaTeleop.loadPreferences();
+                SwerveDriveConstants.kDThetaTeleop.loadPreferences();
+                turnToAngleController.setP(SwerveDriveConstants.kPThetaTeleop.get());
+                turnToAngleController.setI(SwerveDriveConstants.kIThetaTeleop.get());
+                turnToAngleController.setD(SwerveDriveConstants.kDThetaTeleop.get());
             }
             turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
             turningSpeed = Math.toRadians(turningSpeed);
@@ -187,7 +186,7 @@ public class SwerveJoystickCommand extends Command {
         if (precisionSupplier.get()) {
             filteredXSpeed /= 4;
             filteredYSpeed /= 4;
-            filteredTurningSpeed /= 4; // Also slows down the turn to angle speed
+            // filteredTurningSpeed /= 4; // Also slows down the turn to angle speed
         }
         
         ChassisSpeeds chassisSpeeds;
