@@ -174,7 +174,7 @@ public class RobotContainer {
     // Please Comment out one set of these two to run!!!
     // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
     //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 7.7, 7, 0.2, 100)))
+    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 7.7, 7, 0.2, 200)))
       .onFalse(Commands.run(() -> noteCamera.reset()));
       
     

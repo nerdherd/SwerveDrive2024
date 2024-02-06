@@ -36,8 +36,8 @@ public class NoteAssistance implements Reportable{
         this.name = name;
         ShuffleboardTab tab = Shuffleboard.getTab(name);
 
-        areaController = new PIDController(0.045, 0, 0);// todo, tuning pls!!!
-        txController = new PIDController(0.02, 0, 0.006);// todo, tuning pls!!!
+        areaController = new PIDController(0.12, 0, 0.001);// todo, tuning pls!!!
+        txController = new PIDController(0.025, 0, 0.001);// todo, tuning pls!!!
         rotationController = new PIDController(0.02, 0, 0.006);
 
         try { // TODO , we don't need to try-catch
@@ -89,25 +89,25 @@ public class NoteAssistance implements Reportable{
             if(currentTY != null)
                 currentTY.setDouble(ty);
 
-            if( area < 0.5 || area > targetArea*1.1 ) // todo, tuning pls!!!
-            {
-                speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
-            } 
-            else if( tx < targetTX && tx > -1*targetTX && area > targetArea*0.8 ) // todo, tuning pls!!!
-            {
-                speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
-            } 
-            else if( ty < targetTY ) // need a lot of testing here
-            {
-                speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
-            } 
-            else
+            // if( area < 0.5 || area > targetArea*1.1 ) // todo, tuning pls!!!
+            // {
+            //     speeds[0] = speeds[1] = 0; // something is wrong! or filter it out by camera dashboard
+            // } 
+            // else if( tx < targetTX && tx > -1*targetTX && area > targetArea*0.8 ) // todo, tuning pls!!!
+            // {
+            //     speeds[0] = speeds[1] = 0; // arrived! good ranges to get the note. cut off here is faster than the pid
+            // } 
+            // else if( ty < targetTY ) // need a lot of testing here
+            // {
+            //     speeds[0] = speeds[1] = 0; // stop it otherwise too close to the note
+            // } 
+            // else
             {
                 speeds[0] = 1 * areaController.calculate(area, targetArea);
                 speeds[1]= 1 * txController.calculate(tx, 0);
 
                 speeds[0] = NerdyMath.deadband(speeds[0], -0.2, 0.2); // todo, tuning pls!!!
-                speeds[1] = NerdyMath.deadband(speeds[1], -0.35, 0.35);// todo, tuning pls!!!
+                speeds[1] = NerdyMath.deadband(speeds[1], -0.2, 0.2);// todo, tuning pls!!!
             }
         }
         else
