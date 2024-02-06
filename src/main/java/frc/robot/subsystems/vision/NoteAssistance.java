@@ -158,7 +158,7 @@ public class NoteAssistance implements Reportable{
         // todo, need to convert angle to continues value!!! bug
         if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
            currentY < defaultY-1 || currentY > defaultY+1 ||
-           currentR < defaultR-30 || currentR > defaultR+30 )
+           currentR < NerdyMath.continueAngle(defaultR, defaultR - 30) || currentR > NerdyMath.continueAngle(defaultR, defaultR + 30))
         {
             speeds[0] = speeds[1] = 0; // stop because moved too far
         }
@@ -193,7 +193,46 @@ public class NoteAssistance implements Reportable{
         );
     }
 
-    public void turnToNote(double targetTX, int maxSamples) {
+    public void calculateTranslationSpeeds(double targetTA, double targetTX, double targetTY, int maxSamples) {
+        dataSampleCount++;
+        if(dataSampleCount > maxSamples && maxSamples > 0) {
+            speeds[0] = 0;
+            speeds[1] = 0;
+            return;
+        }
+
+        boolean hasTarget = limelight.hasValidTarget();
+        if(targetFound != null)
+            targetFound.setBoolean(hasTarget);
+
+        if(!hasTarget) {
+            speeds[0] = 0;
+            speeds[1] = 0;
+            return;
+        }
+
+        double currentTA = limelight.getArea_avg();
+        double currentTX = limelight.getXAngle_avg();
+        double currentTY = limelight.getYAngle_avg();
+
+        if(NerdyMath.inRange(currentTA, targetTA - 0.2, targetTA * 1.1)) 
+            speeds[0] = 0;
+        else if(NerdyMath.inRange(currentTY, targetTY - 0.1, targetTY + 0.1))
+            speeds[0] = 0;
+        if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1))
+            speeds[1] = 0;
+
+        speeds[0] = 1 * areaController.calculate(currentTA, targetTA);
+        speeds[1] = 1 * txController.calculate(currentTX, targetTX);
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+    }
+
+    public void calculateRotationSpeed(double targetTX, int maxSamples) {
+        dataSampleCount++;
         if(dataSampleCount > maxSamples && maxSamples > 0) {
             speeds[2] = 0;
             return;
@@ -209,9 +248,8 @@ public class NoteAssistance implements Reportable{
         }
 
         double currentTX = limelight.getXAngle_avg();
-        dataSampleCount++;
         
-        if(NerdyMath.inRange(currentTX, -0.1, 0.1)) {
+        if(NerdyMath.inRange(currentTX, targetTX - 0.1, targetTX + 0.1)) {
             speeds[2] = 0;
             return;
         }
@@ -222,20 +260,32 @@ public class NoteAssistance implements Reportable{
             rotationSpeed.setDouble(speeds[2]);
     }
 
-    public Command turnToNoteCommand(SwerveDrivetrain drivetrain, double targetTX, int maxSamples) {
+    /**
+     * runs until reaches targetTX or reaches maximumSamples
+     * @param drivetrain
+     * @param targetTX
+     * @param minSamples minimum samples to have before command stops
+     * @param maxSamples maximum samples before command stops, 0 if just want to run reach targetTX
+     * @return
+     */
+    public Command turnToNoteCommand(SwerveDrivetrain drivetrain, double targetTX, int minSamples, int maxSamples) {
         return Commands.sequence(
             Commands.runOnce(() -> reset()),
-            Commands.parallel(
-                Commands.run(() -> turnToNote(targetTX, maxSamples)),
-                Commands.run(() -> drivetrain.drive(0, 0, speeds[2]))
+            Commands.run(
+                () -> {
+                    calculateRotationSpeed(targetTX, maxSamples);
+                    drivetrain.drive(0, 0, getRotationSpeed());
+                }  
             ).until(() ->
-                    Math.abs(speeds[2]) == 0
+                    Math.abs(speeds[2]) == 0 &&
+                    dataSampleCount >= minSamples
                 )
         );
     }
 
     private double getForwardSpeed() { return speeds[0]; }
     private double getSidewaysSpeed() { return speeds[1]; }
+    private double getRotationSpeed() { return speeds[2]; }
 
     public void setLight(boolean lightModeOn) {
         if(lightModeOn) limelight.setLightState(LightMode.ON);
