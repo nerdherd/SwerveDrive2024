@@ -37,7 +37,7 @@ public class Auto4Notes extends SequentialCommandGroup {
         // You can also get the starting pose from the auto. Only call this if the auto actually has a starting pose.
         Pose2d startPose2d = PathPlannerAuto.getStaringPoseFromAutoFile(autoPath);
 
-        // Blue side
+        // Blue side    
         Pose2d firstPickPose = GetEndPointInPath(pathGroup.get(0));//new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20))); // todo. testing it
         Pose2d secondPickPose = GetEndPointInPath(pathGroup.get(1));//new Pose2d(2.23,6.63, new Rotation2d(Units.degreesToRadians(20)));
 
@@ -61,20 +61,23 @@ public class Auto4Notes extends SequentialCommandGroup {
             Commands.waitSeconds(2), // debug time
 
             // Pickup 1 //AutoBuilder.followPath((pathGroup.get(0))), 
-            PathCurrentToDest(firstPickPose, 0.45, 0.45, 360.0, 540.0), 
-            //notething.driveToNoteCommand(swerve, 7.7, 7, 0.1, 10, 40, firstPickPose),
-            //Commands.waitSeconds(1),
-            //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstPickPose, true),
+            PathCurrentToDest(firstPickPose, 0.9, 3, 360.0, 540.0),
+            //notething.driveToNoteCommand(swerve, 7.7, 7, 0.1, 10, 40, firs *tPickPose),
+            Commands.waitSeconds(4),
+            tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, firstPickPose, true),
             // skip this aim&shoot, do it at next location
             Commands.waitSeconds(4),
 
-            // Pickup 2 //AutoBuilder.followPath((pathGroup.get(1))), 
-            //FindPathThenFollowPlanned(pathGroup.get(1), 0.45, 0.45, 360.0, 540.0), // because the pose was changed in the previous step
+            // Pickup 2 //
+            AutoBuilder.followPath((pathGroup.get(1))), 
+            //PathCurrentToDest(secondPickPose, 0.9, 1.5, 360.0, 540.0),
+            
+            //FindPathThenFollowPlanned(pathGroup.get(1), 0.9, 3, 360.0, 540.0), // because the pose was changed in the previous step
             //tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
             //notething.driveToNoteCommand(swerve, 6.8, 9, 0.1, 10, 40, secondPickPose),
             // tagAssist.aimToApriltagCommand(swerve, aimTargetApriltagID, 4, 20, secondPickPose, true),
             // shoot twice 
-            // Commands.waitSeconds(4),
+            Commands.waitSeconds(4),
 
             // // Pickup 3
             // AutoBuilder.followPath((pathGroup.get(2))), 
