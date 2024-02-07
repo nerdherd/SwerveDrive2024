@@ -145,7 +145,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_robotContainer.initDefaultCommands_Teleop();
+    m_robotContainer.initDefaultCommands_Test();
 
     m_robotContainer.configureBindings_Test();
 

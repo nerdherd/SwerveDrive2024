@@ -211,6 +211,11 @@ public class RobotContainer {
 
   }
 
+  public void initDefaultCommands_Test() {
+    initDefaultCommands_Teleop();
+  }
+
+
   private void initAutoChoosers() {
     // Remember to load the pathplanner paths here
     // final String[] paths = {
