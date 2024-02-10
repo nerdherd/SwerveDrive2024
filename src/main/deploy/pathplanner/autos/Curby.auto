@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.45,
+      "y": 4.75
+    },
+    "rotation": -26.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Curby(1)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Curby(2)"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Curby(3)"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

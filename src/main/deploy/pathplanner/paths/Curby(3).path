@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.65,
+        "y": 5.55
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4699559370624264,
+        "y": 6.268066781150601
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.7800008249589148,
+        "y": 6.455173252226847
+      },
+      "prevControl": {
+        "x": 0.6807503073695607,
+        "y": 5.8587713756624105
+      },
+      "nextControl": {
+        "x": 1.832738750586592,
+        "y": 6.483786382088671
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.65,
+        "y": 7.355623144297515
+      },
+      "prevControl": {
+        "x": 3.59607235722205,
+        "y": 7.32932087549017
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 26.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "CurvyGoodness",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

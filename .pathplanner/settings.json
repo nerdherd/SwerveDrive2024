@@ -2,6 +2,15 @@
   "robotWidth": 0.84,
   "robotLength": 0.84,
   "holonomicMode": true,
-  "generateJSON": false,
-  "generateCSV": false
+  "pathFolders": [
+    "Basic4Piece(bottom)",
+    "CurvyGoodness",
+    "Basic4Piece(top)"
+  ],
+  "autoFolders": [],
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 3.0,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
 }

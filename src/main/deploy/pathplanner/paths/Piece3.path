@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.69,
+        "y": 5.58
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.7383809140582174,
+        "y": 5.54451356378993
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.721530052746715,
+        "y": 6.349925862244887
+      },
+      "prevControl": {
+        "x": 1.6689953917051072,
+        "y": 6.320941221670207
+      },
+      "nextControl": {
+        "x": 2.6196025062409714,
+        "y": 6.845414112448615
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.4873473735551457,
+        "y": 7.285458217640082
+      },
+      "prevControl": {
+        "x": 3.5386346244684495,
+        "y": 7.316596905694588
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 26.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Basic4Piece(bottom)",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
