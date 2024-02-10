@@ -174,7 +174,7 @@ public class RobotContainer {
     // Please Comment out one set of these two to run!!!
     // commandDriverController.L2().whileTrue(Commands.run(() -> noteCamera.speedToNote(4.1, 0, 0)))
     //   .onFalse(Commands.run(() -> noteCamera.resetBuffer()));
-    commandDriverController.L1().whileTrue(Commands.run(() -> noteCamera.driveToNote(swerveDrive, 7.7, 7, 0.2, 200)))
+    commandDriverController.L1().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0))
       .onFalse(Commands.run(() -> noteCamera.reset()));
       
     
@@ -212,7 +212,26 @@ public class RobotContainer {
   }
 
   public void initDefaultCommands_Test() {
-    initDefaultCommands_Teleop();
+    swerveDrive.setDefaultCommand(
+      new SwerveJoystickCommand(
+        swerveDrive,
+        () -> -commandDriverController.getLeftY(), // Horizontal translation
+        commandDriverController::getLeftX, // Vertical Translation
+        // () -> 0.0, // debug
+        commandDriverController::getRightX, // Rotationaq
+
+        // driverController::getSquareButton, // Field oriented
+        () -> true, // should be robot oriented now on true
+
+        driverController::getCrossButton, // Towing
+        // driverController::getR2Button, // Precision/"Sniper Button"
+        () -> driverController.getR2Button(), // Precision mode (disabled)
+        () -> driverController.getCircleButton(), // Turn to angle
+        // () -> false, // Turn to angle (disabled)
+        () -> { // Turn To angle Direction
+          return 0.0;
+        }
+      ));
   }
 
 

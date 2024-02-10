@@ -38,7 +38,7 @@ public class NoteAssistance implements Reportable{
 
         areaController = new PIDController(0.12, 0, 0.001);// todo, tuning pls!!!
         txController = new PIDController(0.025, 0, 0.001);// todo, tuning pls!!!
-        rotationController = new PIDController(0.02, 0, 0.006);
+        rotationController = new PIDController(0.08, 0, 0);
 
         try { // TODO , we don't need to try-catch
             limelight = new Limelight(name);
