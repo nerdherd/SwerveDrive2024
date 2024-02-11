@@ -177,7 +177,8 @@ public class RobotContainer {
     commandDriverController.L1().whileTrue(noteCamera.turnToNoteCommand(swerveDrive, 0, 0, 0))
       .onFalse(Commands.run(() -> noteCamera.reset()));
       
-    
+    commandDriverController.R1().whileTrue(Commands.run(() -> apriltagCamera.getSkew())); // Get robot Pose from tag
+
     //commandDriverController.L2().whileTrue(Commands.run(() -> apriltagCamera.calculateTag(1.8, 0, 0, 7))); // testing
     //commandDriverController.L1().whileTrue(Commands.run(() -> apriltagCamera.TagDriving(swerveDrive, 1, 0, 0, 7))); //1.8, 0, 0, 7
     //   .onFalse(Commands.run(() -> swerveDrive.stopModules()));
