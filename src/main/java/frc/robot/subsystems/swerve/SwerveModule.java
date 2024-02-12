@@ -45,7 +45,7 @@ public class SwerveModule implements Reportable {
     private double currentTurnPercent = 0;
     private double currentAngle = 0;
     private double desiredAngle = 0;
-    private double desiredVelocity = 0;
+    private double desiredVelocityRPS = 0;
     private boolean velocityControl = true;
 
     private SwerveModuleState desiredState = null;
@@ -191,16 +191,11 @@ public class SwerveModule implements Reportable {
 
         desiredAngle = desiredState.angle.getDegrees();
 
-        double velocity = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution / ModuleConstants.kDriveMotorGearRatio;
-        this.desiredVelocity = velocity;
+        this.desiredVelocityRPS = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution;
         
-        if (Math.abs(velocity) < 0.001) {
+        if (Math.abs(desiredVelocityRPS) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
-
-        // driveRequest.Slot = 0;
-        // driveMotor.setControl(driveRequest.withVelocity(velocity));
-        // this.currentPercent = 0;
         
         turnRequest.Slot = 0;
         turnRequest.Position = desiredState.angle.getRotations();
@@ -355,7 +350,7 @@ public class SwerveModule implements Reportable {
                 tab.addNumber("Drive Motor Current", () -> driveMotor.getSupplyCurrent().getValue());
                 // tab.addNumber("Module Velocity", this::getDriveVelocity);
                 tab.addNumber("Module Velocity RPS", this::getDriveVelocityRPS);
-                tab.addNumber("Desired Velocity", () -> this.desiredVelocity);
+                tab.addNumber("Desired Velocity", () -> this.desiredVelocityRPS);
                 tab.addBoolean("Velocity Control", () -> this.velocityControl);
                 tab.addString("Error Status", () -> driveMotor.getFaultField().getName());
                 break;
