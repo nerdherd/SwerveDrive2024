@@ -52,8 +52,6 @@ public class SwerveJoystickCommand extends Command {
      * @param turningSpdFunction    A supplier returning the desired turning speed
      * @param fieldOrientedFunction A boolean supplier that toggles field oriented/robot oriented mode.
      * @param towSupplier           A boolean supplier that toggles the tow mode.
-     * @param dodgeSupplier         A boolean supplier that toggles the dodge mode.
-     * @param dodgeDirectionSupplier A supplier that supplies the dodge direction.
      * @param precisionSupplier     A boolean supplier that toggles the precision mode.
      */
     public SwerveJoystickCommand(SwerveDrivetrain swerveDrive,
@@ -112,7 +110,7 @@ public class SwerveJoystickCommand extends Command {
             SwerveAutoConstants.kTurnToAngleVelocityToleranceAnglesPerSec * 0.02);
     
 
-        this.turnToAngleController.enableContinuousInput(-180, 180);
+        this.turnToAngleController.enableContinuousInput(0, 360);
 
         addRequirements(swerveDrive);
     }
@@ -136,28 +134,12 @@ public class SwerveJoystickCommand extends Command {
         double filteredXSpeed = xFilter.calculate(xSpeed);
         double filteredYSpeed = yFilter.calculate(ySpeed);
 
-        // Turn to angle
-        // if (turnToAngleSupplier.get()) {
-        //     // turnToAngleController.setP(SmartDashboard.getNumber("kP Theta Teleop", SwerveAutoConstants.kPTurnToAngle));
-        //     // turnToAngleController.setI(SmartDashboard.getNumber("kI Theta Teleop", SwerveAutoConstants.kITurnToAngle));
-        //     // turnToAngleController.setD(SmartDashboard.getNumber("kD Theta Teleop", SwerveAutoConstants.kDTurnToAngle));
-        //     double targetAngle = desiredAngle.get();
-        //     turningSpeed = turnToAngleController.calculate(swerveDrive.getImu().getHeading(), targetAngle);
-        //     turningSpeed = Math.toRadians(turningSpeed);
-        //     turningSpeed = MathUtil.clamp(
-        //         turningSpeed, 
-        //         -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
-        //         SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
-        //     filteredTurningSpeed = turningSpeed;
-        //     xSpeed += 0.01;
-        //     ySpeed += 0.01;
-        // } 
-        // else 
         if (turnToAngleSupplier.get()) {
-            // targetAngle = Math.atan2(turningSpdFunction.get()/turnToAngleJoystickMovementSupplier.get())
             double tempAngle = desiredAngle.get();
             if (tempAngle != 1000.0) {
                 targetAngle = tempAngle;
+            } else {
+                targetAngle = ((targetAngle + turningSpdFunction.get() % 360) + 360) % 360;
                 SwerveDriveConstants.kPThetaTeleop.loadPreferences();
                 SwerveDriveConstants.kIThetaTeleop.loadPreferences();
                 SwerveDriveConstants.kDThetaTeleop.loadPreferences();
@@ -171,9 +153,9 @@ public class SwerveJoystickCommand extends Command {
                 turningSpeed, 
                 -SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond, 
                 SwerveDriveConstants.kTurnToAngleMaxAngularSpeedRadiansPerSecond);
+            SmartDashboard.putNumber("Turning Speed", turningSpeed);
+            
             filteredTurningSpeed = turningSpeed;
-            xSpeed += 0.01;
-            ySpeed += 0.01;
         }
         else {
             // Manual turning
@@ -214,40 +196,5 @@ public class SwerveJoystickCommand extends Command {
 
     public double getTargetAngle() {
         return targetAngle;
-    }
-
-    public void reportToSmartDashboard(LOG_LEVEL level) {
-        switch (level) {
-        case OFF:
-            break;
-        case ALL:
-            SmartDashboard.putNumber("ArcTan: ", targetAngle);
-        case MEDIUM:
-            SmartDashboard.putNumber("ArcTan: ", targetAngle);
-        case MINIMAL:
-            SmartDashboard.putNumber("ArcTan: ", targetAngle);
-        }
-    }
-
-    public void initShuffleboard(LOG_LEVEL level) {
-        if (level == LOG_LEVEL.OFF)  {
-            return;
-        }
-        ShuffleboardTab tab;
-        if (level == LOG_LEVEL.MINIMAL) {
-            tab = Shuffleboard.getTab("Main");
-        } else {
-            tab = Shuffleboard.getTab("Imu");
-        }
-        switch (level) {
-            case OFF:
-                break;
-            case ALL:
-                break;
-            case MEDIUM:
-               break;
-            case MINIMAL:
-                break;
-        }
     }
 }

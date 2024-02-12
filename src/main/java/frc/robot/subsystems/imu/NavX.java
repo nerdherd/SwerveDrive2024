@@ -218,6 +218,7 @@ public class NavX extends SubsystemBase implements Gyro {
             case MINIMAL:
                 tab.addNumber("IMU Resets", () -> numResets);
                 tab.addNumber("Robot Heading", () -> getHeading() % 360);
+                tab.addNumber("Robot Heading (CW Positive)", () -> (-getHeading() % 360) + 360);
                 break;
         }
     }
