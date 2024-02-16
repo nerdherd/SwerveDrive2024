@@ -193,6 +193,59 @@ public class NoteAssistance implements Reportable{
         );
     }
 
+    boolean foundNote = false;
+    public void seekForFarNote(SwerveDrivetrain drivetrain, double targetArea, double targetTX, double targetTY, int maxSamples, Pose2d defaultPose) {
+        // must reset counts before or after call this function!!!
+        dataSampleCount++;
+
+        Pose2d currentPose = drivetrain.getPose();
+        double currentX = currentPose.getX();
+        double currentY = currentPose.getY();
+        double currentR = currentPose.getRotation().getDegrees();
+
+        double defaultX = defaultPose.getX();
+        double defaultY = defaultPose.getY();
+        double defaultR = defaultPose.getRotation().getDegrees();
+
+        // todo, need to convert angle to continues value!!! bug
+        if(currentX < defaultX-1 || currentX > defaultX+1 ||  // todo, tuning pls
+           currentY < defaultY-1 || currentY > defaultY+1 ||
+           currentR < defaultR-30 || currentR > defaultR+30 )
+        {
+            speeds[0] = speeds[1] = 0; // stop because moved too far
+            foundNote = false;
+        }
+        else if(maxSamples > 0 && dataSampleCount > maxSamples)
+        {
+            speeds[0] = speeds[1] = 0; // stop because running time too long
+            foundNote = false;
+        }
+        else 
+        {
+            speedToNote(targetArea, targetTX, targetTY);
+            foundNote = true;
+        }
+
+        if(forwardSpeed != null)
+            forwardSpeed.setDouble(speeds[0]);
+        if(sidewaysSpeed != null)
+            sidewaysSpeed.setDouble(speeds[1]);
+        drivetrain.drive(getForwardSpeed(), getSidewaysSpeed(), 0);
+    }
+    
+    // for the auto 
+    // a min running time is required by minSamples 
+    public Command seekForFarNoteCommand(SwerveDrivetrain drivetrain, double targetArea, int minSamples, int maxSamples, Pose2d defaultPose) {
+        return Commands.sequence(
+            Commands.runOnce(() -> reset()),
+            Commands.run( () -> seekForFarNote(drivetrain, targetArea, 0, 0.1, maxSamples, defaultPose))// todo, tuning pls!!!
+                .until(() -> ((foundNote == true || dataSampleCount >= minSamples) && 
+                    Math.abs(getForwardSpeed()) <= 0.1 && 
+                    Math.abs(getSidewaysSpeed()) <= 0.1 
+                    ) )// todo, tuning pls!!!
+        );
+    }
+
     public void calculateTranslationSpeeds(double targetTA, double targetTX, double targetTY, int maxSamples) {
         dataSampleCount++;
         if(dataSampleCount > maxSamples && maxSamples > 0) {
