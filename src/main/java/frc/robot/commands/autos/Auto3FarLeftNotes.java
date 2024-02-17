@@ -114,10 +114,10 @@ public class Auto3FarLeftNotes  {
         {
             INIT,
             PATH_PLAN_TO_NOTE,
-            IMU_DRIVE_ZERO,
+            //IMU_DRIVE_ZERO,
             SEEK_NOTE_ROTATION,
             DRIVE_TO_NOTE,
-            PICKUP_CONFIMATION,
+            //PICKUP_CONFIMATION,
             PATH_PLAN_TO_SHOOT_POSE,
             APRILTAG_AIM_SHOOT,
             PATH_PLAN_TO_NEXT_NOTE,
@@ -197,6 +197,12 @@ public class Auto3FarLeftNotes  {
             NextState = next;
         }
 
+        public void checkNextState(AutoState state)
+        {
+            // check e-stop conditions
+            NextState = state;//sth;
+        }
+
         public void StateJump()
         {
 
@@ -207,13 +213,13 @@ public class Auto3FarLeftNotes  {
         int RountIndex = 0;
         Pose2d ArrivalPose;
         //@Override
-        public void execute()
+        public Command execute()
         {
             switch (NextState) {// each state only can be called once!!!
                 case INIT:
-                    tagAssist.resetInitPoseByVision(swerveDrive, startPose2d, aimTargetApriltagID);
                     PreviousState = AutoState.INIT;
                     NextState = AutoState.WAIT;
+                    //return tagAssist.resetInitPoseByVision(swerveDrive, startPose2d, aimTargetApriltagID).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     break;
                 case PATH_PLAN_TO_NOTE:
                     PreviousState = AutoState.PATH_PLAN_TO_NOTE;
@@ -221,85 +227,89 @@ public class Auto3FarLeftNotes  {
                     if(RountIndex == 0)
                     {
                         ArrivalPose = FirstPickPose2d;
-                        AutoBuilder.followPath(InitToFirstNotePath).andThen(Commands.run(() -> setState(AutoState.IMU_DRIVE_ZERO))).withTimeout(3).end(Stop);
+                        return AutoBuilder.followPath(InitToFirstNotePath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);//.end(Stop);
                     }
                     else if(RountIndex == 1)
                     {
                         ArrivalPose = SecondPickPose2d;
-                        AutoBuilder.followPath(ShootToSecondNotePath);
+                        return AutoBuilder.followPath(ShootToSecondNotePath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else if(RountIndex == 2)
                     {
                         ArrivalPose = ThirdPickPose2d;
-                        AutoBuilder.followPath(ShootToThirdNotePath);
+                        return AutoBuilder.followPath(ShootToThirdNotePath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else
                         NextState = AutoState.EXIT;
                     break;
-                case IMU_DRIVE_ZERO:
-                    TurnToAngleWithVision(0, ArrivalPose, noteAssist); // don't turn if the note is there and current angle is very good
-                    NextState = AutoState.SEEK_NOTE_ROTATION;
-                    break;
+                // case IMU_DRIVE_ZERO:
+                //     return TurnToAngleWithVision(0, ArrivalPose, noteAssist); // don't turn if the note is there and current angle is very good
+                //     NextState = AutoState.WAIT;//AutoState.SEEK_NOTE_ROTATION;
+                //     break;
                 case SEEK_NOTE_ROTATION:
-                    //noteAssist.SeekNoteRotation(20, -10, ArrivalPose); // angle range for scanning
-                    if(true) // saw one
-                        NextState = AutoState.DRIVE_TO_NOTE;
-                    else // none
-                        NextState = AutoState.PATH_PLAN_TO_NEXT_NOTE;
+                    PreviousState = AutoState.SEEK_NOTE_ROTATION;
+                    NextState = AutoState.WAIT;
+                    //return noteAssist.SeekNoteRotation(20, -10, ArrivalPose); // angle range for scanning
                     break;
                 case DRIVE_TO_NOTE:
-                    //noteAssist.drivePickupNoteCommand(swerveDrive, 7, 1, 1, 2, 10, ArrivalPose);// move forward to pick and then move backward
-                    NextState = AutoState.PICKUP_CONFIMATION;
+                    PreviousState = AutoState.DRIVE_TO_NOTE;
+                    NextState = AutoState.WAIT;
+                    //return noteAssist.drivePickupNoteCommand(swerveDrive, 7, 1, 1, 2, 10, ArrivalPose);// move forward to pick and then move backward
+                    //NextState = AutoState.PATH_PLAN_TO_SHOOT_POSE;
+                    //NextState = AutoState.PATH_PLAN_TO_NEXT_NOTE;
                     // timeout or cross line 
                     break;
-                case PICKUP_CONFIMATION:
-                    //colorSensor.Read();
-                    if(false)
-                    {
-                        NextState = AutoState.PATH_PLAN_TO_NEXT_NOTE;
-                    }
-                    else
-                    {
-                        NextState = AutoState.PATH_PLAN_TO_SHOOT_POSE;
-                    }
-                    break;
+                // case PICKUP_CONFIMATION:
+                //     //colorSensor.Read();
+                //     if(false)
+                //     {
+                //         NextState = AutoState.PATH_PLAN_TO_NEXT_NOTE;
+                //     }
+                //     else
+                //     {
+                //         NextState = AutoState.PATH_PLAN_TO_SHOOT_POSE;
+                //     }
+                //     break;
                 case PATH_PLAN_TO_SHOOT_POSE:
+                    PreviousState = AutoState.PATH_PLAN_TO_SHOOT_POSE;
+                    NextState = AutoState.WAIT;
                     if(RountIndex == 0)
                     {
                         ArrivalPose = FirstShootPose2d;
-                        AutoBuilder.followPath(FirstNoteShootPath);
+                        AutoBuilder.followPath(FirstNoteShootPath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else if(RountIndex == 1)
                     {
                         ArrivalPose = FirstShootPose2d; // may changed to diff path
-                        AutoBuilder.followPath(SecondNoteShootPath);
+                        AutoBuilder.followPath(SecondNoteShootPath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else if(RountIndex == 2)
                     {
                         ArrivalPose = FirstShootPose2d;// may changed to diff path
-                        AutoBuilder.followPath(ThirdNoteShootPath);
+                        AutoBuilder.followPath(ThirdNoteShootPath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else
                         NextState = AutoState.EXIT; //Error
-                    NextState = AutoState.APRILTAG_AIM_SHOOT;
+
                     break;
                 case APRILTAG_AIM_SHOOT:
-                    //tagAssist.TagAimingRotation(swerveDrive, aimTargetApriltagID, 10, ArrivalPose);
-                    //shooter.run(ArrivalPose);
+                    PreviousState = AutoState.PATH_PLAN_TO_SHOOT_POSE;
+                    NextState = AutoState.WAIT;
                     RountIndex++;
-                    NextState = AutoState.PATH_PLAN_TO_NOTE;
+                    //return tagAssist.TagAimingRotation(swerveDrive, aimTargetApriltagID, 10, ArrivalPose);
+
                     break;
                 case PATH_PLAN_TO_NEXT_NOTE:
-                    NextState = AutoState.IMU_DRIVE_ZERO; 
+                    NextState = AutoState.SEEK_NOTE_ROTATION; 
                     if(RountIndex == 0)
                     {
                         ArrivalPose = SecondPickPose2d;
-                        AutoBuilder.followPath(FirstToSecondNotePath);
+                        AutoBuilder.followPath(FirstToSecondNotePath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else if(RountIndex == 1)
                     {
                         ArrivalPose = ThirdPickPose2d;
-                        AutoBuilder.followPath(SecondToThirdNotePath);
+                        AutoBuilder.followPath(SecondToThirdNotePath).andThen(Commands.run(() -> checkNextState(AutoState.PATH_PLAN_TO_NOTE))).withTimeout(3);
                     }
                     else
                     {
@@ -309,10 +319,13 @@ public class Auto3FarLeftNotes  {
                     break;
                 case WAIT:
                     StateJump();
+                    return Commands.none();
 
                 default: //EXIT
                     break;
-            }            
+            }  
+            
+                    return Commands.none();          
         }
 
         public Command TurnToAngleWithVision(double targetDegrees, Pose2d ArrivalPose, NoteAssistance noteAssist) {
