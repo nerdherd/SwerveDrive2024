@@ -123,7 +123,7 @@ public class SwerveModule implements Reportable {
         turnMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
         turnMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
         turnMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
-        driveMotorConfigs.CurrentLimits.StatorCurrentLimit = 45;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimit = 50;
         driveMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         turnMotorConfigs.Audio.AllowMusicDurDisable = true;
 
