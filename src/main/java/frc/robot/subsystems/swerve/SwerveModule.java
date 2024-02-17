@@ -18,6 +18,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,7 +35,8 @@ public class SwerveModule implements Reportable {
     private final TalonFXConfigurator turnConfigurator;
 
     private final PositionVoltage turnRequest;
-    private final MotionMagicVelocityVoltage driveRequest;
+    // private final MotionMagicVelocityVoltage driveRequest;
+    private final VelocityVoltage driveRequest;
     private final NeutralOut brakeRequest;
 
     private final int driveMotorID;
@@ -72,7 +74,8 @@ public class SwerveModule implements Reportable {
         this.driveConfigurator = driveMotor.getConfigurator();
         this.turnConfigurator = turnMotor.getConfigurator();
         
-        this.driveRequest = new MotionMagicVelocityVoltage(0).withEnableFOC(false);
+        // this.driveRequest = new MotionMagicVelocityVoltage(0).withEnableFOC(false);
+        this.driveRequest = new VelocityVoltage(0);
         this.turnRequest = new PositionVoltage(0).withEnableFOC(false);
         this.brakeRequest = new NeutralOut();
 
@@ -120,6 +123,8 @@ public class SwerveModule implements Reportable {
         turnMotorConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         turnMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
         turnMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimit = 40;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         turnMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode result = driveConfigurator.apply(driveMotorConfigs);
@@ -154,7 +159,7 @@ public class SwerveModule implements Reportable {
         ModuleConstants.kDDrive.loadPreferences();
         ModuleConstants.kVDrive.loadPreferences();
         ModuleConstants.kSDrive.loadPreferences();
-        ModuleConstants.kSDrive.loadPreferences();
+        ModuleConstants.kADrive.loadPreferences();
         ModuleConstants.kDriveMotionMagicAcceleration.loadPreferences();
         ModuleConstants.kDriveMotionMagicJerk.loadPreferences();
         driveConfigs.Slot0.kP = ModuleConstants.kPDrive.get();
@@ -191,14 +196,21 @@ public class SwerveModule implements Reportable {
 
         desiredAngle = desiredState.angle.getDegrees();
 
-        this.desiredVelocityRPS = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution;
+        this.desiredVelocityRPS = desiredState.speedMetersPerSecond / ModuleConstants.kMetersPerRevolution * ModuleConstants.kDriveMotorGearRatio;
         
         if (Math.abs(desiredVelocityRPS) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
+        else {
+            driveRequest.Velocity = desiredVelocityRPS;
+            driveRequest.Slot = 0;
+            driveMotor.setControl(driveRequest);
+        }
         
         turnRequest.Slot = 0;
         turnRequest.Position = desiredState.angle.getRotations();
+        turnRequest.LimitForwardMotion = false;
+        turnRequest.LimitReverseMotion = false;
         turnMotor.setControl(this.turnRequest);
     }
 
