@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.subsystems.Reportable;
 
 import com.ctre.phoenix6.StatusCode;
@@ -18,6 +19,9 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -36,12 +40,15 @@ public class SwerveModule implements Reportable {
     private final PositionVoltage turnRequest;
     private final MotionMagicVelocityVoltage driveRequest;
     private final NeutralOut brakeRequest;
+    private final VelocityVoltage driveVelocityRequest;
+    private final VoltageOut voltageRequest;
 
     private final int driveMotorID;
     private final int turnMotorID;
     private final int CANCoderID;
 
     private double currentPercent = 0;
+    private double currentVoltage = 0;
     private double currentTurnPercent = 0;
     private double currentAngle = 0;
     private double desiredAngle = 0;
@@ -75,6 +82,10 @@ public class SwerveModule implements Reportable {
         this.driveRequest = new MotionMagicVelocityVoltage(0).withEnableFOC(false);
         this.turnRequest = new PositionVoltage(0).withEnableFOC(false);
         this.brakeRequest = new NeutralOut();
+        this.driveVelocityRequest = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+        this.driveVelocityRequest.Slot = 0;
+        this.voltageRequest = new VoltageOut(0);
+
 
         this.driveMotorID = driveMotorId;
         this.turnMotorID = turningMotorId;
@@ -196,7 +207,17 @@ public class SwerveModule implements Reportable {
         if (Math.abs(desiredVelocityRPS) < 0.001) {
             driveMotor.setControl(brakeRequest);
         }
-        
+        else if (this.velocityControl) {
+            driveVelocityRequest.Slot = 0;
+            driveVelocityRequest.Velocity = desiredVelocityRPS;
+            driveMotor.setControl(driveVelocityRequest);
+            this.currentVoltage = 0;
+        } else {
+            this.currentVoltage = desiredState.speedMetersPerSecond / SwerveDriveConstants.kPhysicalMaxSpeedMetersPerSecond * 12;
+            this.voltageRequest.Output = currentVoltage;
+            driveMotor.setControl(this.voltageRequest);
+        }
+    
         turnRequest.Slot = 0;
         turnRequest.Position = desiredState.angle.getRotations();
         turnMotor.setControl(this.turnRequest);
