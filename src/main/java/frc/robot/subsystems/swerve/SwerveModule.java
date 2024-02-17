@@ -102,6 +102,34 @@ public class SwerveModule implements Reportable {
         refreshPID();
     }
 
+    public void configureAuto() {
+        TalonFXConfiguration autoConfigs = new TalonFXConfiguration();
+        driveConfigurator.refresh(autoConfigs);
+
+        autoConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
+        autoConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        toggleVelocityControl(true);
+
+        StatusCode result = driveConfigurator.apply(autoConfigs);
+        if (!result.isOK()) {
+            DriverStation.reportError("Could not apply drive configs, error code: "+ result.toString(), true);
+        }
+    }
+
+    public void configureTeleop() {
+        TalonFXConfiguration teleopConfigs = new TalonFXConfiguration();
+        driveConfigurator.refresh(teleopConfigs);
+
+        teleopConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        teleopConfigs.CurrentLimits.SupplyCurrentLimitEnable = false;
+        toggleVelocityControl(false);
+
+        StatusCode result = driveConfigurator.apply(teleopConfigs);
+        if (!result.isOK()) {
+            DriverStation.reportError("Could not apply drive configs, error code: "+ result.toString(), true);
+        }
+    }
+
     public void configureMotors() {
         TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
         driveConfigurator.refresh(driveMotorConfigs);
@@ -134,7 +162,7 @@ public class SwerveModule implements Reportable {
         turnMotorConfigs.CurrentLimits.SupplyCurrentThreshold = 20;
         turnMotorConfigs.CurrentLimits.SupplyTimeThreshold = 0.25;
         driveMotorConfigs.CurrentLimits.StatorCurrentLimit = 50;
-        driveMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        driveMotorConfigs.CurrentLimits.StatorCurrentLimitEnable = false;
         turnMotorConfigs.Audio.AllowMusicDurDisable = true;
 
         StatusCode result = driveConfigurator.apply(driveMotorConfigs);

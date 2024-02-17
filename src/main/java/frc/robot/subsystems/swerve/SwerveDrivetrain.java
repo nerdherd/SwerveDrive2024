@@ -302,6 +302,21 @@ public class SwerveDrivetrain extends SubsystemBase implements Reportable {
         backRight.toggleVelocityControl(withVelocityControl);
     }
 
+    public void configureAuto() {
+        frontLeft.configureAuto();
+        frontRight.configureAuto();
+        backLeft.configureAuto();
+        backRight.configureAuto();
+    }
+
+    public void configureTeleop() {
+        frontLeft.configureTeleop();
+        frontRight.configureTeleop();
+        backLeft.configureTeleop();
+        backRight.configureTeleop();
+    }
+
+
     /**
      * Set the neutral modes of all modules.
      * <p>

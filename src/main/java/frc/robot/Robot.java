@@ -4,11 +4,19 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.SwerveDriveConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 
@@ -19,6 +27,7 @@ import frc.robot.commands.SwerveJoystickCommand;
  * project.
  */
 public class Robot extends TimedRobot {
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -75,6 +84,8 @@ public class Robot extends TimedRobot {
     m_robotContainer.imu.zeroHeading();
     m_robotContainer.imu.zeroAll();
     m_robotContainer.imu.setOffset(180);
+    m_robotContainer.swerveDrive.configureAuto();
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -99,6 +110,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.swerveDrive.setBreak(false);
     m_robotContainer.swerveDrive.refreshModulePID();
     m_robotContainer.shooter.refreshPID();
+    m_robotContainer.swerveDrive.configureTeleop();
     SwerveDriveConstants.kPThetaTeleop.loadPreferences();
     SwerveDriveConstants.kIThetaTeleop.loadPreferences();
     SwerveDriveConstants.kDThetaTeleop.loadPreferences();
